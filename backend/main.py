@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from backend.game_logic import Deck, calculate_score
 import random
 import os
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -95,6 +95,13 @@ def stand(game_id: str):
         "dealer_score": dealer_score,
         "dealer_hand": dealer  # Send card names for frontend
     }
+    
+@app.get("/card/{card_name}")
+def get_card(card_name: str):
+    file_path = f"static/cards/{card_name}.svg"
+    if os.path.exists(file_path):
+        return FileResponse(file_path, media_type='image/svg+xml')
+    return {"error": "Card not found"}
 
 # Serve static files (cards and other assets) from the static directory
 app.mount("/static", StaticFiles(directory="static"), name="static")

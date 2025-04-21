@@ -13,17 +13,27 @@
 <body>
   <h1>🃏 Blackjack</h1>
   <div id="game">
-    <p><strong>Dealer:</strong> <span id="dealer"></span></p>
+    <!-- <p><strong>Dealer:</strong> <span id="dealer"></span></p>
     <p><strong>You:</strong> <span id="player"></span></p>
-    <p id="message"></p>
+    <p id="message"></p> -->
+
 
     <div>
-      <button onclick="startGame()">Start Game</button>
-      <button onclick="hit()" disabled>Hit</button>
-      <button onclick="stand()" disabled>Stand</button>
-      <button onclick="shuffle()">Shuffle</button>
-      <button onclick="flipCard()">asdsad</button>
+      <p><strong>Dealer:</strong> <span id="dealer"></span></p>
+      <div id="dealer" class="card-container"></div> <!-- Cards will be displayed here -->
+      
+      <p><strong>You:</strong> <span id="player"></span></p>
+      <div id="player" class="card-container"></div> <!-- Cards will be displayed here -->
+    </div>
 
+    <p id="message"></p> <!-- Message will be displayed here -->
+
+    <div>
+      <button id="startButton">Start Game</button>
+      <button id="hitButton" disabled>Hit</button>
+      <button id="standButton" disabled>Stand</button>
+      <button id="shuffleButton">Shuffle</button>
+      <!-- <button id="flipButton">Flip</button> -->
     </div>
 
     <div id="deck-container">
@@ -55,7 +65,7 @@
 
   <script src="/static/animations.js"></script>
 
-  <script src="/static/game.js"></script>
+  <script type='module' src="/static/game.js"></script>
 
 </body>
 

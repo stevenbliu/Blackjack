@@ -1,119 +1,143 @@
-// import drawAnimation from './animations.js';
+import { createCard } from './cards.js';
+
 console.log("game.js loaded");
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('startButton').addEventListener('click', startGame);
+  document.getElementById('hitButton').addEventListener('click', hit);
+  document.getElementById('standButton').addEventListener('click', stand);
+  document.getElementById('shuffleButton').addEventListener('click', shuffle);
+});
 
 let gameId = null;
 
-// Function to start a new game
+// -----------------------------
+// Start Game
+// -----------------------------
 function startGame() {
-
-
   fetch('/start', { method: 'POST' })
     .then(res => res.json())
     .then(data => {
-      gameId = data.game_id;  // Store the game ID
-      displayCards(data.player_hand, 'player');  // Display player's hand as images
-      displayCards(data.dealer_hand, 'dealer');  // Display dealer's full hand
-    //   document.getElementById('dealer').textContent = data.dealer_showing;  // Display dealer's showing card
-      document.getElementById('message').textContent = "";  // Clear any messages
-      toggleButtons(true);  // Enable 'Hit' and 'Stand' buttons
+      gameId = data.game_id;
+      displayCards(data.player_hand, 'player');
+      displayCards(data.dealer_hand, 'dealer');
+      document.getElementById('message').textContent = "";
+      toggleButtons(true);
 
-      console.log("Game started");  // Log the game ID for debugging
+      document.getElementById('hitButton').disabled = false;
+      document.getElementById('standButton').disabled = false;
+
+      console.log("Game started");
     });
-
 }
 
-// Function to handle 'Hit' action
+// -----------------------------
+// Hit
+// -----------------------------
 function hit() {
   fetch(`/hit/${gameId}`, { method: 'POST' })
     .then(res => res.json())
     .then(data => {
-      if (data.error) return alert(data.error);  // Handle error if any
-      displayCards(data.player_hand, 'player');  // Update player's hand with images
-      if (data.result === "bust") {  // If player busts
+      if (data.error) return alert(data.error);
+      displayCards(data.player_hand, 'player');
+
+      if (data.result === "bust") {
         document.getElementById('message').textContent = "You busted! 💥";
-        toggleButtons(false);  // Disable buttons after bust
+        toggleButtons(false);
+        revealDealerHole();  // Flip the hole card if player busts
       }
     });
 }
 
-// Function to handle 'Stand' action
+// -----------------------------
+// Stand
+// -----------------------------
 function stand() {
   fetch(`/stand/${gameId}`, { method: 'POST' })
     .then(res => res.json())
     .then(data => {
-      displayCards(data.dealer_hand, 'dealer');  // Show dealer's hand with images
+      displayCards(data.dealer_hand, 'dealer');
+      revealDealerHole();  // Flip the hole card when standing
+
       let msg = {
         "player_wins": "You win! 🏆",
         "dealer_wins": "Dealer wins 😞",
         "draw": "It's a draw 🤝"
-      }[data.result];  // Display result
-      document.getElementById('message').textContent = msg;  // Show game result
-      toggleButtons(false);  // Disable buttons after game finishes
+      }[data.result];
+
+      document.getElementById('message').textContent = msg;
+      toggleButtons(false);
     });
 }
 
-// Function to toggle the 'Hit' and 'Stand' buttons
+// -----------------------------
+// Toggle Hit & Stand Buttons
+// -----------------------------
 function toggleButtons(enable) {
-  document.querySelectorAll('button')[1].disabled = !enable;  // Disable 'Hit'
-  document.querySelectorAll('button')[2].disabled = !enable;  // Disable 'Stand'
+  document.querySelectorAll('button')[1].disabled = !enable;  // Hit
+  document.querySelectorAll('button')[2].disabled = !enable;  // Stand
 }
 
-// Function to display cards as images
+// -----------------------------
+// Display Cards
+// -----------------------------
 function displayCards(hand, player) {
-    console.log("Displaying cards for player:", player);  // Log the player for debugging
-    console.log("Hand:", hand);  // Log the hand for debugging
-    const handContainer = document.getElementById(player);
-    handContainer.innerHTML = '';  // Clear previous cards
-  
-    hand.forEach((card, index) => {
-      const img = document.createElement('img');
-      img.src = `/static/cards/${card.CardName}.svg`;
-      img.alt = card.CardName;
-      img.style.width = '100px';
-      img.style.height = '150px';
-      img.style.margin = '0 10px';
+  const handContainer = document.getElementById(player);
+  handContainer.innerHTML = '';
 
-      drawAnimation(img, handContainer, index);
-    });
-  }
+  hand.forEach((card, index) => {
+    const showBack = (player === 'dealer' && index === 1);
+    const cardElement = createCard(card, showBack);
 
+    if (showBack) {
+      cardElement.classList.add('dealer-hole-card');
+    }
 
-function shuffle() {
-    // document.getElementById('shuffle-button').addEventListener('click', () => {
-    const cards = document.querySelectorAll('img');
-    const deck = document.getElementById('deck2');
-    const deckRect = deck.getBoundingClientRect();
-    
-    cards.forEach((card, index) => {
-        const cardRect = card.getBoundingClientRect();
-        
-        // Calculate how far to move the card to align with the deck
-        const dx = deckRect.left - cardRect.left;
-        const dy = deckRect.top - cardRect.top;
-    
-        gsap.to(card, {
-        x: dx,
-        y: dy,
-        rotation: 1080,
-        // scale: Math.random() * 0.4 + 0.6,
-        duration: 0.8,
-        ease: "power2.out",
-        delay: index * 0.1
-        });
-    });
-      
-    // Optionally, reset cards to their original positions
-    setTimeout(() => {
-        gsap.to(cards, {
-        x: 0,
-        y: 0,
-        rotation: 0,
-        scale: 1,
-        duration: 0.5,
-        ease: "power1.out"
-        });
-    }, 800); // Reset position after 800ms (when shuffle animation ends)
-    //   });
-      
+    handContainer.appendChild(cardElement);
+  });
 }
 
+// -----------------------------
+// Reveal Dealer's Facedown Card
+// -----------------------------
+function revealDealerHole() {
+  const holeCard = document.querySelector('.dealer-hole-card');
+  if (holeCard) {
+    holeCard.classList.remove('flipped');
+  }
+}
+
+// -----------------------------
+// Shuffle Animation
+// -----------------------------
+function shuffle() {
+  const cards = document.querySelectorAll('img');
+  const deck = document.getElementById('deck2');
+  const deckRect = deck.getBoundingClientRect();
+
+  cards.forEach((card, index) => {
+    const cardRect = card.getBoundingClientRect();
+    const dx = deckRect.left - cardRect.left;
+    const dy = deckRect.top - cardRect.top;
+
+    gsap.to(card, {
+      x: dx,
+      y: dy,
+      rotation: 1080,
+      duration: 0.8,
+      ease: "power2.out",
+      delay: index * 0.1
+    });
+  });
+
+  setTimeout(() => {
+    gsap.to(cards, {
+      x: 0,
+      y: 0,
+      rotation: 0,
+      scale: 1,
+      duration: 0.5,
+      ease: "power1.out"
+    });
+  }, 800);
+}

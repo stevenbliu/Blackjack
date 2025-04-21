@@ -6,7 +6,7 @@ function drawAnimation(cardElement, container, index) {
   container.appendChild(cardElement);
   
     // Get the bounding box of the deck
-    const deck = document.getElementById('deck');
+    const deck = document.getElementById('deck2');
     const deckRect = deck.getBoundingClientRect();
   
     // Get where the card will be placed
@@ -15,14 +15,19 @@ function drawAnimation(cardElement, container, index) {
     // Calculate offsets from the deck to the container
     const offsetX = deckRect.left - cardRect.left;
     const offsetY = deckRect.top - cardRect.top;
+
+    const dx = deckRect.left - cardRect.left;
+    const dy = deckRect.top - cardRect.top;
   
     // Set initial transform based on deck position
-    cardElement.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(0.1)`;
-    cardElement.style.opacity = 0;
+    cardElement.style.transform = `translate(${dx}px, ${dy}px)`;
+    cardElement.style.opacity = 1;
+
+
   
     // Animate to final position
     gsap.to(cardElement, {
-      duration: 2,
+      duration: 5,
       x: 0,
       y: 0,
       scale: 1,
