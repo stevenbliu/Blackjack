@@ -1,0 +1,19 @@
+#game {
+    text-align: center;
+  }
+  
+  #player-hand, #dealer-hand {
+    margin: 10px;
+  }
+  
+  img {
+    width: 70px;  /* Adjust size as needed */
+    height: auto;
+    margin: 5px;
+  }
+  
+  button {
+    margin: 10px;
+    padding: 10px;
+  }
+  

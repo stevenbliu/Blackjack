@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blackjack</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    .cards { margin: 1em 0; font-size: 2em; }
+    button { margin: 0.5em; padding: 0.5em 1em; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <h1>🃏 Blackjack</h1>
+  <div id="game">
+    <p><strong>Dealer:</strong> <span id="dealer"></span></p>
+    <p><strong>You:</strong> <span id="player"></span></p>
+    <p id="message"></p>
+    <div>
+      <button onclick="startGame()">Start Game</button>
+      <button onclick="hit()" disabled>Hit</button>
+      <button onclick="stand()" disabled>Stand</button>
+    </div>
+  </div>
+
+  <!-- Link to the external JavaScript file -->
+  <script src="/static/game.js"></script>
+</body>
+</html>

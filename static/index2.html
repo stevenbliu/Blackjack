@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blackjack</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    .cards { margin: 1em 0; font-size: 2em; }
+    button { margin: 0.5em; padding: 0.5em 1em; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <h1>🃏 Blackjack</h1>
+  <div id="game">
+    <p><strong>Dealer:</strong> <span id="dealer"></span></p>
+    <p><strong>You:</strong> <span id="player"></span></p>
+    <p id="message"></p>
+    <div>
+      <button onclick="startGame()">Start Game</button>
+      <button onclick="hit()" disabled>Hit</button>
+      <button onclick="stand()" disabled>Stand</button>
+    </div>
+  </div>
+
+  <script>
+    let gameId = null;
+
+    // Function to start a new game
+    function startGame() {
+      fetch('/start', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          gameId = data.game_id;  // Store the game ID
+          document.getElementById('player').textContent = data.player_hand.join(' ');  // Display player's hand
+          document.getElementById('dealer').textContent = data.dealer_showing;  // Display dealer's showing card
+          document.getElementById('message').textContent = "";  // Clear any messages
+          toggleButtons(true);  // Enable 'Hit' and 'Stand' buttons
+        });
+    }
+
+    // Function to handle 'Hit' action
+    function hit() {
+      fetch(`/hit/${gameId}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) return alert(data.error);  // Handle error if any
+          document.getElementById('player').textContent = data.player_hand.join(' ');  // Update player's hand
+          if (data.result === "bust") {  // If player busts
+            document.getElementById('message').textContent = "You busted! 💥";
+            toggleButtons(false);  // Disable buttons after bust
+          }
+        });
+    }
+
+    // Function to handle 'Stand' action
+    function stand() {
+      fetch(`/stand/${gameId}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('dealer').textContent = data.dealer_hand.join(' ');  // Show dealer's hand
+          let msg = {
+            "player_wins": "You win! 🏆",
+            "dealer_wins": "Dealer wins 😞",
+            "draw": "It's a draw 🤝"
+          }[data.result];  // Display result
+          document.getElementById('message').textContent = msg;  // Show game result
+          toggleButtons(false);  // Disable buttons after game finishes
+        });
+    }
+
+    // Function to toggle the 'Hit' and 'Stand' buttons
+    function toggleButtons(enable) {
+      document.querySelectorAll('button')[1].disabled = !enable;  // Disable 'Hit'
+      document.querySelectorAll('button')[2].disabled = !enable;  // Disable 'Stand'
+    }
+  </script>
+</body>
+</html>
