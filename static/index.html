@@ -15,14 +15,26 @@
     <p><strong>Dealer:</strong> <span id="dealer"></span></p>
     <p><strong>You:</strong> <span id="player"></span></p>
     <p id="message"></p>
+
     <div>
       <button onclick="startGame()">Start Game</button>
       <button onclick="hit()" disabled>Hit</button>
       <button onclick="stand()" disabled>Stand</button>
+      <button onclick="shuffle()">Shuffle</button>
     </div>
+
+    <!-- <div class="deck" id="deck-container"> -->
+    <img id="deck" src="/static/cards/back_of_card.svg">
+    <!-- </div> -->
+
   </div>
 
   <!-- Link to the external JavaScript file -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.1/gsap.min.js"></script>
+
+  <script src="/static/animations.js"></script>
+
   <script src="/static/game.js"></script>
+
 </body>
 </html>

@@ -1,3 +1,5 @@
+// import drawAnimation from './animations.js';
+
 let gameId = null;
 
 // Function to start a new game
@@ -52,18 +54,49 @@ function toggleButtons(enable) {
 
 // Function to display cards as images
 function displayCards(hand, player) {
-  const handContainer = document.getElementById(player);
-  handContainer.innerHTML = '';  // Clear previous hand
-  hand.forEach(card => {
-    const img = document.createElement('img');
-    // console.log(card, player);  // Log the card for debugging
-    // const cardName = card.replace('_', ' ').toLowerCase(); // Convert card name (e.g., "2_of_clubs") to "2 of clubs"
-    // img.src = `/static/cards/${cardName}.svg`;  // Get the image for the card
-    console.log('card name', card['CardName'], player);  // Log the image source for debugging
-    img.src = `/static/cards/${card.CardName}.svg`;  // Get the image for the card
-    img.alt = card;  // Set the alt text as the card's name
-    img.style.width = '100px';  // You can adjust the size as needed
-    img.style.margin = '0 5px';
-    handContainer.appendChild(img);  // Add the card image to the container
-  });
+    const handContainer = document.getElementById(player);
+    handContainer.innerHTML = '';  // Clear previous cards
+  
+    hand.forEach((card, index) => {
+      const img = document.createElement('img');
+      img.src = `/static/cards/${card.CardName}.svg`;
+      img.alt = card.CardName;
+      img.style.width = '100px';
+      img.style.margin = '0 10px';
+
+      drawAnimation(img, handContainer, index);
+    });
+  }
+
+
+function shuffle() {
+    // document.getElementById('shuffle-button').addEventListener('click', () => {
+        const cards = document.querySelectorAll('img');
+      
+        // Animate cards to random positions, rotations, and scales
+        cards.forEach((card, index) => {
+          gsap.to(card, {
+            x: Math.random() * 300 - 150, // Random horizontal position
+            y: Math.random() * 300 - 150, // Random vertical position
+            rotation: Math.random() * 360 - 180, // Random rotation
+            scale: Math.random() * 0.4 + 0.6, // Random scale between 0.6 and 1
+            duration: 0.8,
+            ease: "power2.out",
+            delay: index * 0.1 // Delay each card slightly
+          });
+        });
+      
+        // Optionally, reset cards to their original positions
+        setTimeout(() => {
+          gsap.to(cards, {
+            x: 0,
+            y: 0,
+            rotation: 0,
+            scale: 1,
+            duration: 0.5,
+            ease: "power1.out"
+          });
+        }, 800); // Reset position after 800ms (when shuffle animation ends)
+    //   });
+      
 }
