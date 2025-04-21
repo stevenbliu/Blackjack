@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <title>Blackjack</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    /* body { font-family: sans-serif; text-align: center; padding: 2em; }
     .cards { margin: 1em 0; font-size: 2em; }
-    button { margin: 0.5em; padding: 0.5em 1em; font-size: 1em; }
+    button { margin: 0.5em; padding: 0.5em 1em; font-size: 1em; } */
   </style>
+
 </head>
 <body>
   <h1>🃏 Blackjack</h1>
@@ -21,15 +22,33 @@
       <button onclick="hit()" disabled>Hit</button>
       <button onclick="stand()" disabled>Stand</button>
       <button onclick="shuffle()">Shuffle</button>
+      <button onclick="flipCard()">asdsad</button>
+
     </div>
 
-    <!-- <div class="deck" id="deck-container"> -->
-    <img id="deck" src="/static/cards/back_of_card.svg">
-    <img id="deck2" src="/static/cards/back_of_card.svg" y="1000" x="1000">
+    <div id="deck-container">
+      <img id="deck" src="/static/cards/back_of_card.svg">
+      <img id="deck2" src="/static/cards/back_of_card.svg">
+    </div>
 
-    <!-- </div> -->
+
+    <div class="card-container">
+      <div class="card"  onclick=flipCard(this)>
+        <div class="card-front">
+          <!-- Card front content, like the card image -->
+          <img src="/static/cards/ace_of_spades.svg" alt="Ace of Spades" />
+        </div>
+        <div class="card-back">
+          <!-- Card back content -->
+          <img src="/static/cards/back_of_card.svg" alt="Card Back" />
+        </div>
+      </div>
+    </div>
 
   </div>
+
+
+  <link rel="stylesheet" href="/static/styles.css">
 
   <!-- Link to the external JavaScript file -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.1/gsap.min.js"></script>
@@ -39,4 +58,9 @@
   <script src="/static/game.js"></script>
 
 </body>
+
+<script>
+  console.log("JavaScript is loaded");
+</script>
+
 </html>

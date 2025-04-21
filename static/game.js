@@ -1,9 +1,12 @@
 // import drawAnimation from './animations.js';
+console.log("game.js loaded");
 
 let gameId = null;
 
 // Function to start a new game
 function startGame() {
+
+
   fetch('/start', { method: 'POST' })
     .then(res => res.json())
     .then(data => {
@@ -13,7 +16,10 @@ function startGame() {
     //   document.getElementById('dealer').textContent = data.dealer_showing;  // Display dealer's showing card
       document.getElementById('message').textContent = "";  // Clear any messages
       toggleButtons(true);  // Enable 'Hit' and 'Stand' buttons
+
+      console.log("Game started");  // Log the game ID for debugging
     });
+
 }
 
 // Function to handle 'Hit' action
@@ -54,6 +60,8 @@ function toggleButtons(enable) {
 
 // Function to display cards as images
 function displayCards(hand, player) {
+    console.log("Displaying cards for player:", player);  // Log the player for debugging
+    console.log("Hand:", hand);  // Log the hand for debugging
     const handContainer = document.getElementById(player);
     handContainer.innerHTML = '';  // Clear previous cards
   
@@ -62,6 +70,7 @@ function displayCards(hand, player) {
       img.src = `/static/cards/${card.CardName}.svg`;
       img.alt = card.CardName;
       img.style.width = '100px';
+      img.style.height = '150px';
       img.style.margin = '0 10px';
 
       drawAnimation(img, handContainer, index);
@@ -86,7 +95,7 @@ function shuffle() {
         x: dx,
         y: dy,
         rotation: 1080,
-        scale: Math.random() * 0.4 + 0.6,
+        // scale: Math.random() * 0.4 + 0.6,
         duration: 0.8,
         ease: "power2.out",
         delay: index * 0.1
@@ -107,3 +116,4 @@ function shuffle() {
     //   });
       
 }
+

@@ -1,5 +1,9 @@
+
+console.log("animations.js loaded");
+
 function drawAnimation(cardElement, container, index) {
-    container.appendChild(cardElement);
+  console.log("drawAnimation called", cardElement, container, index);
+  container.appendChild(cardElement);
   
     // Get the bounding box of the deck
     const deck = document.getElementById('deck');
@@ -29,4 +33,31 @@ function drawAnimation(cardElement, container, index) {
   }
   
   window.drawAnimation = drawAnimation;
+
+
+// Function to flip the card (both forward and back)
+function flipCard(cardElement) {
+  const isFlipped = cardElement.classList.contains('flipped');
   
+  // If the card is not flipped, animate it to flip
+  if (!isFlipped) {
+    gsap.to(cardElement, {
+      rotationY: 180, // Flip by 180 degrees
+      duration: 0.6,
+      ease: "power2.inOut"
+    });
+  } else {
+    // If it's flipped, animate it back to its original position
+    gsap.to(cardElement, {
+      rotationY: 0,  // Flip it back to 0 degrees
+      duration: 0.6,
+      ease: "power2.inOut"
+    });
+  }
+  
+  // Toggle the 'flipped' class after animation to track the state
+  cardElement.classList.toggle('flipped');
+}
+
+
+window.flipCard = flipCard;

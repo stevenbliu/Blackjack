@@ -102,7 +102,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Serve the frontend index.html file
 @app.get("/", response_class=HTMLResponse)
 async def read_index():
-    print("Serving index.html")  # Debug statement
+    # print("Serving index.html")  # Debug statement
     path = os.path.join("static", "index.html")
     try:
         if not os.path.exists(path):
