@@ -71,32 +71,39 @@ function displayCards(hand, player) {
 
 function shuffle() {
     // document.getElementById('shuffle-button').addEventListener('click', () => {
-        const cards = document.querySelectorAll('img');
-      
-        // Animate cards to random positions, rotations, and scales
-        cards.forEach((card, index) => {
-          gsap.to(card, {
-            x: Math.random() * 300 - 150, // Random horizontal position
-            y: Math.random() * 300 - 150, // Random vertical position
-            rotation: Math.random() * 360 - 180, // Random rotation
-            scale: Math.random() * 0.4 + 0.6, // Random scale between 0.6 and 1
-            duration: 0.8,
-            ease: "power2.out",
-            delay: index * 0.1 // Delay each card slightly
-          });
+    const cards = document.querySelectorAll('img');
+    const deck = document.getElementById('deck2');
+    const deckRect = deck.getBoundingClientRect();
+    
+    cards.forEach((card, index) => {
+        const cardRect = card.getBoundingClientRect();
+        
+        // Calculate how far to move the card to align with the deck
+        const dx = deckRect.left - cardRect.left;
+        const dy = deckRect.top - cardRect.top;
+    
+        gsap.to(card, {
+        x: dx,
+        y: dy,
+        rotation: 1080,
+        scale: Math.random() * 0.4 + 0.6,
+        duration: 0.8,
+        ease: "power2.out",
+        delay: index * 0.1
         });
+    });
       
-        // Optionally, reset cards to their original positions
-        setTimeout(() => {
-          gsap.to(cards, {
-            x: 0,
-            y: 0,
-            rotation: 0,
-            scale: 1,
-            duration: 0.5,
-            ease: "power1.out"
-          });
-        }, 800); // Reset position after 800ms (when shuffle animation ends)
+    // Optionally, reset cards to their original positions
+    setTimeout(() => {
+        gsap.to(cards, {
+        x: 0,
+        y: 0,
+        rotation: 0,
+        scale: 1,
+        duration: 0.5,
+        ease: "power1.out"
+        });
+    }, 800); // Reset position after 800ms (when shuffle animation ends)
     //   });
       
 }
