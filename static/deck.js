@@ -35,38 +35,40 @@ export function generateVisualDeck() {
  * Animate the shuffle of visual cards
  */
 export function animateShuffle(cards) {
-  const tl = gsap.timeline();
-
-
-    //   Get the deck's position
-    const deck = document.getElementById('deck2');
-  const deckRect = deck.getBoundingClientRect();
-//   cards.forEach((card, index) => {
-//     //     const cardRect = card.getBoundingClientRect();
-//     //     const dx = deckRect.left - cardRect.left;
-//     //     const dy = deckRect.top - cardRect.top;
-
-//   Scatter cards around
-  tl.to(cards, {
-    x: () => gsap.utils.random(-100, 100),
-    y: () => gsap.utils.random(-150, 150),
-    rotation: () => gsap.utils.random(-30, 30),
-    stagger: 0.02,
-    duration: 0.5,
-    ease: 'power2.inOut',
-  });
-
-//   Restack the deck face-down
-  tl.to(cards, {
-    x: deckRect.left - deckRect.width / 2,
-    y: deckRect.top - deckRect.height / 2,
-    // y: 0,
-    rotation: 0,
-    stagger: 0.02,
-    duration: 0.5,
-    ease: 'power1.in',
-    onStart: () => {
-      cards.forEach(card => card.classList.add('flipped'));
-    },
-  });
-}
+    const tl = gsap.timeline();
+  
+    // Scatter animation
+    tl.to(cards, {
+      x: () => gsap.utils.random(-100, 100),
+      y: () => gsap.utils.random(-150, 150),
+      rotation: () => gsap.utils.random(-30, 30),
+      stagger: 0.01,
+      duration: 0.4,
+      ease: 'power2.inOut',
+    });
+  
+    // After scatter, stack them neatly on #deck2
+    tl.add(() => {
+      const deck = document.getElementById('deck2');
+      const deckRect = deck.getBoundingClientRect();
+  
+      cards.forEach((card, index) => {
+        const cardRect = card.getBoundingClientRect();
+  
+        const dx = deckRect.left - cardRect.left;
+        const dy = deckRect.top - cardRect.top;
+  
+        gsap.to(card, {
+          x: `+=${dx}`,
+          y: `+=${dy}`,
+          rotation: 0,
+          duration: 0.3,
+          ease: 'power1.in',
+          delay: index * 0.005,
+          onStart: () => {
+            card.classList.add('flipped');
+          }
+        });
+      });
+    });
+  }
