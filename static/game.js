@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('startButton').addEventListener('click', startGame);
   document.getElementById('hitButton').addEventListener('click', hit);
   document.getElementById('standButton').addEventListener('click', stand);
-  document.getElementById('shuffleButton').addEventListener('click', shuffle);
+  // document.getElementById('shuffleButton').addEventListener('click', shuffle);
 });
 
 let gameId = null;
@@ -110,34 +110,45 @@ function displayCards(hand, player) {
 // -----------------------------
 // Shuffle Animation
 // -----------------------------
-function shuffle() {
-  const cards = document.querySelectorAll('img');
-  const deck = document.getElementById('deck2');
-  const deckRect = deck.getBoundingClientRect();
+// function shuffle() {
+//   const cards = document.querySelectorAll('img');
+//   const deck = document.getElementById('deck2');
+//   const deckRect = deck.getBoundingClientRect();
 
-  cards.forEach((card, index) => {
-    const cardRect = card.getBoundingClientRect();
-    const dx = deckRect.left - cardRect.left;
-    const dy = deckRect.top - cardRect.top;
+//   cards.forEach((card, index) => {
+//     const cardRect = card.getBoundingClientRect();
+//     const dx = deckRect.left - cardRect.left;
+//     const dy = deckRect.top - cardRect.top;
 
-    gsap.to(card, {
-      x: dx,
-      y: dy,
-      rotation: 1080,
-      duration: 0.8,
-      ease: "power2.out",
-      delay: index * 0.1
-    });
+//     gsap.to(card, {
+//       x: dx,
+//       y: dy,
+//       rotation: 1080,
+//       duration: 0.8,
+//       ease: "power2.out",
+//       delay: index * 0.1
+//     });
+//   });
+
+//   setTimeout(() => {
+//     gsap.to(cards, {
+//       x: 0,
+//       y: 0,
+//       rotation: 0,
+//       scale: 1,
+//       duration: 0.5,
+//       ease: "power1.out"
+//     });
+//   }, 800);
+// }
+
+
+import { generateVisualDeck, animateShuffle } from './deck.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = generateVisualDeck();
+
+  document.getElementById('shuffleButton').addEventListener('click', () => {
+    animateShuffle(cards);
   });
-
-  setTimeout(() => {
-    gsap.to(cards, {
-      x: 0,
-      y: 0,
-      rotation: 0,
-      scale: 1,
-      duration: 0.5,
-      ease: "power1.out"
-    });
-  }, 800);
-}
+});

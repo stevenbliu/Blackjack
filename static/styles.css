@@ -75,3 +75,17 @@ button {
 .card-back {
   transform: rotateY(180deg);
 }
+
+#deck-container {
+  position: relative;
+  /* width: 300px; */
+  /* height: auto; */
+  margin: 20px;
+}
+
+/* .card {
+  position: absolute;
+  width: 60px;
+  height: 90px;
+  transition: transform 0.2s ease;
+} */
