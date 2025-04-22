@@ -1,4 +1,4 @@
-import { createCard } from './cards.js';
+import { createCard, revealDealerHole } from './cards.js';
 
 console.log("game.js loaded");
 
@@ -100,12 +100,12 @@ function displayCards(hand, player) {
 // -----------------------------
 // Reveal Dealer's Facedown Card
 // -----------------------------
-function revealDealerHole() {
-  const holeCard = document.querySelector('.dealer-hole-card');
-  if (holeCard) {
-    holeCard.classList.remove('flipped');
-  }
-}
+// function revealDealerHole() {
+//   const holeCard = document.querySelector('.dealer-hole-card');
+//   if (holeCard) {
+//     holeCard.classList.remove('flipped');
+//   }
+// }
 
 // -----------------------------
 // Shuffle Animation

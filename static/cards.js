@@ -23,7 +23,23 @@ export function createCard(card, flipped = false) {
     cardInner.appendChild(cardBack);
     cardElement.appendChild(cardInner);
     
-  
     return cardElement;
   }
-  
+
+// Function to flip the dealer's facedown card using GSAP Flip
+export function revealDealerHole() {
+const card = document.querySelector('.dealer-hole-card');
+if (!card) return;
+
+// 1. Capture the card's current state
+const state = Flip.getState(card);
+
+// 2. Toggle the 'flipped' class (this should visually flip it via CSS)
+card.classList.remove('flipped');
+
+// 3. Animate to the new state
+Flip.from(state, {
+    duration: 0.6,
+    ease: "power1.inOut"
+});
+}
