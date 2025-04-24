@@ -15,6 +15,17 @@ interface GameState {
   result?: string;
 }
 
+const API_URL = (() => {
+    if (import.meta.env.DEV) {
+      return import.meta.env.VITE_DEVELOPMENT_API_URL;
+    } else if (import.meta.env.PROD) {
+      return import.meta.env.VITE_PRODUCTION_API_URL;
+    } else {
+      throw new Error("API URL not set. Please check your environment variables.");
+    }
+  })();
+  
+
 export const useGame = () => {
   const [gameId, setGameId] = useState<string | null>(null);
   const [playerHand, setPlayerHand] = useState<Card[]>([]);
@@ -23,7 +34,7 @@ export const useGame = () => {
   const [gameOver, setGameOver] = useState<boolean>(false);
 
   const startGame = async () => {
-    const res = await fetch('http://localhost:8000/start', { method: 'POST' });
+    const res = await fetch(`${API_URL}/start`, { method: 'POST' });
     const data: GameState = await res.json();
     setGameId(data.game_id);
     setPlayerHand(data.player_hand);
@@ -33,7 +44,7 @@ export const useGame = () => {
   };
 
   const hit = async () => {
-    const res = await fetch(`http://localhost:8000/hit/${gameId}`, { method: 'POST' });
+    const res = await fetch(`${API_URL}/hit/${gameId}`, { method: 'POST' });
     const data: GameState = await res.json();
     setPlayerHand(data.player_hand);
     if (data.result === "player_bust") {
@@ -45,7 +56,7 @@ export const useGame = () => {
   };
 
   const stand = async () => {
-    const res = await fetch(`http://localhost:8000/stand/${gameId}`, { method: 'POST' });
+    const res = await fetch(`${API_URL}/stand/${gameId}`, { method: 'POST' });
     const data: GameState = await res.json();
     setDealerHand(data.dealer_hand);
 
