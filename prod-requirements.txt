@@ -1,0 +1,26 @@
+# Core backend
+fastapi==0.115.8
+uvicorn==0.34.2
+pydantic==2.10.6
+starlette==0.45.3
+python-dotenv==0.21.1
+
+# Database (if using PostgreSQL)
+psycopg2==2.9.10
+
+# Redis (for session or game state management)
+redis==5.2.1
+
+# Optional: For CORS if frontend is separate
+Flask-Cors==5.0.0
+
+# Optional: For JWT or login sessions
+Flask-Login==0.6.3
+PyJWT==2.6.0
+
+# If you're interacting with AWS (e.g., for file/image storage or logs)
+boto3==1.35.82
+
+# Utilities
+requests==2.31.0
+python-slugify==8.0.4
