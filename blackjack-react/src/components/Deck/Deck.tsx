@@ -31,7 +31,7 @@ const Deck = () => {
           style={{ position: 'absolute' }}
         >
           <img
-            src="http://localhost:8000/card/back_of_card"
+            src="/cards/back_of_card.svg"
             alt="card-back"
             width={100}
             height={150}

@@ -1,6 +1,6 @@
 // src/App.tsx
 import React, { useState } from 'react';
-import { useGame } from './hooks/useGame';
+import useGame from './hooks/useGame';  // adjust the relative path as needed
 import GameArea from './components/GameArea/GameArea';
 import SidebarRules from './components/Sidebar/SidebarRules';
 // import MessageZone from './components/MessageZone/MessageZone';

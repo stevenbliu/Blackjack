@@ -96,16 +96,16 @@ def stand(game_id: str):
         "dealer_hand": dealer  # Send card names for frontend
     }
     
-@app.get("/card/{card_name}")
-def get_card(card_name: str):
-    file_path = f"static/cards/{card_name}.svg"
-    if os.path.exists(file_path):
-        return FileResponse(file_path, media_type='image/svg+xml')
-    return {"error": "Card not found"}
+# @app.get("/card/{card_name}")
+# def get_card(card_name: str):
+#     file_path = f"static/cards/{card_name}.svg"
+#     if os.path.exists(file_path):
+#         return FileResponse(file_path, media_type='image/svg+xml')
+#     return {"error": "Card not found"}
 
 # Serve static files (cards and other assets) from the static directory
 dist_path = os.path.join(os.path.dirname(__file__), "../blackjack-react/dist")
-app.mount("/", StaticFiles(directory=dist_path, html=True), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # # Serve the frontend index.html file
 # @app.get("/", response_class=HTMLResponse)

@@ -4,12 +4,23 @@ import './Card.css'; // Import the CSS for card animations
 
 interface CardProps {
   cardName: string;
-  cardAlt: string;
   isFaceUp: boolean;
   animate: boolean;
 }
 
-const Card: React.FC<CardProps> = ({ cardName, cardAlt, isFaceUp, animate }) => {
+// const API_URL = (() => {
+//   if (import.meta.env.DEV === true) {  // Checking against string "true"
+//     console.log("Development mode detected. Using development API URL.");
+//     return import.meta.env.VITE_DEVELOPMENT_API_URL;
+//   } else if (import.meta.env.DEV === false) {  // Checking against string "false"
+//     console.log("Production mode detected. Using production API URL.");
+//     return import.meta.env.VITE_PRODUCTION_API_URL;
+//   } else {
+//     throw new Error(`API URL not set. Please check your environment variables. DEV Enabled: ${import.meta.env.DEV}`);
+//   }
+// })();
+
+const Card: React.FC<CardProps> = ({ cardName, isFaceUp, animate }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Flip the card animation (on deal or when clicked for example)
@@ -27,8 +38,9 @@ const Card: React.FC<CardProps> = ({ cardName, cardAlt, isFaceUp, animate }) => 
     <div ref={cardRef} className={`card-container`}>
       <img
         className={`card-image`}
-        src={isFaceUp ? `http://localhost:8000/card/${cardName}` : `http://localhost:8000/card/back_of_card`}
-        alt={cardAlt}
+        // src={isFaceUp ? `${API_URL}/static/cards/${cardName}.svg` : `${API_URL}/static/cards/back_of_card.svg`}
+        src={isFaceUp ? `/cards/${cardName}.svg` : `/cards/back_of_card.svg`}
+      // alt={cardAlt}
       />
       {/* <p>{cardAlt}</p> */}
     </div>

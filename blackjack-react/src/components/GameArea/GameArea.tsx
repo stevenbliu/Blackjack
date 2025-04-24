@@ -69,7 +69,6 @@ const GameArea: React.FC<GameAreaProps> = ({
                   <Card
                     key={i}
                     cardName={card.CardName}
-                    cardAlt={card.name}
                     isFaceUp={true}
                     animate={animatePlayerHand}
                   />
@@ -84,7 +83,6 @@ const GameArea: React.FC<GameAreaProps> = ({
                   <Card
                     key={i}
                     cardName={card.CardName}
-                    cardAlt={card.name}
                     isFaceUp={i !== 0} // Dealer's first card is face down
                     animate={animateDealerHand}
                   />
