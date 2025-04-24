@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, JSX } from 'react';
 import gsap from 'gsap';
 
 const Deck = () => {
@@ -25,7 +25,9 @@ const Deck = () => {
         <div
           key={index}
           className="card"
-          ref={(el) => (cardRefs.current[index] = el)}
+          ref={(el) => {
+            cardRefs.current[index] = el;
+          }}
           style={{ position: 'absolute' }}
         >
           <img

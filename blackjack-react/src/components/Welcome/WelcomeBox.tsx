@@ -1,5 +1,5 @@
 // src/components/WelcomeBox.tsx
-import React from 'react';
+// import React from 'react';
 import Deck from '../Deck/Deck'; // Adjust the import path as necessary
 
 const WelcomeBox = () => {

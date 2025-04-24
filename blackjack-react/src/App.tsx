@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useGame } from './hooks/useGame';
 import GameArea from './components/GameArea/GameArea';
 import SidebarRules from './components/Sidebar/SidebarRules';
-import MessageZone from './components/MessageZone/MessageZone';
+// import MessageZone from './components/MessageZone/MessageZone';
 import './App.css';
 import WelcomeBox from './components/Welcome/WelcomeBox';
 

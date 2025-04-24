@@ -3,7 +3,7 @@ import Controls from '../Controls/Controls';
 import MessageZone from '../MessageZone/MessageZone';
 import Card from '../Card'; // Import the Card component
 import './GameArea.css'; // Import the CSS file
-import Deck from '../Deck/Deck';
+// import Deck from '../Deck/Deck';
 
 
 interface Card {
@@ -20,7 +20,7 @@ interface GameAreaProps {
   stand: () => void;
   restartGame: () => void;
   gameOver: boolean;
-  message: string;
+  message: string | null;
 }
 
 const GameArea: React.FC<GameAreaProps> = ({
