@@ -1,0 +1,74 @@
+/* src/components/GameArea/GameArea.css */
+
+/* Container for the game area */
+.game-area {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    /* overflow: hidden; */
+  }
+  
+  /* Title styles */
+  .game-title {
+    text-align: center;
+    color: #00e5ff;
+  }
+  
+  /* Start button styling */
+  .start-button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s;
+  }
+  
+  .start-button:hover {
+    background-color: #ff3d00;
+  }
+  
+  /* Hand section (Player/Dealer hands) */
+  .hand-container {
+    margin-bottom: 20px;
+  }
+  
+  .hand-header {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .card-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .card {
+    text-align: center;
+  }
+  
+  .card img {
+    border-radius: 5px;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .card p {
+    margin-top: 5px;
+    font-size: 14px;
+  }
+  
+  /* Controls section */
+  .controls-container {
+    margin-top: 20px;
+  }
+  

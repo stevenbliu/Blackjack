@@ -1,0 +1,32 @@
+.card {
+  width: 100px; /* Set card width */
+  height: 150px; /* Set card height */
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 0.3s ease; /* Smooth transition for shuffle animation */
+  z-index: 1; /* Ensures the card is above others */
+  will-change: transform, opacity;
+  opacity: 0;
+  overflow: visible;
+}
+
+.deck-container {
+  perspective: 1500px; /* Adds depth to the 3D effect */
+  opacity: 0;
+  overflow: visible;
+}
+
+.shuffle-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.shuffle-button:disabled {
+  background-color: #e0e0e0;
+}

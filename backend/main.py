@@ -62,9 +62,9 @@ def hit(game_id: str):
 
     if score > 21:
         game.status = "player_bust"
-        return {"result": "bust", "player_hand": game.player_hand, "score": score}
+        return {"game_id": game_id, "result": "player_bust", "player_hand": game.player_hand, "score": score}
 
-    return {"player_hand": game.player_hand, "score": score}
+    return {"game_id": game_id, "player_hand": game.player_hand, "score": score}
 
 @app.post("/stand/{game_id}")
 def stand(game_id: str):

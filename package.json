@@ -2,12 +2,14 @@
     "name": "blackjack-project",
     "version": "1.0.0",
     "scripts": {
-      "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
-      "start:frontend": "cd blackjack-react && npm run dev",
-      "start:backend": "uvicorn backend.main:app --reload"
+        "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
+        "start:frontend": "cd blackjack-react && npm run dev",
+        "start:backend": "uvicorn backend.main:app --reload"
     },
     "devDependencies": {
-      "concurrently": "^7.0.0"
+        "concurrently": "^7.0.0"
+    },
+    "dependencies": {
+        "gsap": "^3.12.7"
     }
-  }
-  
+}

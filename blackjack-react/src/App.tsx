@@ -1,60 +1,57 @@
-import { useState } from 'react';
+// src/App.tsx
+import React, { useState } from 'react';
+import { useGame } from './hooks/useGame';
+import GameArea from './components/GameArea/GameArea';
+import SidebarRules from './components/Sidebar/SidebarRules';
+import MessageZone from './components/MessageZone/MessageZone';
+import './App.css';
+import WelcomeBox from './components/Welcome/WelcomeBox';
 
-// Define the types for game and cards
-interface Card {
-  rank: string;
-  suit: string;
-  name: string;
-  CardName: string;
-}
+const App: React.FC = () => {
+  const {
+    gameId,
+    playerHand,
+    dealerHand,
+    message,
+    gameOver,
+    startGame,
+    hit,
+    stand,
+    restartGame
+  } = useGame();
 
-interface GameState {
-  game_id: string;
-  player_hand: Card[];
-  dealer_hand: Card[];
-}
-
-function App() {
-  const [gameId, setGameId] = useState<string | null>(null);
-  const [playerHand, setPlayerHand] = useState<Card[]>([]);
-  const [dealerHand, setDealerHand] = useState<Card[]>([]);
-
-  const startGame = async () => {
-    const res = await fetch('http://localhost:8000/start', { method: 'POST' });
-    const data: GameState = await res.json();
-    setGameId(data.game_id);
-    setPlayerHand(data.player_hand);
-    setDealerHand(data.dealer_hand);
-  };
+  const [rulesVisible, setRulesVisible] = useState<boolean>(false);
 
   return (
-    <div>
-      <button onClick={startGame}>Start Game</button>
-      {gameId && (
-        <div>
-          <h2>Game ID: {gameId}</h2>
-          <div>
-            <h3>Player Hand:</h3>
-            {playerHand.map((card, i) => (
-              <div key={i}>
-                <span>{card.name}</span>
-                <img src={`http://localhost:8000/card/${card.CardName}`} alt={card.name} width={70} />
-              </div>
-            ))}
-          </div>
-          <div>
-            <h3>Dealer Hand:</h3>
-            {dealerHand.map((card, i) => (
-              <div key={i}>
-                <span>{card.name}</span>
-                <img src={`http://localhost:8000/card/${card.CardName}`} alt={card.name} width={70} />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+    <div style={{
+      display: 'flex',
+      height: '100vh',
+      flexDirection: 'row',
+      backgroundColor: '#121212',
+      color: '#f0f0f0',
+      fontFamily: 'Arial, sans-serif',
+      overflow: 'hidden',
+      padding: 0
+    }}>
+      <WelcomeBox />
+
+
+      <GameArea
+        playerHand={playerHand}
+        dealerHand={dealerHand}
+        gameId={gameId}
+        startGame={startGame}
+        hit={hit}
+        stand={stand}
+        restartGame={restartGame}
+        gameOver={gameOver}
+        message={message}
+      />
+      <SidebarRules rulesVisible={rulesVisible} setRulesVisible={setRulesVisible} />
+
+      {/* <MessageZone message={message} /> */}
     </div>
   );
-}
+};
 
 export default App;

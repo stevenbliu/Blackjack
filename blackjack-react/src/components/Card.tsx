@@ -1,36 +1,36 @@
-// src/components/Card.tsx
-import React, { useRef, useEffect } from 'react';
-import './Card.css'; // use your current CSS
-import { gsap } from 'gsap';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import './Card.css'; // Import the CSS for card animations
 
-type CardProps = {
+interface CardProps {
   cardName: string;
-  flipped?: boolean;
-  isDealerHoleCard?: boolean;
-};
+  cardAlt: string;
+  isFaceUp: boolean;
+  animate: boolean;
+}
 
-const Card: React.FC<CardProps> = ({ cardName, flipped = false, isDealerHoleCard = false }) => {
+const Card: React.FC<CardProps> = ({ cardName, cardAlt, isFaceUp, animate }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
+  // Flip the card animation (on deal or when clicked for example)
   useEffect(() => {
-    if (flipped && cardRef.current) {
-      gsap.set(cardRef.current, { rotationY: 180 });
+    if (animate && cardRef.current) {
+      gsap.fromTo(
+        cardRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6, ease: "bounce.out" }
+      );
     }
-  }, [flipped]);
+  }, [animate]);
 
   return (
-    <div
-      className={`card ${flipped ? 'flipped' : ''} ${isDealerHoleCard ? 'dealer-hole-card' : ''}`}
-      ref={cardRef}
-    >
-      <div className="card-inner">
-        <div className="card-front">
-          <img src={`/assets/cards/${cardName}.svg`} alt={cardName} />
-        </div>
-        <div className="card-back">
-          <img src="/assets/cards/back_of_card.svg" alt="Back of card" />
-        </div>
-      </div>
+    <div ref={cardRef} className={`card-container`}>
+      <img
+        className={`card-image`}
+        src={isFaceUp ? `http://localhost:8000/card/${cardName}` : `http://localhost:8000/card/back_of_card`}
+        alt={cardAlt}
+      />
+      {/* <p>{cardAlt}</p> */}
     </div>
   );
 };
