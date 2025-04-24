@@ -111,8 +111,9 @@ const Deck = () => {
       className="deck-container"
       style={{
         position: 'relative',
-        width: '200px',
-        height: '500px',
+        width: '5vw',
+        maxWidth: '100%',
+        height: '100%',
         cursor: 'pointer',
         overflow: 'visible', // 👈 THIS is the key change
       }}

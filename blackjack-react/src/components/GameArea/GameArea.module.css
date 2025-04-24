@@ -1,0 +1,92 @@
+/* GameArea.module.css */
+
+.gameArea {
+  padding: 2rem;
+  background-color: #121212;
+  color: white;
+  min-height: 100vh;
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gameTitle {
+  text-align: center;
+}
+
+.startButton {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  background-color: #00e676;
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.startButton:hover {
+  background-color: #00c853;
+}
+
+.handZone {
+  margin: 2rem 0;
+  width: 100%;
+  max-width: 800px;
+}
+
+.zoneTitle {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.cardContainer {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  min-height: 160px;
+  margin-bottom: 1rem;
+}
+
+.controlsContainer {
+  margin-top: 1.5rem;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .gameArea {
+    padding: 1.5rem;
+  }
+
+  .cardContainer {
+    min-height: 130px;
+  }
+
+  .startButton {
+    font-size: 1rem;
+    padding: 0.5rem 1.25rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .gameArea {
+    padding: 1rem;
+  }
+
+  .zoneTitle {
+    font-size: 1rem;
+  }
+
+  .cardContainer {
+    min-height: 100px;
+  }
+
+  .startButton {
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+  }
+}

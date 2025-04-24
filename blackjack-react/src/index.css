@@ -81,3 +81,27 @@ button:focus-visible {
     color: #213547;
   }
 }
+
+/* Media query for screens smaller than 768px (tablets and mobile phones) */
+@media screen and (max-width: 768px) {
+  body {
+      font-size: 14px;
+      margin: 10px;
+  }
+
+  .card {
+      width: 100%; /* Make cards full-width on mobile */
+  }
+}
+
+/* Media query for very small screens (like small phones) */
+@media screen and (max-width: 480px) {
+  body {
+      font-size: 12px;
+  }
+
+  .button {
+      padding: 10px;
+      font-size: 14px;
+  }
+}

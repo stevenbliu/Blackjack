@@ -1,0 +1,96 @@
+/* SidebarRules.module.css */
+
+.sidebar {
+    width: 20%; /* Default width for larger screens */
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto; /* Allow scrolling if content overflows */
+    background-color: #ffffff;
+    text-align: center;
+    transition: width 0.3s ease; /* Smooth transition for width change */
+  }
+  
+  .toggleButton {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    width: 100%; /* Make the button take full width */
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .toggleButton:hover {
+    background-color: #45a049;
+  }
+  
+  .rulesContainer {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #2e7d32;
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    width: 100%; /* Ensure it takes the full width within the sidebar */
+    max-width: 350px; /* Limit the max-width for large screens */
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    margin: 0 auto; /* Center align */
+  }
+  
+  .rulesContainer h3 {
+    margin-bottom: 16px;
+  }
+  
+  .rulesList {
+    padding: 0;
+    margin: 0;
+    list-style-type: disc;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-left: 20px;
+  }
+  
+  /* Tablet */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 30%; /* Adjust width for tablets */
+      padding: 16px;
+    }
+  
+    .toggleButton {
+      font-size: 0.95rem;
+      padding: 8px 16px;
+    }
+  
+    .rulesContainer {
+      max-width: 300px; /* Reduce the max-width on tablets */
+    }
+  }
+  
+  /* Mobile */
+  @media (max-width: 480px) {
+    .sidebar {
+      width: 100%; /* Take full width on mobile */
+      padding: 12px;
+      height: auto;
+    }
+  
+    .toggleButton {
+      font-size: 0.9rem;
+      padding: 6px 14px;
+    }
+  
+    .rulesContainer {
+      max-width: 100%; /* Ensure the container takes full width */
+      padding: 12px;
+    }
+  }
+  

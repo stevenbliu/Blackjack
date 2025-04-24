@@ -104,7 +104,7 @@ def stand(game_id: str):
 #     return {"error": "Card not found"}
 
 # Serve static files (cards and other assets) from the static directory
-dist_path = os.path.join(os.path.dirname(__file__), "../blackjack-react/dist")
+# dist_path = os.path.join(os.path.dirname(__file__), "../blackjack-react/dist")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # # Serve the frontend index.html file

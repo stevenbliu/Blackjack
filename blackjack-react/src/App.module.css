@@ -41,4 +41,22 @@
   color: #888;
 }
 
+.app {
+  display: flex;
+  height: 100vh;
+  flex-direction: row;
+  background-color: #121212;
+  color: #f0f0f0;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  padding: 0;
+}
+
+@media (max-width: 768px) {
+  .app {
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+  }
+}
 

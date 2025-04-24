@@ -1,0 +1,36 @@
+/* Card.module.css */
+
+.cardContainer {
+  position: absolute;
+  transition: transform 0.3s ease;
+}
+
+.cardImage {
+  width: 100px;
+  height: 145px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+/* Hover effect */
+.cardImage:hover {
+  transform: translateY(-10px);
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .cardImage {
+    width: 75px;
+    height: 110px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .cardImage {
+    width: 60px;
+    height: 90px;
+  }
+}

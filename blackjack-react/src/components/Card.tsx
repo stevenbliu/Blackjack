@@ -1,29 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import './Card.css'; // Import the CSS for card animations
+import styles from './Card.module.css'; // Use CSS module instead of global CSS
 
 interface CardProps {
   cardName: string;
   isFaceUp: boolean;
   animate: boolean;
+  position: number;
 }
 
-// const API_URL = (() => {
-//   if (import.meta.env.DEV === true) {  // Checking against string "true"
-//     console.log("Development mode detected. Using development API URL.");
-//     return import.meta.env.VITE_DEVELOPMENT_API_URL;
-//   } else if (import.meta.env.DEV === false) {  // Checking against string "false"
-//     console.log("Production mode detected. Using production API URL.");
-//     return import.meta.env.VITE_PRODUCTION_API_URL;
-//   } else {
-//     throw new Error(`API URL not set. Please check your environment variables. DEV Enabled: ${import.meta.env.DEV}`);
-//   }
-// })();
-
-const Card: React.FC<CardProps> = ({ cardName, isFaceUp, animate }) => {
+const Card: React.FC<CardProps> = ({ cardName, isFaceUp, animate, position }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Flip the card animation (on deal or when clicked for example)
   useEffect(() => {
     if (animate && cardRef.current) {
       gsap.fromTo(
@@ -34,15 +22,23 @@ const Card: React.FC<CardProps> = ({ cardName, isFaceUp, animate }) => {
     }
   }, [animate]);
 
+  const translateX = position * 1.25;
+  const translateY = position * 2.31;
+
   return (
-    <div ref={cardRef} className={`card-container`}>
+    <div
+      ref={cardRef}
+      className={styles.cardContainer}
+      style={{
+        transform: `translateX(${translateX}vw) translateY(${translateY}vh)`,
+        zIndex: position,
+      }}
+    >
       <img
-        className={`card-image`}
-        // src={isFaceUp ? `${API_URL}/static/cards/${cardName}.svg` : `${API_URL}/static/cards/back_of_card.svg`}
+        className={styles.cardImage}
         src={isFaceUp ? `/cards/${cardName}.svg` : `/cards/back_of_card.svg`}
-      // alt={cardAlt}
+        alt={cardName}
       />
-      {/* <p>{cardAlt}</p> */}
     </div>
   );
 };
