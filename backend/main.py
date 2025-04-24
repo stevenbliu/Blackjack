@@ -104,17 +104,20 @@ def get_card(card_name: str):
     return {"error": "Card not found"}
 
 # Serve static files (cards and other assets) from the static directory
-app.mount("/static", StaticFiles(directory="static"), name="static")
+dist_path = os.path.join(os.path.dirname(__file__), "../blackjack-react/dist")
+app.mount("/", StaticFiles(directory=dist_path, html=True), name="static")
 
-# Serve the frontend index.html file
-@app.get("/", response_class=HTMLResponse)
-async def read_index():
-    # print("Serving index.html")  # Debug statement
-    path = os.path.join("static", "index.html")
-    try:
-        if not os.path.exists(path):
-            return HTMLResponse(content="index.html not found", status_code=404)
-        with open(path, encoding="utf-8") as f:  # Specify the encoding here
-            return HTMLResponse(content=f.read())
-    except FileNotFoundError:
-        return HTMLResponse(content="index.html not found", status_code=404)
+# # Serve the frontend index.html file
+# @app.get("/", response_class=HTMLResponse)
+# async def read_index():
+#     # print("Serving index.html")  # Debug statement
+#     path = os.path.join("I:\GitHub\Blackack\Blackjack\blackjack-react\dist\index.html")
+#     print(path)
+#     path = "I:\GitHub\Blackack\Blackjack\blackjack-react\dist\index.html"
+#     try:
+#         if not os.path.exists(path):
+#             return HTMLResponse(content="index.html not found", status_code=404)
+#         with open(path, encoding="utf-8") as f:  # Specify the encoding here
+#             return HTMLResponse(content=f.read())
+#     except FileNotFoundError:
+#         return HTMLResponse(content="index.html not found", status_code=404)
