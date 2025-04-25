@@ -2,122 +2,140 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from backend.game_logic import Deck, calculate_score
 import random
-import os
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Enable CORS so JS frontend can call the backend
+# Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # You can restrict this later
+    allow_origins=["*"],  # Modify if necessary
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# In-memory state (single-player only for now)
+# In-memory game state (for simplicity, use a dictionary)
 games = {}
+num_players = 1  # Number of players
 
 class GameState:
-    def __init__(self, player_hand, dealer_hand, deck, status):
-        self.player_hand = player_hand
+    def __init__(self, player_hands, dealer_hand, deck, status):
+        self.player_hands = player_hands  # List of hands for multiple players
         self.dealer_hand = dealer_hand
-        self.dealer_full_hand = dealer_hand[:]  # copy full dealer hand
+        self.dealer_full_hand = dealer_hand[:]  # Full dealer hand
         self.deck = deck
         self.status = status
 
 @app.post("/start")
 def start_game():
-    deck = Deck()  # Use the new Deck class
-    player = [deck.draw(), deck.draw()]  # Draw two cards for the player
-    dealer = [deck.draw(), deck.draw()]  # Draw two cards for the dealer
+    deck = Deck()  # New deck
+    # Draw two cards for each player (assuming 3 players here)
+    players = [[deck.draw(), deck.draw()] for _ in range(num_players)]  # List of hands for 3 players
+    dealer = [deck.draw(), deck.draw()]  # Dealer's hand
 
-    game_id = str(random.randint(1000, 9999))  # crude game ID
+    game_id = str(random.randint(1000, 9999))  # Random game ID
     games[game_id] = GameState(
-        player_hand=player,
-        dealer_hand=[dealer[0]],  # hide second card
+        player_hands=players,  # Hands for all players
+        dealer_hand=[dealer[0]],  # Only show one dealer card initially
         deck=deck,
         status="in_progress"
     )
-    games[game_id].dealer_full_hand = dealer  # not part of schema, for backend use
+    games[game_id].dealer_full_hand = dealer  # Full dealer hand for backend use
 
-        # Now return the dealer's full hand in the response, along with the player hand
     return {
         "game_id": game_id,
-        "player_hand": player,
-        "dealer_hand": dealer,  # Send the full dealer hand, not just the first card
+        "player_hands": players,  # Send all players' hands
+        "dealer_hand": dealer,  # Send the visible dealer card
     }
-@app.post("/hit/{game_id}")
-def hit(game_id: str):
+
+@app.post("/hit/{game_id}/{player_index}")
+def hit(game_id: str, player_index: int):
     game = games.get(game_id)
     if not game or game.status != "in_progress":
-        return {"error": "Invalid game"}
+        return {"error": "Invalid game state"}
+
+    if player_index >= len(game.player_hands):  # Ensure player index is valid
+        return {"error": "Invalid player index"}
 
     card = game.deck.draw()  # Draw a card from the deck
-    game.player_hand.append(card)
-    score = calculate_score(game.player_hand)
+    game.player_hands[player_index].append(card)
+    score = calculate_score(game.player_hands[player_index])
 
     if score > 21:
         game.status = "player_bust"
-        return {"game_id": game_id, "result": "player_bust", "player_hand": game.player_hand, "score": score}
+        return {
+            "game_id": game_id,
+            "result": "player_bust",
+            "player_hand": game.player_hands[player_index],  # Only send current player's hand
+            "score": score
+        }
 
-    return {"game_id": game_id, "player_hand": game.player_hand, "score": score}
+    return {
+        "game_id": game_id,
+        "player_hand": game.player_hands[player_index],  # Only send current player's hand
+        "score": score
+    }
 
-@app.post("/stand/{game_id}")
-def stand(game_id: str):
+@app.post("/stand/{game_id}/{player_index}")
+def stand(game_id: str, player_index: int):
     game = games.get(game_id)
     if not game or game.status != "in_progress":
-        return {"error": "Invalid game"}
+        return {"error": "Invalid game state"}
 
+    # Handle player standing logic
     dealer = game.dealer_full_hand
     while calculate_score(dealer) < 17:
-        dealer.append(game.deck.draw())  # Dealer draws cards until their score is 17 or higher
+        dealer.append(game.deck.draw())  # Dealer draws cards until they reach 17 or higher
 
-    player_score = calculate_score(game.player_hand)
+    player_scores = [calculate_score(hand) for hand in game.player_hands]
     dealer_score = calculate_score(dealer)
 
     game.dealer_hand = dealer
     game.status = "finished"
 
-    if dealer_score > 21 or player_score > dealer_score:
-        result = "player_wins"
-    elif dealer_score == player_score:
-        result = "draw"
-    else:
-        result = "dealer_wins"
+    # Determine game results
+    results = []
+    for i, score in enumerate(player_scores):
+        if score > 21:
+            results.append({"player": i + 1, "result": "bust"})
+        elif dealer_score > 21 or score > dealer_score:
+            results.append({"player": i + 1, "result": "win"})
+        elif score == dealer_score:
+            results.append({"player": i + 1, "result": "draw"})
+        else:
+            results.append({"player": i + 1, "result": "loss"})
 
     return {
-        "result": result,
-        "player_score": player_score,
+        "result": results,
         "dealer_score": dealer_score,
-        "dealer_hand": dealer  # Send card names for frontend
+        "dealer_hand": dealer
     }
-    
-# @app.get("/card/{card_name}")
-# def get_card(card_name: str):
-#     file_path = f"static/cards/{card_name}.svg"
-#     if os.path.exists(file_path):
-#         return FileResponse(file_path, media_type='image/svg+xml')
-#     return {"error": "Card not found"}
 
-# Serve static files (cards and other assets) from the static directory
-# dist_path = os.path.join(os.path.dirname(__file__), "../blackjack-react/dist")
+@app.post("/restart/{game_id}")
+def restart_game(game_id: str):
+    game = games.get(game_id)
+    if not game:
+        return {"error": "Game not found"}
+
+    # Restart the game with a new deck and hands
+    deck = Deck()
+    players = [[deck.draw(), deck.draw()] for _ in range(3)]  # Reset players' hands
+    dealer = [deck.draw(), deck.draw()]  # Reset dealer's hand
+
+    game.deck = deck
+    game.player_hands = players
+    game.dealer_hand = [dealer[0]]  # Show only one dealer card initially
+    game.dealer_full_hand = dealer
+    game.status = "in_progress"
+
+    return {
+        "game_id": game_id,
+        "player_hands": players,
+        "dealer_hand": dealer
+    }
+
+# Serve static files (cards, etc.)
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# # Serve the frontend index.html file
-# @app.get("/", response_class=HTMLResponse)
-# async def read_index():
-#     # print("Serving index.html")  # Debug statement
-#     path = os.path.join("I:\GitHub\Blackack\Blackjack\blackjack-react\dist\index.html")
-#     print(path)
-#     path = "I:\GitHub\Blackack\Blackjack\blackjack-react\dist\index.html"
-#     try:
-#         if not os.path.exists(path):
-#             return HTMLResponse(content="index.html not found", status_code=404)
-#         with open(path, encoding="utf-8") as f:  # Specify the encoding here
-#             return HTMLResponse(content=f.read())
-#     except FileNotFoundError:
-#         return HTMLResponse(content="index.html not found", status_code=404)
