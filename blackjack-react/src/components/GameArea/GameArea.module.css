@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-image: url('public/blackjack-background.png');
+  background-image: url('/blackjack-background.png');
 }
 
 .gameTitle {

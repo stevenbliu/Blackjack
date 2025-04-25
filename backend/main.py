@@ -139,3 +139,4 @@ def restart_game(game_id: str):
 
 # Serve static files (cards, etc.)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+# app.mount("/static", StaticFiles(directory=os.path.join(os.getcwd(), "public")), name="static")
