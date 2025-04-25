@@ -10,19 +10,19 @@ interface Card {
 }
 
 interface GameAreaProps {
-  playerHand: Card[];
+  playersHands: Card[][];
   dealerHand: Card[];
   gameId: string | null;
   startGame: () => void;
-  hit: () => void;
-  stand: () => void;
+  hit: (playerIndex: number) => void;
+  stand: (playerIndex: number) => void;
   restartGame: () => void;
   gameOver: boolean;
   message: string | null;
 }
 
 const GameArea: React.FC<GameAreaProps> = ({
-  playerHand,
+  playersHands,
   dealerHand,
   gameId,
   startGame,
@@ -32,71 +32,90 @@ const GameArea: React.FC<GameAreaProps> = ({
   gameOver,
   message,
 }) => {
-  const [animatePlayerHand, setAnimatePlayerHand] = useState(false);
-  const [animateDealerHand, setAnimateDealerHand] = useState(false);
+  const [animateHands, setAnimateHands] = useState<boolean[]>([]);
 
   useEffect(() => {
     if (gameId) {
-      setAnimatePlayerHand(true);
-      setAnimateDealerHand(true);
+      setAnimateHands(Array(playersHands.length + 1).fill(true));
     }
-  }, [gameId]);
+  }, [gameId, playersHands.length]);
 
   return (
     <div className={styles.gameArea}>
-      <div className={styles.gameTitle}>
-        <h1>🎲 Blackjack</h1>
+      {/* Top Right - Game ID */}
+      {gameId && (
+        <div className={styles.topRight}>
+          <h3>
+            Game ID: <span style={{ color: '#00e676' }}>{gameId}</span>
+          </h3>
+        </div>
+      )}
 
+      {/* Game Title / Start Button */}
+      <div className={styles.gameTitle}>
         {!gameId && (
           <button onClick={startGame} className={styles.startButton}>
             Start Game
           </button>
         )}
-
-        {gameId && (
-          <>
-            <h3>
-              Game ID: <span style={{ color: '#00e676' }}>{gameId}</span>
-            </h3>
-
-            <div className={styles.handZone}>
-              <div className={styles.zoneTitle}>🧑 Player Hand</div>
-              <div className={styles.cardContainer}>
-                {playerHand.map((card, i) => (
-                  <Card
-                    key={i}
-                    cardName={card.CardName}
-                    isFaceUp={true}
-                    animate={animatePlayerHand}
-                    position={i}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.handZone}>
-              <div className={styles.zoneTitle}>🎩 Dealer Hand</div>
-              <div className={styles.cardContainer}>
-                {dealerHand.map((card, i) => (
-                  <Card
-                    key={i}
-                    cardName={card.CardName}
-                    isFaceUp={i !== 1 || gameOver}
-                    animate={animateDealerHand}
-                    position={i}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.controlsContainer}>
-              <Controls onHit={hit} onStand={stand} onRestart={restartGame} disabled={gameOver} />
-            </div>
-          </>
-        )}
       </div>
 
-      <MessageZone message={message} />
+      {/* Dealer Zone */}
+      {gameId && (
+        <>
+          <div className={styles.dealerZone}>
+            <div className={styles.zoneTitle}>🎩 Dealer Hand</div>
+            <div className={styles.cardContainer}>
+              {dealerHand.map((card, i) => (
+                <Card
+                  key={i}
+                  cardName={card.CardName}
+                  isFaceUp={i !== 1 || gameOver}
+                  animate={animateHands[playersHands.length]}
+                  position={i}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Player Zones */}
+          <div className={styles.playerZones}>
+            {playersHands.map((playerHand, playerIndex) => (
+              <div key={playerIndex} className={styles.playerZone}>
+                <div className={styles.zoneTitle}>🧑 Player {playerIndex + 1} Hand</div>
+                <div className={styles.cardContainer}>
+                  {playerHand.map((card, i) => (
+                    <Card
+                      key={i}
+                      cardName={card.CardName}
+                      isFaceUp={true}
+                      animate={animateHands[playerIndex]}
+                      position={i}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Bottom Left - Controls (for player 0 or active player) */}
+      {gameId && (
+        <div className={styles.bottomLeft}>
+          <Controls
+            onHit={() => hit(0)}
+            onStand={() => stand(0)}
+            onRestart={restartGame}
+            disabled={gameOver}
+          />
+        </div>
+      )}
+
+      {/* Bottom Right - Message Zone */}
+      <div className={styles.bottomRight}>
+        <MessageZone message={message} />
+      </div>
     </div>
   );
 };

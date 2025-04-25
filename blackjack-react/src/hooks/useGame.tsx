@@ -1,4 +1,3 @@
-// src/hooks/useGame.ts
 import { useState } from 'react';
 
 interface Card {
@@ -10,16 +9,18 @@ interface Card {
 
 interface GameState {
     game_id: string;
-    player_hand: Card[];
+    player_hands: Card[][];  // Array of hands for multiple players
     dealer_hand: Card[];
     result?: string;
+    player_hand?: Card[];  // Optional player hand (if needed for specific players or game states)
+
 }
 
 const API_URL = (() => {
-    if (import.meta.env.DEV === true) {  // Checking against string "true"
+    if (import.meta.env.DEV === true) {
         console.log("Development mode detected. Using development API URL.");
         return import.meta.env.VITE_DEVELOPMENT_API_URL;
-    } else if (import.meta.env.DEV === false) {  // Checking against string "false"
+    } else if (import.meta.env.DEV === false) {
         console.log("Production mode detected. Using production API URL.");
         return import.meta.env.VITE_PRODUCTION_API_URL;
     } else {
@@ -29,10 +30,11 @@ const API_URL = (() => {
 
 const useGame = () => {
     const [gameId, setGameId] = useState<string | null>(null);
-    const [playerHand, setPlayerHand] = useState<Card[]>([]);
+    const [playerHands, setPlayerHands] = useState<Card[][]>([]);  // Initialize as an empty array
     const [dealerHand, setDealerHand] = useState<Card[]>([]);
     const [message, setMessage] = useState<string | null>(null);
     const [gameOver, setGameOver] = useState<boolean>(false);
+    const [currentPlayer, setCurrentPlayer] = useState<number>(0);  // Track whose turn it is
 
     const handleError = (error: unknown, context: string) => {
         console.error(`${context} error:`, error);
@@ -47,36 +49,69 @@ const useGame = () => {
             const res = await fetch(`${API_URL}/start`, { method: 'POST' });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data: GameState = await res.json();
+            console.log("Game started:", data, 'Player Hand Length:', data.player_hands.length);  // Log the response for debugging
             setGameId(data.game_id);
-            setPlayerHand(data.player_hand);
+            setPlayerHands(data.player_hands || []);  // Ensure playerHands is not undefined
             setDealerHand(data.dealer_hand);
             setMessage(null);
             setGameOver(false);
+            setCurrentPlayer(0);  // Start with the first player
         } catch (error) {
             handleError(error, "Start game");
         }
     };
 
-    const hit = async () => {
+    const hit = async (playerIndex: number) => {
+        if (playerIndex !== currentPlayer) {
+            setMessage("It's not your turn!");
+            return;
+        }
+
+        if (!playerHands || playerHands.length <= playerIndex || !playerHands[playerIndex]) {
+            setMessage("Invalid hand or player index.");
+            return;
+        }
+
         try {
-            const res = await fetch(`${API_URL}/hit/${gameId}`, { method: 'POST' });
+            const res = await fetch(`${API_URL}/hit/${gameId}/${playerIndex}`, { method: 'POST' });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data: GameState = await res.json();
-            setPlayerHand(data.player_hand);
+            console.log("Hit response data:", data.player_hand);  // Log the response for debugging
+
+            // Update only the current player's hand
+            setPlayerHands((prevHands) => {
+                const updatedHands = [...prevHands];
+                // updatedHands[playerIndex] = data.player_hand; // Update only the player's hand
+                if (data.player_hand) {
+                    updatedHands[playerIndex] = data.player_hand; // Update only the player's hand
+                } else {
+                    console.error("Player hand is undefined or null.");
+                }
+                return updatedHands;
+            });
+
+            console.log("Hit response:", data);  // Log the response for debugging
             if (data.result === "player_bust") {
                 setMessage("You busted! Game over.");
                 setGameOver(true);
             } else {
                 setMessage(null);
+                // Move to next player's turn
+                setCurrentPlayer((prev) => (prev + 1) % playerHands.length);
             }
         } catch (error) {
             handleError(error, "Hit");
         }
     };
 
-    const stand = async () => {
+    const stand = async (playerIndex: number) => {
+        if (playerIndex !== currentPlayer) {
+            setMessage("It's not your turn!");
+            return;
+        }
+
         try {
-            const res = await fetch(`${API_URL}/stand/${gameId}`, { method: 'POST' });
+            const res = await fetch(`${API_URL}/stand/${gameId}/${playerIndex}`, { method: 'POST' });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data: GameState = await res.json();
             setDealerHand(data.dealer_hand);
@@ -100,15 +135,16 @@ const useGame = () => {
 
     const restartGame = () => {
         setGameId(null);
-        setPlayerHand([]);
+        setPlayerHands([[], [], []]);  // Default hands for 3 players (modify if number of players changes)
         setDealerHand([]);
         setMessage(null);
         setGameOver(false);
+        setCurrentPlayer(0);  // Reset turn to player 0
     };
 
     return {
         gameId,
-        playerHand,
+        playerHands,  // Return the hands for all players
         dealerHand,
         message,
         gameOver,
