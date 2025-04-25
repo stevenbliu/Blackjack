@@ -7,13 +7,20 @@ interface Card {
     CardName: string;
 }
 
+interface PlayerResult {
+    result: "win" | "loss" | "draw" | "bust" | string;
+    player_index: number;
+    score: number;
+}
+
 interface GameState {
     game_id: string;
     player_hands: Card[][];  // Array of hands for multiple players
     dealer_hand: Card[];
-    result?: string;
-    player_hand?: Card[];  // Optional player hand (if needed for specific players or game states)
-
+    result: PlayerResult[] | string;  // Array of results for each player or a string indicating the game state
+    player_hand: Card[];  // Optional player hand (if needed for specific players or game states)
+    dealer_score?: number;  // Optional dealer score (if needed for specific game states)
+    player_score?: number;  // Optional player score (if needed for specific game states)
 }
 
 const API_URL = (() => {
@@ -53,7 +60,7 @@ const useGame = () => {
             setGameId(data.game_id);
             setPlayerHands(data.player_hands || []);  // Ensure playerHands is not undefined
             setDealerHand(data.dealer_hand);
-            setMessage(null);
+            setMessage("Game started! Your turn.");
             setGameOver(false);
             setCurrentPlayer(0);  // Start with the first player
         } catch (error) {
@@ -76,12 +83,11 @@ const useGame = () => {
             const res = await fetch(`${API_URL}/hit/${gameId}/${playerIndex}`, { method: 'POST' });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data: GameState = await res.json();
-            console.log("Hit response data:", data.player_hand);  // Log the response for debugging
+            // console.log("Hit response data:", data.player_hand);  // Log the response for debugging
 
             // Update only the current player's hand
             setPlayerHands((prevHands) => {
                 const updatedHands = [...prevHands];
-                // updatedHands[playerIndex] = data.player_hand; // Update only the player's hand
                 if (data.player_hand) {
                     updatedHands[playerIndex] = data.player_hand; // Update only the player's hand
                 } else {
@@ -91,11 +97,16 @@ const useGame = () => {
             });
 
             console.log("Hit response:", data);  // Log the response for debugging
-            if (data.result === "player_bust") {
-                setMessage("You busted! Game over.");
+            const latestCard: Card = data.player_hand.slice(-1)[0];  // Assuming the latest card is the first one in the array];
+            const latestCardName = `${latestCard.rank}${latestCard.suit}` ;  // Assuming CardName is the property for the card name
+            
+            const result: string | PlayerResult[] = data.result;
+
+            if (result === "player_bust") {
+                setMessage(`You drew a ${latestCardName}. It's a bust! Game over.`);
                 setGameOver(true);
             } else {
-                setMessage(null);
+                setMessage(`You hit! ${latestCardName}`);  // Show the last card drawn
                 // Move to next player's turn
                 setCurrentPlayer((prev) => (prev + 1) % playerHands.length);
             }
@@ -115,18 +126,28 @@ const useGame = () => {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data: GameState = await res.json();
             setDealerHand(data.dealer_hand);
+            console.log("Stand response data:", data);  // Log the response for debugging
 
-            if (data.result === "player_bust") {
-                setMessage("You busted! Dealer wins.");
-            } else if (data.result === "dealer_bust") {
-                setMessage("Dealer busted! You win.");
-            } else if (data.result === "player_wins") {
-                setMessage("You win!");
-            } else if (data.result === "dealer_wins") {
-                setMessage("Dealer wins!");
-            } else {
-                setMessage(null);
+            const result: string | PlayerResult[] = data.result;
+
+            if (Array.isArray(result)) {
+                // Now we know `result` is an array, we can safely access player_data
+                const player_data: PlayerResult = result[0];  // Assuming result is an array of results for each player
+
+                if (player_data.result === "win") {
+                    setMessage(`Dealer busted! Dealer scored: ${data.dealer_score} You win.`);
+                } else if (player_data.result === "loss") {
+                    setMessage(`You lose! Dealer scored: ${data.dealer_score}`);
+                } else if (player_data.result === "draw") {
+                    setMessage(`Draw! Dealer scored: ${data.dealer_score}`);
+                } else {
+                    setMessage("Unknown!");
+                }
+            } else if (typeof result === "string") {
+                // Handle case where result is a string
+                setMessage(`Unexpected result format: ${result}`);
             }
+
             setGameOver(true);
         } catch (error) {
             handleError(error, "Stand");

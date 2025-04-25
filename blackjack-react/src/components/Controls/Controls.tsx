@@ -22,7 +22,7 @@ const buttonStyle = (disabled: boolean, color: string) => ({
 
 const Controls: React.FC<ControlsProps> = ({ onHit, onStand, onRestart, disabled }) => {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px', border: '1px solid #ccc', padding: '10px', borderRadius: '8px', background: 'gray', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
       <button
         onClick={onHit}
         disabled={disabled}

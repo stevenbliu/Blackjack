@@ -42,22 +42,19 @@ const GameArea: React.FC<GameAreaProps> = ({
 
   return (
     <div className={styles.gameArea}>
+
       {/* Top Right - Game ID */}
-      {gameId && (
+      {
         <div className={styles.topRight}>
           <h3>
             Game ID: <span style={{ color: '#00e676' }}>{gameId}</span>
           </h3>
         </div>
-      )}
+      }
 
-      {/* Game Title / Start Button */}
-      <div className={styles.gameTitle}>
-        {!gameId && (
-          <button onClick={startGame} className={styles.startButton}>
-            Start Game
-          </button>
-        )}
+      {/* Bottom Right - Message Zone */}
+      <div className={styles.topMiddle}>
+        <MessageZone message={message} />
       </div>
 
       {/* Dealer Zone */}
@@ -112,10 +109,16 @@ const GameArea: React.FC<GameAreaProps> = ({
         </div>
       )}
 
-      {/* Bottom Right - Message Zone */}
-      <div className={styles.bottomRight}>
-        <MessageZone message={message} />
+
+      {/* Game Title / Start Button */}
+      <div className={styles.gameTitle}>
+        {!gameId && (
+          <button onClick={startGame} className={styles.startButton}>
+            Start Game
+          </button>
+        )}
       </div>
+
     </div>
   );
 };

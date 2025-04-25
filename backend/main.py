@@ -100,13 +100,13 @@ def stand(game_id: str, player_index: int):
     results = []
     for i, score in enumerate(player_scores):
         if score > 21:
-            results.append({"player": i + 1, "result": "bust"})
+            results.append({"player": i + 1, "result": "bust", "score": score})
         elif dealer_score > 21 or score > dealer_score:
-            results.append({"player": i + 1, "result": "win"})
+            results.append({"player": i + 1, "result": "win", "score": score})
         elif score == dealer_score:
-            results.append({"player": i + 1, "result": "draw"})
+            results.append({"player": i + 1, "result": "draw", "score": score})
         else:
-            results.append({"player": i + 1, "result": "loss"})
+            results.append({"player": i + 1, "result": "loss", "score": score})
 
     return {
         "result": results,
