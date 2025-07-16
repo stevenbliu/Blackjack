@@ -5,7 +5,7 @@ import { SEND_WS_MESSAGE, WS_RECEIVED, WS_CONNECTED, WS_ERROR } from './actionTy
 let wsManager: WebSocketManager | null = null;
 
 const websocketMiddlewareFn = (store: MiddlewareAPI) => (next: Dispatch) => (action: AnyAction) => {
-  console.log('[Middleware] Received action:', action);
+  // console.log('[Middleware] Received action:', action);
 
   if (action.type !== SEND_WS_MESSAGE) {
     return next(action);

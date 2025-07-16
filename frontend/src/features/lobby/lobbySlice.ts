@@ -33,7 +33,7 @@ export const initLobby = createAsyncThunk<void, void, { state: RootState }>(
   'lobby/initLobby',
   async (_, { dispatch }) => {
     // Subscribe to lobby updates
-    dispatch({ type: SEND_WS_MESSAGE, payload: { action: 'subscribe', room: 'lobby' } });
+    // dispatch({ type: SEND_WS_MESSAGE, payload: { action: 'subscribe', room: 'lobby' } });
 
     // Fetch current rooms list
     dispatch(fetchRooms({ page: 1, limit: 10 }));
@@ -95,6 +95,9 @@ const lobbySlice = createSlice({
     stopCreating(state) {
       state.creating = false;
     },
+    setCurrentPage(state, action: PayloadAction<number>) {
+  state.currentPage = action.payload;
+}
   },
   extraReducers: (builder) => {
     builder
@@ -120,6 +123,7 @@ export const {
   stopLoading,
   startCreating,
   stopCreating,
+  setCurrentPage
 } = lobbySlice.actions;
 
 export default lobbySlice.reducer;

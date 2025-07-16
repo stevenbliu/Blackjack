@@ -36,6 +36,7 @@ async def websocket_endpoint(websocket: WebSocket, game_manager: GameManager):
                 logging.info(
                     f"Received action '{action}' from player {player_id} with requestId={request_id}"
                 )
+                logging.info(f"message: {message}")
 
                 if action == "create_game":
                     game_id = await create_game(player_id, websocket, game_manager)
@@ -142,8 +143,10 @@ async def websocket_endpoint(websocket: WebSocket, game_manager: GameManager):
                         )
 
                 elif action == "lobby":
+                    logging.info(f"123 {message}, {data}")
                     page = data.get("page", 1)
                     limit = data.get("limit", 10)
+                    logging.info(f"Action 'lobby': page{page} limit{limit}")
 
                     available_games_data = game_manager.get_available_games(
                         page=page, limit=limit

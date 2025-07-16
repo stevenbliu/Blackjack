@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useAppDispatch } from '../../app/hooks';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
-import { initLobby, fetchRooms, createGame } from './lobbySlice';
+import { initLobby, fetchRooms, createGame, setCurrentPage } from './lobbySlice';
 import { setGameId } from '../game/gameSlice';
 import { SEND_WS_MESSAGE } from '../websocket/actionTypes';
 import RoomList from './components/RoomList/RoomList';
@@ -12,14 +12,16 @@ type LobbyProps = {
   currentPlayerId: string;
 };
 
-const POLL_INTERVAL_MS = 5000; // 5 seconds polling
-const PAGE_LIMIT = 10;
+const POLL_INTERVAL_MS = 105000; // 5 seconds polling
+const PAGE_LIMIT = 3;
 
 const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
   const dispatch = useAppDispatch();
   const { gameRooms, loading, creating, socketError, currentPage, totalPages } = useSelector(
     (state: RootState) => state.lobby
   );
+  const pageRef = useRef(currentPage);
+  pageRef.current = currentPage;
 
   useEffect(() => {
     dispatch(initLobby());
@@ -28,12 +30,13 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
     dispatch(fetchRooms({ page: 1, limit: PAGE_LIMIT }));
 
     // Polling with current page param
+    console.log('[Polling] Fetching page:', pageRef.current);
     const intervalId = setInterval(() => {
-      dispatch(fetchRooms({ page: currentPage, limit: PAGE_LIMIT }));
+      dispatch(fetchRooms({ page: pageRef.current, limit: PAGE_LIMIT }));
     }, POLL_INTERVAL_MS);
 
     return () => clearInterval(intervalId);
-  }, [dispatch, currentPage]);
+  }, [dispatch]);
 
   const handleCreateGame = async () => {
     try {
@@ -55,6 +58,7 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
+      dispatch(setCurrentPage(newPage)); // 👈 ensure Redux state updates immediately
       dispatch(fetchRooms({ page: newPage, limit: PAGE_LIMIT }));
     }
   };

@@ -25,7 +25,7 @@ const RoomList: React.FC<RoomListProps> = ({ games, onJoin }) => {
   return (
     <ul style={{ listStyle: 'none', padding: 0 }}>
       {games.map((game) => {
-        log('Rendering game:', game.game_id);
+        // log('Rendering game:', game.game_id);
         return (
           <li
             key={game.game_id}
