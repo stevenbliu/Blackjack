@@ -1,0 +1,54 @@
+/* WelcomeBox.module.css */
+
+.welcomeBox {
+    width: 300px; /* Default width */
+    background: black;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    overflow: visible;
+    text-align: center;
+    color: #00e676;
+    /* margin: 0 auto; Center align the box */
+    transition: width 0.3s ease; /* Smooth transition for width change */
+    
+    /* Make the box a flex container */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Vertically center content */
+    align-items: center; /* Horizontally center content */
+  }
+  
+  .welcomeBox h1 {
+    margin-bottom: 10px;
+  }
+  
+  .welcomeBox p {
+    margin-bottom: 20px;
+  }
+  
+  .welcomeBox .deck {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+    padding: 40px;
+  }
+  
+  /* Tablet */
+  @media (max-width: 768px) {
+    .welcomeBox {
+      width: 80%; /* Adjust width for tablets */
+      padding: 16px;
+    }
+  }
+  
+  /* Mobile */
+  @media (max-width: 480px) {
+    .welcomeBox {
+      width: 100%; /* Take full width on mobile */
+      padding: 12px;
+    }
+  }
+  

@@ -1,0 +1,36 @@
+.deck {
+  position: relative;
+  width: 80px;
+  height: 110px;
+  cursor: pointer;
+}
+
+.cardBack {
+  position: absolute;
+  width: 80px;
+  height: 110px;
+  background: linear-gradient(135deg, #004, #008);
+  border-radius: 8px;
+  border: 2px solid #002;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  transform-origin: center;
+  top: 0;
+  left: 0;
+  transition: transform 0.3s ease;
+}
+
+/* Slight offset to create stack effect */
+.cardBack:nth-child(1) {
+  transform: translate(0px, 0px);
+  z-index: 3;
+}
+.cardBack:nth-child(2) {
+  transform: translate(6px, 6px);
+  z-index: 2;
+  opacity: 0.8;
+}
+.cardBack:nth-child(3) {
+  transform: translate(12px, 12px);
+  z-index: 1;
+  opacity: 0.6;
+}
