@@ -24,7 +24,7 @@ logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 
 origins = [
-    "https://blackjack-frontend-y2bh.onrender.com",
+    "https://blackjack-frontend-ttx9.onrender.com",
 ]
 
 app.add_middleware(
