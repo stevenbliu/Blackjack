@@ -5,10 +5,11 @@ import react from '@vitejs/plugin-react-swc'
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: '0.0.0.0', // Ensures Vite is accessible from outside Docker container
+    host: '0.0.0.0',
     watch: {
-      usePolling: true, // Enables polling for file changes
-      interval: 100,    // Optional: polling interval (ms)
+      usePolling: true,
+      interval: 100,
     },
+    allowedHosts: ['blackjack-frontend-y2bh.onrender.com'], // ✅ Add this line
   },
 })

@@ -23,10 +23,14 @@ logging.basicConfig(level=logging.INFO)
 
 app = FastAPI()
 
+origins = [
+    "https://blackjack-frontend-y2bh.onrender.com",
+]
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
