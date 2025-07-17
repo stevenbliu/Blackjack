@@ -4,14 +4,36 @@ import { SEND_WS_MESSAGE, WS_RECEIVED, WS_CONNECTED, WS_ERROR } from './actionTy
 
 let wsManager: WebSocketManager | null = null;
 
-const websocketMiddlewareFn = (store: MiddlewareAPI) => (next: Dispatch) => (action: AnyAction) => {
-  // console.log('[Middleware] Received action:', action);
+// Keep track of outgoing chat message IDs to filter echoes
+const sentChatMessageIds = new Set<string>();
 
-  if (action.type !== SEND_WS_MESSAGE) {
-    return next(action);
+const websocketMiddlewareFn = (store: MiddlewareAPI) => (next: Dispatch) => (action: AnyAction) => {
+  // Step 1: Track outgoing chat message IDs when dispatching SEND_WS_MESSAGE
+  if (action.type === SEND_WS_MESSAGE) {
+    const message = action.payload as WebSocketMessage;
+
+    // If this is a chat_message, save its ID
+    if (message.action === 'chat_message' && message.message_id) {
+      sentChatMessageIds.add(message.message_id);
+    }
   }
 
-  if (!wsManager) {
+  // Step 2: Filter incoming WS messages that are echoed chat messages already sent
+  if (action.type === WS_RECEIVED) {
+    const message = action.payload as WebSocketMessage;
+
+    if (message.action === 'chat_message' && message.message_id) {
+      if (sentChatMessageIds.has(message.message_id)) {
+        // Remove the ID from the set to prevent memory leak
+        sentChatMessageIds.delete(message.message_id);
+        // Skip dispatching this echoed message to avoid duplicate in chat
+        return;
+      }
+    }
+  }
+
+  // Initialize WebSocketManager if needed
+  if (!wsManager && action.type === SEND_WS_MESSAGE) {
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const WS_URL = `${protocol}://${window.location.hostname}:8000/ws`;
 
@@ -35,20 +57,21 @@ const websocketMiddlewareFn = (store: MiddlewareAPI) => (next: Dispatch) => (act
     });
   }
 
-  console.log('[Middleware] Sending message:', action.payload);
-  wsManager.send(action.payload as WebSocketMessage)
-    .then(response => {
-      console.log('[Middleware] Message sent successfully, response:', response);
-      store.dispatch({ type: WS_RECEIVED, payload: response });
-    })
-    .catch(error => {
-      console.error('[Middleware] Error sending message:', error);
-      store.dispatch({ type: WS_ERROR, payload: { message: error.message, stack: error.stack } });
-    });
+  // Send message if action is SEND_WS_MESSAGE
+  if (action.type === SEND_WS_MESSAGE && wsManager) {
+    console.log('[Middleware] Sending message:', action.payload);
+    wsManager.send(action.payload as WebSocketMessage)
+      .then(response => {
+        console.log('[Middleware] Message sent successfully, response:', response);
+        store.dispatch({ type: WS_RECEIVED, payload: response });
+      })
+      .catch(error => {
+        console.error('[Middleware] Error sending message:', error);
+        store.dispatch({ type: WS_ERROR, payload: { message: error.message, stack: error.stack } });
+      });
+  }
 
   return next(action);
 };
-
-
 
 export const websocketMiddleware = websocketMiddlewareFn as Middleware;

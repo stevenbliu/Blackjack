@@ -2,12 +2,13 @@ import random
 import uuid
 import logging
 import math
+from starlette.websockets import WebSocket, WebSocketState
 
 
 class GameManager:
     def __init__(self):
         self.games = {}
-        self.connections = {}
+        self.connections = {}  # Maps player_id -> WebSocket
         self.num_players = 2
 
     def create_new_game(self):
@@ -29,7 +30,7 @@ class GameManager:
         }
         return self.games[game_id]
 
-    def add_player_to_game(self, game, player_id, websocket):
+    def add_player_to_game(self, game, player_id, websocket: WebSocket):
         if player_id in game["players"]:
             logging.warning(f"Player {player_id} already in game")
             return False
@@ -55,7 +56,6 @@ class GameManager:
     def generate_deck(self):
         SUITS = ["hearts", "spades", "clubs", "diamonds"]
         RANKS = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
-
         return [
             {
                 "rank": rank,
@@ -83,10 +83,7 @@ class GameManager:
 
         total_games = len(all_games)
         total_pages = max(1, math.ceil(total_games / limit))
-
-        # Clamp page to valid range
         page = max(1, min(page, total_pages))
-
         start = (page - 1) * limit
         end = start + limit
         games_slice = all_games[start:end]
@@ -104,6 +101,16 @@ class GameManager:
                 return game
         return None
 
+    def add_connection(self, player_id: str, websocket: WebSocket):
+        self.connections[player_id] = websocket
+
+    def remove_connection(self, player_id: str):
+        if player_id in self.connections:
+            del self.connections[player_id]
+            logging.info(f"Removed connection for player {player_id}")
+        else:
+            logging.warning(f"Connection for player {player_id} not found")
+
     def remove_player(self, player_id):
         for game_id, game in list(self.games.items()):
             if player_id in game["players"]:
@@ -113,28 +120,47 @@ class GameManager:
                     logging.info(f"No players left. Deleting game {game_id}")
                     del self.games[game_id]
 
-    def add_connection(self, player_id, websocket):
-        self.connections[player_id] = websocket
-
-    def remove_connection(self, player_id):
-        if player_id in self.connections:
-            del self.connections[player_id]
-            logging.info(f"Removed connection for player {player_id}")
-        else:
-            logging.warning(f"Connection for player {player_id} not found")
-
-    async def broadcast_lobby(self, message):
-
-        # available_games = self.get_available_games()
-        # message = {"type": "lobby_update", "games": available_games}
-
-        logging.info(f"Broadcasting lobby update: {message}")
-        logging.info(f"Connections: {self.connections.keys()}")
-        for playerId, connection in self.connections.items():
+    async def broadcast_lobby(self, message: str):
+        disconnected = []
+        for player_id, ws in self.connections.items():
             try:
-                await connection.send_text((message))
+                if ws.application_state == WebSocketState.CONNECTED:
+                    await ws.send_text(message)
+                else:
+                    disconnected.append(player_id)
             except Exception as e:
-                self.remove_connection(playerId)
-                logging.error(
-                    f"Error sending lobby update: {e} at connection {playerId}"
-                )
+                logging.error(f"Failed to send lobby message to {player_id}: {e}")
+                disconnected.append(player_id)
+
+        for pid in disconnected:
+            self.remove_connection(pid)
+
+    async def broadcast_to_game(self, player_id: str, message: str):
+        game = self.find_game_by_player(player_id)
+        if not game:
+            return
+
+        disconnected = []
+        for pid in game["players"]:
+            ws = self.connections.get(pid)
+            if ws and ws.application_state == WebSocketState.CONNECTED:
+                try:
+                    await ws.send_text(message)
+                except Exception as e:
+                    logging.error(f"Failed to send game message to {pid}: {e}")
+                    disconnected.append(pid)
+            else:
+                disconnected.append(pid)
+
+        for pid in disconnected:
+            self.remove_connection(pid)
+
+    async def send_private_message(self, from_id: str, to_id: str, message: str):
+        for pid in [from_id, to_id]:
+            ws = self.connections.get(pid)
+            if ws and ws.application_state == WebSocketState.CONNECTED:
+                try:
+                    await ws.send_text(message)
+                except Exception as e:
+                    logging.error(f"Failed to send private message to {pid}: {e}")
+                    self.remove_connection(pid)

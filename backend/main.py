@@ -17,6 +17,7 @@ from game_manager import GameManager
 
 # from backend.game_logic import create_game, join_game
 from websocket_manager import websocket_endpoint
+from connection_manager import ConnectionManager
 
 logging.basicConfig(level=logging.INFO)
 
@@ -33,26 +34,7 @@ app.add_middleware(
 
 # Initialize GameManager
 game_manager = GameManager()
-
-# @app.post("/create_game")
-# async def create_game_route():
-#     """Create a new game."""
-#     game = create_game(game_manager)
-#     return {"gameId": game['game_id']}
-
-
-# @app.post("/join_game")
-# async def join_game_route(data: JoinRequest):
-#     """Join an existing game."""
-#     response = join_game(game_manager, data)
-#     return response
-# return response
-
-# @app.get("/lobby")
-# async def lobby():
-#     """Get available games in the lobby."""
-#     available = game_manager.get_available_games()
-#     return JSONResponse(content=available)
+manager = ConnectionManager()
 
 
 @app.websocket("/ws")

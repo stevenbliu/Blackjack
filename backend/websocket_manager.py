@@ -174,6 +174,44 @@ async def websocket_endpoint(websocket: WebSocket, game_manager: GameManager):
                         game_manager, "stand", player_id, websocket, request_id
                     )
 
+                elif action == "chat_message":
+                    chat_type = data.get("type")
+                    content = data.get("content")
+                    to = data.get("to")  # only used for private
+                    timestamp = data.get("timestamp")
+                    message_id = data.get("message_id")
+
+                    chat_message = {
+                        "action": "chat_message",
+                        "message_id": message_id,
+                        "player_id": player_id,
+                        "content": content,
+                        "timestamp": timestamp,
+                        "type": chat_type,
+                        "to": to,
+                    }
+
+                    if chat_type == "lobby":
+                        await game_manager.broadcast_lobby(json.dumps(chat_message))
+                    elif chat_type == "game":
+                        await game_manager.broadcast_to_game(
+                            player_id, json.dumps(chat_message)
+                        )
+                    elif chat_type == "private" and to:
+                        await game_manager.send_private_message(
+                            player_id, to, json.dumps(chat_message)
+                        )
+                    else:
+                        await websocket.send_text(
+                            json.dumps(
+                                {
+                                    "action": "error",
+                                    "message": "Invalid chat message",
+                                    "requestId": request_id,
+                                }
+                            )
+                        )
+
                 else:
                     logging.warning(f"Unknown action: {action}")
                     await websocket.send_text(

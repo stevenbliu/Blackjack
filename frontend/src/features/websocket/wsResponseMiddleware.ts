@@ -1,34 +1,42 @@
 import { Middleware } from '@reduxjs/toolkit';
 import { WS_RECEIVED } from './actionTypes';
 import { setGameRooms, setSocketError } from '../lobby/lobbySlice';
+import { WS_CHAT_MESSAGE_RECEIVED } from './actionTypes';
 
 export const wsResponseMiddleware: Middleware = (store) => (next) => (action) => {
   if (action.type === WS_RECEIVED) {
     const message = action.payload;
-    console.log("Message:", message)
 
     switch (message.action) {
-        case 'lobby_update':
+      case 'chat_message':
+        store.dispatch({
+          type: WS_CHAT_MESSAGE_RECEIVED,
+          payload: {
+            id: message.id,
+            from: message.from,
+            to: message.to,
+            content: message.content,
+            timestamp: message.timestamp,
+            type: message.type,
+
+          },
+        });
+        break;
+
+      case 'lobby_update':
         store.dispatch(
-            setGameRooms({
+          setGameRooms({
             games: message.games,
             currentPage: message.currentPage || 1,
             totalPages: message.totalPages || 1,
-            })
+          })
         );
         break;
 
       case 'error':
         if (message.error) {
           store.dispatch(setSocketError(message.error));
-        } else {
-          console.warn('Received error message without error payload');
         }
-        break;
-
-      // You can handle other message types here
-
-      default:
         break;
     }
   }
