@@ -27,13 +27,12 @@ origins = [
     "https://blackjack-frontend-y2bh.onrender.com",
 ]
 
-# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins
+    allow_origins=origins,  # 👈 whitelist your frontend
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # or list specific methods like ["GET", "POST"]
+    allow_headers=["*"],  # or list specific headers
 )
 
 # Initialize GameManager
