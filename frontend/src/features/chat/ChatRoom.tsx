@@ -92,7 +92,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
     const msg: ChatMessage = {
         id: crypto.randomUUID(),
         // id: 3,
-        from: currentPlayerId,
+        from: currentPlayerId ?? '',
         content: trimmed,
         timestamp: Date.now(),
         type: selectedTab === 'lobby' || selectedTab === 'game' ? selectedTab : 'private',
