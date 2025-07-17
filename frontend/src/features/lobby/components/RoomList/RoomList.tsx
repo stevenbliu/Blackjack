@@ -1,6 +1,6 @@
 import React from 'react';
 
-const isLoggingEnabled = process.env.NODE_ENV === 'development';
+const isLoggingEnabled = import.meta.env.MODE === 'development';
 
 const log = (...args: any[]) => {
   if (isLoggingEnabled) {
