@@ -12,6 +12,8 @@ type LobbyProps = {
   currentPlayerId: string;
 };
 
+
+
 const POLL_INTERVAL_MS = 105000; // 5 seconds polling
 const PAGE_LIMIT = 3;
 

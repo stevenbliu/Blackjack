@@ -1,11 +1,10 @@
 import { Middleware } from '@reduxjs/toolkit';
-import { WS_RECEIVED } from './actionTypes';
+import { WS_RECEIVED, WS_CHAT_MESSAGE_RECEIVED } from './actionTypes';
 import { setGameRooms, setSocketError } from '../lobby/lobbySlice';
-import { WS_CHAT_MESSAGE_RECEIVED } from './actionTypes';
 
 export const wsResponseMiddleware: Middleware = (store) => (next) => (action) => {
-  if (action.type === WS_RECEIVED) {
-    const message = action.payload;
+  if (typeof action === 'object' && action !== null && 'type' in action && action.type === WS_RECEIVED) {
+    const message = (action as any).payload;
 
     switch (message.action) {
       case 'chat_message':
@@ -18,7 +17,6 @@ export const wsResponseMiddleware: Middleware = (store) => (next) => (action) =>
             content: message.content,
             timestamp: message.timestamp,
             type: message.type,
-
           },
         });
         break;

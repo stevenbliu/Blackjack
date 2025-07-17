@@ -62,7 +62,7 @@ const App: React.FC = () => {
     // Add outgoing message locally in Redux state
     dispatch(addOutgoingMessage({
       id: messageId,
-      from: playerId,
+      from: playerId ?? "",
       content,
       timestamp: msgPayload.timestamp,
       type,
@@ -87,7 +87,25 @@ const App: React.FC = () => {
         <WelcomeBox />
 
         <div className={styles.gameContainer}>
-          {!gameId ? <Lobby currentPlayerId={playerId} /> : <GameArea />}
+          {!gameId ? (
+            <Lobby currentPlayerId={playerId ?? ""} />
+          ) : (
+            // <GameArea
+            //   gameId={gameId}
+            //   gameOver={false}
+            //   message=""
+            //   startGame={() => {}}
+            //   playerHand={[]}
+            //   dealerHand={[]}
+            //   playerScore={0}
+            //   dealerScore={0}
+            //   onHit={() => {}}
+            //   onStand={() => {}}
+            // />
+            <div>
+              Temp Game Area
+            </div>
+          )}
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { Middleware, MiddlewareAPI, Dispatch, AnyAction } from '@reduxjs/toolkit';
+import { Middleware, MiddlewareAPI, Dispatch, AnyAction, isAction } from '@reduxjs/toolkit';
 import { WebSocketMessage, WebSocketManager } from './wsManager';
 import {
   SEND_WS_MESSAGE,
@@ -9,18 +9,16 @@ import {
 import { setPlayerId } from '../player/playerSlice';
 import { setError } from '../error/errorSlice';
 
-const createWebsocketMiddleware = (): Middleware => {
+const createWebsocketMiddleware = (): Middleware<{}, any> => {
   let wsManager: WebSocketManager | null = null;
   let messageQueue: WebSocketMessage[] = [];
   let reconnectAttempts = 0;
   let isConnecting = false;
 
-  // Track IDs of sent chat messages to filter echoes
   const sentChatMessageIds = new Set<string>();
 
-  // Initialize WebSocket and set up handlers
   const initWebSocket = (store: MiddlewareAPI) => {
-    if (wsManager || isConnecting) return; 
+    if (wsManager || isConnecting) return;
     isConnecting = true;
 
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -36,33 +34,48 @@ const createWebsocketMiddleware = (): Middleware => {
         console.log('[Middleware] WebSocket connected');
         store.dispatch({ type: WS_CONNECTED });
 
-        // Flush queued messages and track sent chat message IDs
         while (messageQueue.length) {
           const msg = messageQueue.shift()!;
           if (msg.action === 'chat_message' && msg.id) {
             sentChatMessageIds.add(msg.id);
           }
+
           try {
-            await wsManager.send(msg);
-          } catch (error) {
-            console.error('[Middleware] Error sending queued message:', error);
-            store.dispatch({ type: WS_ERROR, payload: { message: error.message, stack: error.stack } });
+            if (wsManager?.ws.readyState === WebSocket.OPEN) {
+              await wsManager.send(msg);
+            }
+          } catch (error: unknown) {
+            if (error instanceof Error) {
+              console.error('[Middleware] Error sending queued message:', error);
+              store.dispatch({
+                type: WS_ERROR,
+                payload: { message: error.message, stack: error.stack },
+              });
+            }
           }
         }
 
-        // Request player ID from server
         const requestPlayerId: WebSocketMessage = { action: 'request_player_id' };
         try {
-          await wsManager.send(requestPlayerId);
-        } catch (err) {
-          console.error('[Middleware] Error sending request_player_id:', err);
+          if (wsManager?.ws.readyState === WebSocket.OPEN) {
+            await wsManager.send(requestPlayerId);
+          }
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            console.error('[Middleware] Error sending request_player_id:', err);
+          }
         }
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         isConnecting = false;
-        console.error('[Middleware] WebSocket connection error:', error);
-        store.dispatch({ type: WS_ERROR, payload: { message: error.message, stack: error.stack } });
-        store.dispatch(setError(error.message));
+        if (error instanceof Error) {
+          console.error('[Middleware] WebSocket connection error:', error);
+          store.dispatch({
+            type: WS_ERROR,
+            payload: { message: error.message, stack: error.stack },
+          });
+          store.dispatch(setError(error.message));
+        }
 
         reconnectAttempts++;
         const delay = Math.min(10000, 1000 * 2 ** reconnectAttempts);
@@ -74,11 +87,10 @@ const createWebsocketMiddleware = (): Middleware => {
       });
 
     wsManager.onEvent((message: WebSocketMessage) => {
-      // Ignore echoed chat messages (sent by us)
       if (message.action === 'chat_message' && message.id) {
         if (sentChatMessageIds.has(message.id)) {
           sentChatMessageIds.delete(message.id);
-          return; // skip processing echoed message
+          return;
         }
       }
 
@@ -100,23 +112,27 @@ const createWebsocketMiddleware = (): Middleware => {
     };
   };
 
-  return (store: MiddlewareAPI) => (next: Dispatch) => (action: AnyAction) => {
-    if (!wsManager && action.type === SEND_WS_MESSAGE) {
+  return (store: MiddlewareAPI) => (next: Dispatch<AnyAction>) => (action: AnyAction) => {
+    if (action.type === SEND_WS_MESSAGE && !wsManager) {
       initWebSocket(store);
     }
 
     if (action.type === SEND_WS_MESSAGE) {
-      const message = action.payload as WebSocketMessage;
+      const message = (action as any).payload as WebSocketMessage;
 
-      // Track sent chat message IDs
       if (message.action === 'chat_message' && message.id) {
         sentChatMessageIds.add(message.id);
       }
 
-      if (wsManager && wsManager.ws.readyState === WebSocket.OPEN) {
-        wsManager.send(message).catch((error) => {
-          console.error('[Middleware] Error sending message:', error);
-          store.dispatch({ type: WS_ERROR, payload: { message: error.message, stack: error.stack } });
+      if (wsManager?.ws.readyState === WebSocket.OPEN) {
+        wsManager.send(message).catch((error: unknown) => {
+          if (error instanceof Error) {
+            console.error('[Middleware] Error sending message:', error);
+            store.dispatch({
+              type: WS_ERROR,
+              payload: { message: error.message, stack: error.stack },
+            });
+          }
         });
       } else {
         console.log('[Middleware] WS not ready, queueing message');
@@ -129,4 +145,3 @@ const createWebsocketMiddleware = (): Middleware => {
 };
 
 export const websocketMiddleware = createWebsocketMiddleware();
-

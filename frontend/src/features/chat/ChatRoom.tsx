@@ -17,8 +17,12 @@ interface ChatMessage {
 }
 
 
+type MessageType = 'lobby' | 'game' | 'private';
+
 interface ChatRoomProps {
-  getPlayerName?: (playerId: string) => string;
+  messages: ChatMessage[];
+  onSendMessage: (content: string, type: MessageType, to?: string) => void;
+  getPlayerName: (id: string) => string;
 }
 
 const ChatRoom: React.FC<ChatRoomProps> = ({

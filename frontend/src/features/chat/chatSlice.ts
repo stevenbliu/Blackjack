@@ -1,5 +1,5 @@
 // chatSlice.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
 import { WS_CHAT_MESSAGE_RECEIVED } from '../websocket/actionTypes';
 
 type ChatType = 'lobby' | 'game' | 'private';
@@ -42,31 +42,34 @@ const chatSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(WS_CHAT_MESSAGE_RECEIVED, (state, action: PayloadAction<ChatMessage>) => {
-      const { from, to, type } = action.payload;
+    builder.addCase(
+      createAction<ChatMessage>(WS_CHAT_MESSAGE_RECEIVED),
+      (state, action) => {
+        const { from, to, type } = action.payload;
 
-      let target = 'lobby';
-      if (type === 'private' && to) {
-        // Determine which user chat this message belongs to
-        // If the current chat is with 'from', message belongs to 'from'
-        // Otherwise, message belongs to 'to'
-        target = (state.currentChatTarget === from) ? from : to;
-      } else if (type === 'game') {
-        // Handle game chat target logic here if needed
-        target = 'game'; // or some game id or group key
-      } else {
-        target = 'lobby';
+        let target = 'lobby';
+        if (type === 'private' && to) {
+          // Determine which user chat this message belongs to
+          // If the current chat is with 'from', message belongs to 'from'
+          // Otherwise, message belongs to 'to'
+          target = (state.currentChatTarget === from) ? from : to;
+        } else if (type === 'game') {
+          // Handle game chat target logic here if needed
+          target = 'game'; // or some game id or group key
+        } else {
+          target = 'lobby';
+        }
+
+        if (!state.messagesByUser[target]) {
+          state.messagesByUser[target] = [];
+        }
+
+        state.messagesByUser[target].push(action.payload);
+
+        // Optional: sort by timestamp ascending
+        state.messagesByUser[target].sort((a, b) => a.timestamp - b.timestamp);
       }
-
-      if (!state.messagesByUser[target]) {
-        state.messagesByUser[target] = [];
-      }
-
-      state.messagesByUser[target].push(action.payload);
-
-      // Optional: sort by timestamp ascending
-      state.messagesByUser[target].sort((a, b) => a.timestamp - b.timestamp);
-    });
+    );
   },
 });
 

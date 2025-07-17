@@ -8,16 +8,13 @@ const log = (...args: any[]) => {
   }
 };
 
-interface GameRoom {
-  game_id: string;
-  players: string[];
-  max_players: number;
-}
-
+import type { GameRoom } from '../../lobbySlice';
 type RoomListProps = {
   games: GameRoom[];
   onJoin: (gameId: string) => void;
 };
+
+
 
 const RoomList: React.FC<RoomListProps> = ({ games, onJoin }) => {
   log('Rendering RoomList with games:', games);
@@ -25,7 +22,7 @@ const RoomList: React.FC<RoomListProps> = ({ games, onJoin }) => {
   return (
     <ul style={{ listStyle: 'none', padding: 0 }}>
       {games.map((game) => {
-        // log('Rendering game:', game.game_id);
+        // log('Rendering game:', game.id);
         return (
           <li
             key={game.game_id}
