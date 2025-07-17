@@ -9,6 +9,11 @@ import {
 import { setPlayerId } from '../player/playerSlice';
 import { setError } from '../error/errorSlice';
 
+const isLoggingEnabled = import.meta.env.MODE === 'development';
+const url = isLoggingEnabled
+  ? "https://blackjack-backend-ctfq.onrender.com/"
+  : `${window.location.protocol}//${window.location.hostname}:8000`;
+
 const createWebsocketMiddleware = (): Middleware<{}, any, Dispatch> => {
   let wsManager: WebSocketManager | null = null;
   let messageQueue: WebSocketMessage[] = [];
@@ -23,9 +28,9 @@ const createWebsocketMiddleware = (): Middleware<{}, any, Dispatch> => {
     isConnecting = true;
 
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const WS_URL = `${protocol}://${window.location.hostname}:8000/ws`;
-    console.log(`[Middleware] Connecting WebSocket at ${WS_URL}`);
+    const WS_URL = `${protocol}://${new URL(url).host}/ws`;  // Extract host from URL for WebSocket
 
+    console.log(`[Middleware] Connecting WebSocket at ${WS_URL}`);
     wsManager = new WebSocketManager(WS_URL);
 
     wsManager.ready
