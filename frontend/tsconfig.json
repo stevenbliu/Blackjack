@@ -5,6 +5,8 @@
     "jsx": "react-jsx",
     "moduleResolution": "node",
     "baseUrl": "./src",
+    "noEmit": true,
+
     "paths": {
       "@features/*": ["features/*"],
       "@components/*": ["components/*"],

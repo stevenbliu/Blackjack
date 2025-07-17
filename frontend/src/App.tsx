@@ -83,9 +83,11 @@ const App: React.FC = () => {
 
   return (
     <div className={styles.app}>
+      <h1>12331</h1>
+
       <div className={styles.leftColumn}>
         <WelcomeBox />
-
+        <h1> 12321321312</h1>
         <div className={styles.gameContainer}>
           {!gameId ? (
             <Lobby currentPlayerId={playerId ?? ""} />
