@@ -6,6 +6,7 @@ WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
+RUN npm install --save-dev @vitejs/plugin-react @vitejs/plugin-react-swc
 
 COPY . .
 RUN npm run build
