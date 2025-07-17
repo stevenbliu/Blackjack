@@ -11,7 +11,7 @@
       "@redux/*": ["redux/*"],
       "@websockets/*": ["websockets/*"]
     },
-    "types": ["vite/client", "node"],
+    "types": ["vite/client"], // Removed "node"
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
