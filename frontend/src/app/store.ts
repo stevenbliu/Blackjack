@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import gameReducer from '../features/game/gameSlice';
 import lobbyReducer from '../features/lobby/lobbySlice';
 import chatReducer from '../features/chat/chatSlice';
+import playerReducer from '../features/player/playerSlice';
 
 import { websocketMiddleware } from '../features/websocket/websocketMiddleware';
 import { wsResponseMiddleware } from '../features/websocket/wsResponseMiddleware';
@@ -11,6 +12,8 @@ export const store = configureStore({
     game: gameReducer,
     lobby: lobbyReducer,
     chat: chatReducer,
+    player: playerReducer,
+
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(websocketMiddleware, wsResponseMiddleware),

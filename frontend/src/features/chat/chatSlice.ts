@@ -4,14 +4,15 @@ import { WS_CHAT_MESSAGE_RECEIVED } from '../websocket/actionTypes';
 
 type ChatType = 'lobby' | 'game' | 'private';
 
-type ChatMessage = {
-  id: string;
-  from: string;
-  to?: string;
+interface ChatMessage {
+  id: string;         // message id
+  from: string;       // sender player id
+  to?: string;        // recipient player id for private messages
   content: string;
   timestamp: number;
-  type: ChatType;
-};
+  type: 'lobby' | 'game' | 'private';
+}
+
 
 interface ChatState {
   messagesByUser: Record<string, ChatMessage[]>;

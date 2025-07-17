@@ -1,27 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '../../app/hooks'; // adjust path as needed
+import { useAppDispatch, useAppSelector} from '../../app/hooks'; // adjust path as needed
 import { SEND_WS_MESSAGE } from '../websocket/actionTypes';
 import { addOutgoingMessage } from './chatSlice';
+import { current } from '@reduxjs/toolkit';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../app/store'; // adjust the path based on your file structure
+
 
 interface ChatMessage {
-  message_id: string;
-  player_id: string;
+  id: string;         // message id
+  from: string;       // sender player id
+  to?: string;        // recipient player id for private messages
   content: string;
   timestamp: number;
   type: 'lobby' | 'game' | 'private';
-  to?: string;
 }
 
+
 interface ChatRoomProps {
-  currentPlayerId: string;
   getPlayerName?: (playerId: string) => string;
 }
 
 const ChatRoom: React.FC<ChatRoomProps> = ({
-  currentPlayerId,
   getPlayerName,
 }) => {
   const dispatch = useAppDispatch();
+  const currentPlayerId = useSelector((state: RootState) => state.player.playerId);
+
 
   const [newMessage, setNewMessage] = useState('');
   const [selectedTab, setSelectedTab] = useState<'lobby' | 'game' | string>('lobby');
@@ -38,8 +43,8 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
     if (selectedTab === 'game') return msg.type === 'game';
     return (
       msg.type === 'private' &&
-      ((msg.player_id === selectedTab && msg.to === currentPlayerId) ||
-        (msg.player_id === currentPlayerId && msg.to === selectedTab))
+      ((msg.from === selectedTab && msg.to === currentPlayerId) ||
+        (msg.from === currentPlayerId && msg.to === selectedTab))
     );
   });
 
@@ -50,7 +55,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
   useEffect(() => {
     messages.forEach((msg) => {
       if (msg.type === 'private') {
-        const otherId = msg.player_id === currentPlayerId ? msg.to : msg.player_id;
+        const otherId = msg.from === currentPlayerId ? msg.to : msg.from;
         if (!otherId || otherId === currentPlayerId) return;
 
         if (!openPrivateTabs.includes(otherId)) {
@@ -81,12 +86,13 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
     if (!trimmed) return;
 
     const msg: ChatMessage = {
-      message_id: crypto.randomUUID(),
-      player_id: currentPlayerId,
-      content: trimmed,
-      timestamp: Date.now(),
-      type: selectedTab === 'lobby' || selectedTab === 'game' ? selectedTab : 'private',
-      to: selectedTab !== 'lobby' && selectedTab !== 'game' ? selectedTab : undefined,
+        id: crypto.randomUUID(),
+        // id: 3,
+        from: currentPlayerId,
+        content: trimmed,
+        timestamp: Date.now(),
+        type: selectedTab === 'lobby' || selectedTab === 'game' ? selectedTab : 'private',
+        to: selectedTab !== 'lobby' && selectedTab !== 'game' ? selectedTab : undefined,
     };
 
     dispatch({ type: SEND_WS_MESSAGE, payload: { action: 'chat_message', ...msg } });
@@ -169,12 +175,12 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
           <p style={{ color: '#666' }}>No messages in this chat yet.</p>
         )}
         {filteredMessages.map((msg) => {
-          const isMe = msg.player_id === currentPlayerId;
-          const displayName = getPlayerName ? getPlayerName(msg.player_id) : msg.player_id;
+          const isMe = msg.from === currentPlayerId;
+          const displayName = getPlayerName ? getPlayerName(msg.from) : msg.from;
           const timeString = new Date(msg.timestamp).toLocaleTimeString();
-
+        //   console.log(msg, currentPlayerId)
           return (
-            <div key={msg.message_id} style={{ marginBottom: 8, textAlign: isMe ? 'right' : 'left' }}>
+            <div key={msg.id} style={{ marginBottom: 8, textAlign: isMe ? 'right' : 'left' }}>
               {!isMe && (
                 <div style={{ fontWeight: 'bold', fontSize: 12 }}>{displayName}</div>
               )}

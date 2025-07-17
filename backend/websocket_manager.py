@@ -38,7 +38,19 @@ async def websocket_endpoint(websocket: WebSocket, game_manager: GameManager):
                 )
                 logging.info(f"message: {message}")
 
-                if action == "create_game":
+                if action == "request_player_id":
+                    logging.info(f"Handling 'request_player_id' for player {player_id}")
+                    await websocket.send_text(
+                        json.dumps(
+                            {
+                                "action": "player_id",
+                                "playerId": player_id,
+                                "requestId": request_id,
+                            }
+                        )
+                    )
+
+                elif action == "create_game":
                     game_id = await create_game(player_id, websocket, game_manager)
                     logging.info(f"Player {player_id} created game {game_id}")
                     await websocket.send_text(
@@ -179,17 +191,18 @@ async def websocket_endpoint(websocket: WebSocket, game_manager: GameManager):
                     content = data.get("content")
                     to = data.get("to")  # only used for private
                     timestamp = data.get("timestamp")
-                    message_id = data.get("message_id")
+                    message_id = data.get("id")
 
                     chat_message = {
                         "action": "chat_message",
-                        "message_id": message_id,
-                        "player_id": player_id,
+                        "id": message_id,
+                        "from": player_id,
                         "content": content,
                         "timestamp": timestamp,
                         "type": chat_type,
                         "to": to,
                     }
+                    logging.info(f"chat message response: {chat_message}")
 
                     if chat_type == "lobby":
                         await game_manager.broadcast_lobby(json.dumps(chat_message))
