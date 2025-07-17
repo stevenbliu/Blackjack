@@ -9,10 +9,12 @@ import {
 import { setPlayerId } from '../player/playerSlice';
 import { setError } from '../error/errorSlice';
 
-const isLoggingEnabled = import.meta.env.MODE === 'development';
-const url = isLoggingEnabled
-  ? "https://blackjack-backend-ctfq.onrender.com/"
-  : `${window.location.protocol}//${window.location.hostname}:8000`;
+// const isDev = import.meta.env.MODE === 'development';
+const isDev = false;
+
+const url = isDev
+  ? `${window.location.protocol}//${window.location.hostname}:8000`
+  :"https://blackjack-backend-ctfq.onrender.com/";
 
 const createWebsocketMiddleware = (): Middleware<{}, any, Dispatch> => {
   let wsManager: WebSocketManager | null = null;
@@ -27,7 +29,7 @@ const createWebsocketMiddleware = (): Middleware<{}, any, Dispatch> => {
     if (wsManager || isConnecting) return;
     isConnecting = true;
 
-    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const protocol = url.startsWith('https') ? 'wss' : 'ws';
     const WS_URL = `${protocol}://${new URL(url).host}/ws`;  // Extract host from URL for WebSocket
 
     console.log(`[Middleware] Connecting WebSocket at ${WS_URL}`);
