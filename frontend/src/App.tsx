@@ -6,7 +6,8 @@ import WelcomeBox from './components/Welcome/WelcomeBox';
 import Lobby from './features/lobby/Lobby';
 import ChatRoom from './features/chat/ChatRoom';
 import styles from './app.module.css';
-
+import ErrorBanner from './features/ErrorBanner/ErrorBanner';
+import { clearError } from './features/error/errorSlice';
 import {
   addOutgoingMessage,
 } from './features/chat/chatSlice';
@@ -21,6 +22,7 @@ const App: React.FC = () => {
   const messagesByUser = useAppSelector((state) => state.chat.messagesByUser);
   const currentChatTarget = useAppSelector((state) => state.chat.currentChatTarget);
   const gameId = useAppSelector((state) => state.game.gameId);
+  const errorMessage = useAppSelector(state => state.error.message);
 
   // Load playerId from localStorage and update Redux
   useEffect(() => {
@@ -49,8 +51,8 @@ const App: React.FC = () => {
     const messageId = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
     const msgPayload = {
       action: 'chat_message',
-      message_id: messageId,
-      player_id: playerId,
+      id: messageId,          // changed from message_id
+      from: playerId,         // changed from player_id
       content,
       timestamp: Date.now(),
       type,
@@ -70,6 +72,7 @@ const App: React.FC = () => {
     // Send via WebSocket middleware
     dispatch({ type: SEND_WS_MESSAGE, payload: msgPayload });
   };
+
 
   const getPlayerName = (id: string) => {
     if (id === playerId) return 'You';
@@ -97,6 +100,10 @@ const App: React.FC = () => {
           getPlayerName={getPlayerName}
         />
       </div>
+
+      {errorMessage && (
+        <ErrorBanner message={errorMessage} onClose={() => dispatch(clearError())} />
+      )}
     </div>
   );
 };

@@ -4,18 +4,36 @@ export interface WebSocketMessage {
 }
 
 export class WebSocketManager {
-  private ws: WebSocket;
+  public ws!: WebSocket;
   private eventCallback: (message: WebSocketMessage) => void = () => {};
+  private url: string;
 
   public ready: Promise<void>;
+  private readyResolve!: () => void;
+  private readyReject!: (err: any) => void;
 
   constructor(url: string) {
-    this.ws = new WebSocket(url);
+    this.url = url;
 
+    // Create a promise that resolves when ws is open
     this.ready = new Promise((resolve, reject) => {
-      this.ws.onopen = () => resolve();
-      this.ws.onerror = (err) => reject(err);
+      this.readyResolve = resolve;
+      this.readyReject = reject;
     });
+
+    this.connect();
+  }
+
+  private connect() {
+    this.ws = new WebSocket(this.url);
+
+    this.ws.onopen = () => {
+      this.readyResolve();
+    };
+
+    this.ws.onerror = (event) => {
+      this.readyReject(new Error('WebSocket error'));
+    };
 
     this.ws.onmessage = (event) => {
       let data: WebSocketMessage;
@@ -28,20 +46,21 @@ export class WebSocketManager {
     };
   }
 
-  onEvent(callback: (message: WebSocketMessage) => void) {
+  public onEvent(callback: (message: WebSocketMessage) => void) {
     this.eventCallback = callback;
   }
 
-  send(message: WebSocketMessage): Promise<any> {
+  public send(message: WebSocketMessage): Promise<void> {
     return new Promise((resolve, reject) => {
       if (this.ws.readyState !== WebSocket.OPEN) {
         return reject(new Error('WebSocket is not open'));
       }
-      this.ws.send(JSON.stringify(message));
-
-      // Simplified: resolve immediately.
-      // You can enhance this to wait for server response if protocol allows.
-      resolve({ status: 'sent' });
+      try {
+        this.ws.send(JSON.stringify(message));
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 }
