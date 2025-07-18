@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, Action } from '@reduxjs/toolkit';
 import { WS_RECEIVED } from './actionTypes';
 import { WebSocketMessage } from './wsManager';
 
@@ -15,7 +15,7 @@ const websocketSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(WS_RECEIVED, (state, action: PayloadAction<WebSocketMessage>) => {
+    builder.addCase(WS_RECEIVED as string, (state, action: PayloadAction<WebSocketMessage>) => {
       state.messages.push(action.payload);
       // Optional: limit stored messages to last 50 or so
       if (state.messages.length > 50) state.messages.shift();
