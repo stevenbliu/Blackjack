@@ -1,4 +1,4 @@
-import { Middleware, MiddlewareAPI, Dispatch } from '@reduxjs/toolkit';
+import { Middleware, MiddlewareAPI } from '@reduxjs/toolkit';
 import { WebSocketMessage, WebSocketManager } from './wsManager';
 import {
   SEND_WS_MESSAGE,
@@ -30,9 +30,27 @@ let isConnecting = false;
 let messageQueue: WebSocketMessage[] = [];
 let reconnectAttempts = 0;
 let storeRef: MiddlewareAPI | null = null;
+let heartbeatInterval: number | null = null;
+let keepAlive = true;
+
+// Cleanup function to be called when app unmounts
+export const disconnectWebSocket = () => {
+  keepAlive = false;
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    heartbeatInterval = null;
+  }
+  wsManager?.close();
+  wsManager = null;
+  messageQueue = [];
+  Object.keys(pendingRequests).forEach((id) => {
+    clearTimeout(pendingRequests[id].timeoutId);
+    delete pendingRequests[id];
+  });
+};
 
 function startWebSocket(store: MiddlewareAPI) {
-  if (wsManager || isConnecting) return;
+  if (wsManager || isConnecting || !keepAlive) return;
 
   isConnecting = true;
   const wsEndpoint = `${wsUrl}`;
@@ -45,6 +63,13 @@ function startWebSocket(store: MiddlewareAPI) {
       reconnectAttempts = 0;
       store.dispatch({ type: WS_CONNECTED });
       console.log('[WS] Connected');
+
+      // Start heartbeat
+      heartbeatInterval = window.setInterval(() => {
+        if (wsManager?.ws.readyState === WebSocket.OPEN) {
+          wsManager.send({ action: 'ping' }).catch(() => {});
+        }
+      }, 25000);
 
       // Drain queue
       messageQueue.forEach((msg) => wsManager?.send(msg));
@@ -60,12 +85,19 @@ function startWebSocket(store: MiddlewareAPI) {
       store.dispatch(setError(err.message));
       store.dispatch({ type: WS_ERROR, payload: { message: err.message, stack: err.stack } });
 
-      const delay = Math.min(10000, 1000 * 2 ** reconnectAttempts++);
-      setTimeout(() => startWebSocket(store), delay);
+      if (keepAlive) {
+        const delay = Math.min(10000, 1000 * 2 ** reconnectAttempts++);
+        setTimeout(() => startWebSocket(store), delay);
+      }
     });
 
   wsManager.onEvent((message: WebSocketMessage) => {
     const id = message.requestId || message.requestId;
+
+    // Handle pong responses
+    if (message.action === 'pong') {
+      return;
+    }
 
     // Skip duplicates
     if (message.action === 'chat_message' && message.id && sentChatMessageIds.has(message.id)) {
@@ -95,17 +127,29 @@ function startWebSocket(store: MiddlewareAPI) {
   });
 
   wsManager.ws.onclose = () => {
-    console.warn('[WS] Connection closed, reconnecting...');
+    if (heartbeatInterval) {
+      clearInterval(heartbeatInterval);
+      heartbeatInterval = null;
+    }
+    console.warn('[WS] Connection closed');
     wsManager = null;
-    const delay = Math.min(10000, 1000 * 2 ** reconnectAttempts++);
-    setTimeout(() => startWebSocket(store), delay);
+    if (keepAlive) {
+      console.log('[WS] Attempting reconnect...');
+      const delay = Math.min(10000, 1000 * 2 ** reconnectAttempts++);
+      setTimeout(() => startWebSocket(store), delay);
+    }
   };
 }
 
 export const websocketMiddleware: Middleware = (store) => {
   storeRef = store;
+  startWebSocket(store); // Initialize connection
 
   return (next) => (action: any) => {
+    // First, always pass the action through the middleware chain
+    const result = next(action);
+
+    // Then handle WebSocket-specific actions
     if (action.type === SEND_WS_MESSAGE) {
       const message: WebSocketMessage = { ...action.payload };
 
@@ -119,7 +163,7 @@ export const websocketMiddleware: Middleware = (store) => {
         sentChatMessageIds.add(message.id);
       }
 
-      // Return a Promise tied to the requestId
+      // Create and track the promise
       const promise = new Promise((resolve, reject) => {
         const timeoutId = window.setTimeout(() => {
           delete pendingRequests[message.requestId!];
@@ -133,17 +177,26 @@ export const websocketMiddleware: Middleware = (store) => {
       if (wsManager?.ws.readyState === WebSocket.OPEN) {
         wsManager.send(message).catch((err) => {
           if (message.requestId) delete pendingRequests[message.requestId];
-          store.dispatch({ type: WS_ERROR, payload: { message: err.message, stack: err.stack } });
+          store.dispatch({ 
+            type: WS_ERROR, 
+            payload: { 
+              message: err.message, 
+              stack: err.stack,
+              originalMessage: message 
+            } 
+          });
         });
       } else {
         console.log('[WS] Not ready. Queueing message:', message);
         messageQueue.push(message);
-        startWebSocket(store);
+        if (!isConnecting) {
+          startWebSocket(store);
+        }
       }
 
       return promise;
     }
 
-    return next(action);
+    return result;
   };
 };

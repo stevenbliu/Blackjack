@@ -49,6 +49,10 @@ export class WebSocketManager {
     };
   }
 
+  public close() {
+    this.ws.close();
+  }
+
   public onEvent(callback: (message: WebSocketMessage) => void) {
     this.eventCallback = callback;
   }
