@@ -1,7 +1,7 @@
 import { useDrag } from 'react-dnd';
 import { ItemTypes } from '../../constants/dndTypes';
 import type { CardData } from '../../tabletopSlice';
-import Card from '../Card/Card'; // adjust path as needed
+import Card from '../Card/Card';
 
 interface HandCardProps {
   card: CardData;
@@ -18,7 +18,7 @@ export const HandCard = ({ card }: HandCardProps) => {
 
   return (
     <div
-      ref={drag}
+      ref={(node) => { drag(node); }}  // Note the explicit void return
       style={{
         opacity: isDragging ? 0.5 : 1,
         cursor: 'move',

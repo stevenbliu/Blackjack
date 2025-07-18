@@ -105,7 +105,7 @@ function startWebSocket(store: MiddlewareAPI) {
 export const websocketMiddleware: Middleware = (store) => {
   storeRef = store;
 
-  return (next) => (action) => {
+  return (next) => (action: any) => {
     if (action.type === SEND_WS_MESSAGE) {
       const message: WebSocketMessage = { ...action.payload };
 

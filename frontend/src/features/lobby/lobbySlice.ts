@@ -59,12 +59,16 @@ export const fetchRooms = createAsyncThunk<
 // import { createAsyncThunk } from '@reduxjs/toolkit';
 // import { SEND_WS_MESSAGE } from './actions';
 
-export const createGame = createAsyncThunk(
+export const createGame = createAsyncThunk<
+  { game_id: string }, // Return type
+  { playerId: string; gameName: string; maxPlayers: number }, // Payload type
+  { state: RootState }
+>(
   'lobby/createGame',
   async ({ playerId, gameName, maxPlayers }, { dispatch }) => {
     const requestId = crypto.randomUUID();
 
-    const response = await dispatch({
+    dispatch({
       type: SEND_WS_MESSAGE,
       payload: {
         action: 'create_game',
@@ -75,7 +79,8 @@ export const createGame = createAsyncThunk(
       },
     });
 
-    return { game_id: response.gameId || response.game_id };
+    // The actual game_id should be handled in a WebSocket response handler elsewhere
+    return { game_id: requestId };
   }
 );
 
