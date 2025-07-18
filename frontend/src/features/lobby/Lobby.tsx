@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAppDispatch } from '../../app/hooks';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
@@ -25,6 +25,10 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
   const pageRef = useRef(currentPage);
   pageRef.current = currentPage;
 
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [gameName, setGameName] = useState('');
+  const [maxPlayers, setMaxPlayers] = useState(2);
+
   useEffect(() => {
     dispatch(initLobby());
 
@@ -40,13 +44,28 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
     return () => clearInterval(intervalId);
   }, [dispatch]);
 
+
   const handleCreateGame = async () => {
     try {
-      await dispatch(createGame(currentPlayerId)).unwrap();
-      // Refresh room list to first page after creating a game
+      const result = await dispatch(createGame({ playerId: currentPlayerId, gameName, maxPlayers })).unwrap();
+      
+      if (result.game_id) {
+        dispatch(setGameId(result.game_id));
+        dispatch({
+          type: SEND_WS_MESSAGE,
+          payload: {
+            action: 'join_game',
+            game_id: result.game_id,
+            playerId: currentPlayerId,
+          },
+        });
+      }
+
+      setShowCreateModal(false);
       dispatch(fetchRooms({ page: 1, limit: PAGE_LIMIT }));
-    } catch (error) {
-      console.error('Failed to create game:', error);
+    } catch (err) {
+      console.error('Create game failed:', err);
+      alert('Failed to create game: ' + err);
     }
   };
 
@@ -71,9 +90,38 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
 
       {socketError && <div className={styles.error}>{socketError}</div>}
 
-      <button onClick={handleCreateGame} disabled={creating}>
-        {creating ? 'Creating...' : 'Create New Game'}
-      </button>
+    <button onClick={() => setShowCreateModal(true)} disabled={creating}>
+      {creating ? 'Creating...' : 'Create New Game'}
+    </button>
+
+
+    {showCreateModal && (
+  <div className={styles.modal}>
+    <h3>Create Game</h3>
+    <input
+      type="text"
+      placeholder="Game Name"
+      value={gameName}
+      onChange={(e) => setGameName(e.target.value)}
+      disabled={creating}
+    />
+    <select
+      value={maxPlayers}
+      onChange={(e) => setMaxPlayers(Number(e.target.value))}
+      disabled={creating}
+    >
+      <option value={2}>2 Players</option>
+      <option value={3}>3 Players</option>
+      {/* Add more options if needed */}
+    </select>
+    <button onClick={handleCreateGame} disabled={creating || !gameName.trim()}>
+      {creating ? 'Creating...' : 'Create'}
+    </button>
+    <button onClick={() => setShowCreateModal(false)} disabled={creating}>
+      Cancel
+    </button>
+  </div>
+    )}
 
       <button onClick={() => dispatch(fetchRooms({ page: currentPage, limit: PAGE_LIMIT }))} disabled={loading}>
         ⟲ Refresh

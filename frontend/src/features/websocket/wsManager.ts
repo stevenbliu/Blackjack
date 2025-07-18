@@ -5,8 +5,8 @@ export interface WebSocketMessage {
 
 export class WebSocketManager {
   public ws!: WebSocket;
-  private eventCallback: (message: WebSocketMessage) => void = () => {};
   private url: string;
+  private eventCallback: (message: WebSocketMessage) => void = () => {};
 
   public ready: Promise<void>;
   private readyResolve!: () => void;
@@ -15,7 +15,6 @@ export class WebSocketManager {
   constructor(url: string) {
     this.url = url;
 
-    // Create a promise that resolves when ws is open
     this.ready = new Promise((resolve, reject) => {
       this.readyResolve = resolve;
       this.readyReject = reject;
@@ -28,10 +27,12 @@ export class WebSocketManager {
     this.ws = new WebSocket(this.url);
 
     this.ws.onopen = () => {
+      console.log('[WSManager] Connected to', this.url);
       this.readyResolve();
     };
 
     this.ws.onerror = (event) => {
+      console.error('[WSManager] WebSocket error');
       this.readyReject(new Error('WebSocket error'));
     };
 
@@ -39,9 +40,11 @@ export class WebSocketManager {
       let data: WebSocketMessage;
       try {
         data = JSON.parse(event.data);
-      } catch {
-        data = { action: 'unknown', data: event.data };
+      } catch (err) {
+        console.warn('[WSManager] Failed to parse message:', event.data);
+        return;
       }
+
       this.eventCallback(data);
     };
   }
@@ -50,17 +53,16 @@ export class WebSocketManager {
     this.eventCallback = callback;
   }
 
-  public send(message: WebSocketMessage): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (this.ws.readyState !== WebSocket.OPEN) {
-        return reject(new Error('WebSocket is not open'));
-      }
-      try {
-        this.ws.send(JSON.stringify(message));
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
+  public async send(message: WebSocketMessage): Promise<void> {
+    if (this.ws.readyState !== WebSocket.OPEN) {
+      throw new Error('WebSocket is not open');
+    }
+
+    try {
+      this.ws.send(JSON.stringify(message));
+    } catch (error) {
+      console.error('[WSManager] Failed to send message:', error);
+      throw error;
+    }
   }
 }

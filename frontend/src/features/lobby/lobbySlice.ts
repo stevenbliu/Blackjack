@@ -55,12 +55,34 @@ export const fetchRooms = createAsyncThunk<
     });
 });
 
-export const createGame = createAsyncThunk<void, string, { state: RootState }>(
+// // lobbyThunks.ts
+// import { createAsyncThunk } from '@reduxjs/toolkit';
+// import { SEND_WS_MESSAGE } from './actions';
+
+export const createGame = createAsyncThunk(
   'lobby/createGame',
-  async (playerId, { dispatch }) => {
-    dispatch({ type: SEND_WS_MESSAGE, payload: { action: 'create_game', playerId } });
+  async ({ playerId, gameName, maxPlayers }, { dispatch }) => {
+    const requestId = crypto.randomUUID();
+
+    const response = await dispatch({
+      type: SEND_WS_MESSAGE,
+      payload: {
+        action: 'create_game',
+        playerId,
+        name: gameName,
+        maxPlayers,
+        requestId,
+      },
+    });
+
+    return { game_id: response.gameId || response.game_id };
   }
 );
+
+
+
+
+
 
 const lobbySlice = createSlice({
   name: 'lobby',

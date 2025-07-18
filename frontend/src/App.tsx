@@ -14,6 +14,7 @@ import {
 
 import { SEND_WS_MESSAGE } from './features/websocket/actionTypes';
 import { setPlayerId } from './features/player/playerSlice'; // correct path
+import { Tabletop } from './features/Tabletop/Tabletop';
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -83,11 +84,9 @@ const App: React.FC = () => {
 
   return (
     <div className={styles.app}>
-      <h1>12331</h1>
 
       <div className={styles.leftColumn}>
         <WelcomeBox />
-        <h1> 12321321312</h1>
         <div className={styles.gameContainer}>
           {!gameId ? (
             <Lobby currentPlayerId={playerId ?? ""} />
@@ -104,9 +103,12 @@ const App: React.FC = () => {
             //   onHit={() => {}}
             //   onStand={() => {}}
             // />
-            <div>
-              Temp Game Area
-            </div>
+            <Tabletop>
+
+            </Tabletop>
+            // <div>
+            //   Temp Game Area
+            // </div>
           )}
         </div>
       </div>

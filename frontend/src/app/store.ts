@@ -6,6 +6,8 @@ import lobbyReducer from '../features/lobby/lobbySlice';
 import chatReducer from '../features/chat/chatSlice';
 import playerReducer from '../features/player/playerSlice';
 import errorReducer from '../features/error/errorSlice';
+import websocketReducer from '../features/websocket/websocketSlice'
+import tabletopReducer from '../features/Tabletop/tabletopSlice'
 
 import { websocketMiddleware } from '../features/websocket/websocketMiddleware';
 import { wsResponseMiddleware } from '../features/websocket/wsResponseMiddleware';
@@ -17,6 +19,8 @@ export const store = configureStore({
     chat: chatReducer,
     player: playerReducer,
     error: errorReducer,
+    websocket: websocketReducer,
+    tabletop: tabletopReducer,
     
   },
   middleware: (getDefaultMiddleware) =>

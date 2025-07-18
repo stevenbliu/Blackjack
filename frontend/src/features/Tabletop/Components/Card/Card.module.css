@@ -1,0 +1,20 @@
+.card {
+  width: 60px;
+  height: 90px;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background-color: white;
+  text-align: center;
+  line-height: 90px;
+  font-weight: bold;
+  margin: 0.25rem;
+}
+
+.faceDown {
+  background-color: #333;
+  color: #333;
+}
+
+.back {
+  font-size: 24px;
+}
