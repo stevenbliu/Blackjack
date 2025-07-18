@@ -12,7 +12,7 @@ type PendingRequests = {
 
 const pendingRequests: PendingRequests = {};
 
-export const wsResponseMiddleware: Middleware = (store) => (next) => (action) => {
+export const wsResponseMiddleware: Middleware = (store) => (next) => (action: any) => {
   if (action.type === SEND_WS_MESSAGE) {
     const payload = action.payload;
     const messageId = payload?.messageId;
