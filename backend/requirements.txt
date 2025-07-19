@@ -6,3 +6,5 @@ pytest
 black
 flake8
 pre-commit
+python-socketio
+fastapi-socketio
