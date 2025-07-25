@@ -2,11 +2,15 @@ import React, { useMemo } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { defineHex, spiral, hexToPoint, createHexOrigin } from 'honeycomb-grid'
 import { Hexagon } from './Hexagon'
+import styles from './CatanBoard.module.css' // <-- NEW
+import {typeColorMap, typeEmojiMap}  from '../../assets/temp_assets';
 
-const terrainTypes = ['forest', 'fields', 'pasture', 'hills', 'mountains', 'desert']
+const resourceTypeList = Object.keys(typeColorMap);
+
+// const resourceTypeList = ['forest', 'fields', 'pasture', 'hills', 'mountains', 'desert']
 
 export default function CatanBoard() {
-  const origin = createHexOrigin('topLeft', { width: 10, height: 10 })
+  const origin = createHexOrigin('topLeft', { width: 0, height: 0 })
   const Hex = defineHex({ dimensions: 1, orientation: 'pointy', origin })
 
   const createHex = coords => new Hex(coords)
@@ -18,7 +22,7 @@ export default function CatanBoard() {
   const hexData = useMemo(() => {
     return hexes.map((hex, i) => ({
       hex,
-      terrainType: terrainTypes[i % terrainTypes.length],
+      terrainType: resourceTypeList[i % resourceTypeList.length],
       numberToken: [6, 8].includes(i) ? 8 : i + 2,
       hasRobber: false,
       highlight: false,
@@ -26,6 +30,7 @@ export default function CatanBoard() {
   }, [hexes])
 
   return (
+  <div className={styles.canvasWrapper}> {/* <-- NEW */}
     <Canvas orthographic camera={{ position: [0, 5, 10], zoom: 50 }}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 10, 5]} intensity={0.8} />
@@ -47,5 +52,6 @@ export default function CatanBoard() {
         )
       })}
     </Canvas>
+    </div>
   )
 }

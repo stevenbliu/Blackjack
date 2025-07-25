@@ -20,3 +20,5 @@ export const typeColorMap: Record<ResourceType, string> = {
 }
 
 
+
+

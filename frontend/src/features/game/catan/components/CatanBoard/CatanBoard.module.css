@@ -1,0 +1,9 @@
+.canvasWrapper {
+  height: 100%;
+  width: 100%;
+  min-height: 600px;
+  max-height: 80vh;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9; /* optional for contrast */
+  position: relative;
+}

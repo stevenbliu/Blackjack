@@ -1,24 +1,20 @@
 import { useMemo, useState } from 'react';
 import { Text } from '@react-three/drei';
 import * as THREE from 'three';
+import {typeColorMap, typeEmojiMap, ResourceType}  from '../../assets/temp_assets';
+
+Object.keys(typeEmojiMap)
 
 interface HexagonProps {
   position: [number, number, number];
-  terrainType: 'forest' | 'fields' | 'pasture' | 'hills' | 'mountains' | 'desert';
+  terrainType: ResourceType;
   numberToken?: number;
   hasRobber?: boolean;
   onClick?: () => void;
   highlight?: boolean;
 }
 
-const terrainColors = {
-  forest: '#6a8a62',
-  fields: '#f0e68c',
-  pasture: '#98fb98',
-  hills: '#d2b48c',
-  mountains: '#bebebe',
-  desert: '#f5deb3'
-};
+
 
 export function Hexagon(props: HexagonProps) {
   const [hovered, setHover] = useState(false);
@@ -28,7 +24,7 @@ export function Hexagon(props: HexagonProps) {
     const ctx = canvas.getContext('2d')!;
     
     // Draw hex background
-    ctx.fillStyle = props.highlight ? '#e0ffe0' : terrainColors[props.terrainType];
+    ctx.fillStyle = props.highlight ? '#e0ffe0' : typeColorMap[props.terrainType];
     ctx.fillRect(0, 0, 256, 256);
     
     if (props.highlight) {
