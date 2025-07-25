@@ -3,7 +3,6 @@ import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 import {typeColorMap, typeEmojiMap, ResourceType}  from '../../assets/temp_assets';
 
-Object.keys(typeEmojiMap)
 
 interface HexagonProps {
   position: [number, number, number];
