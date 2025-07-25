@@ -9,8 +9,11 @@ import errorReducer from '../features/error/errorSlice';
 import websocketReducer from '../features/websocket/websocketSlice'
 import tabletopReducer from '../features/Tabletop/tabletopSlice'
 
-import { websocketMiddleware } from '../features/websocket/websocketMiddleware';
-import { wsResponseMiddleware } from '../features/websocket/wsResponseMiddleware';
+import { socketMiddleware } from '../features/websocket/websocketMiddleware';
+import { socketResponseMiddleware } from '../features/websocket/wsResponseMiddleware';
+
+import authReducer from '../features/auth/authSlice'
+import { authApi } from '../features/auth/api/authApi'; // Import your API slice
 
 export const store = configureStore({
   reducer: {
@@ -21,10 +24,12 @@ export const store = configureStore({
     error: errorReducer,
     websocket: websocketReducer,
     tabletop: tabletopReducer,
+    [authApi.reducerPath]: authApi.reducer,
+    auth: authReducer,
     
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(websocketMiddleware, wsResponseMiddleware),
+    getDefaultMiddleware().concat(socketMiddleware, socketResponseMiddleware),
 });
 
 // Typed types

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector} from '../../app/hooks'; // adjust path as needed
-import { SEND_WS_MESSAGE } from '../websocket/actionTypes';
+import { SEND_WS_MESSAGE } from '../websocket/types/actionTypes';
 import { addOutgoingMessage } from './chatSlice';
 import { current } from '@reduxjs/toolkit';
 import { useSelector } from 'react-redux';

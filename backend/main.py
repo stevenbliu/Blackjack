@@ -1,53 +1,82 @@
-import logging
-from fastapi import FastAPI
+import socketio
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from fastapi import WebSocket
-from pydantic import BaseModel
+from fastapi.routing import Mount  # Add this import
 
-logging.basicConfig(level=logging.INFO)
+from auth.routes import router
+import uvicorn
+from urllib.parse import parse_qs  # For query string parsing
 
-
-class JoinRequest(BaseModel):
-    game_id: str
-    player_name: str
-
-
-from game_manager import GameManager
-
-# from backend.game_logic import create_game, join_game
-from websocket_manager import websocket_endpoint
-from connection_manager import ConnectionManager
-
-logging.basicConfig(level=logging.INFO)
+# Initialize Socket.IO server FIRST
+sio = socketio.AsyncServer(
+    async_mode="asgi",
+    cors_allowed_origins="*",
+    engineio_logger=True,  # Enable for debugging
+)
 
 app = FastAPI()
 
-origins = [
-    "https://blackjack-frontend-ttx9.onrender.com",
-]
-
+# CORS Middleware - Must come before routes
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # 👈 whitelist your frontend
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # or list specific methods like ["GET", "POST"]
-    allow_headers=["*"],  # or list specific headers
 )
 
-# Initialize GameManager
-game_manager = GameManager()
-manager = ConnectionManager()
+# HTTP Routes
+app.include_router(router)  # Remove prefix since it's already in routes.py
 
 
-@app.websocket("/ws")
-async def websocket_route(websocket: WebSocket):
-    """Handle WebSocket connections."""
-    print("Websocket attempt")
-    await websocket_endpoint(websocket, game_manager)
+# WebSocket Connection Handler
+@sio.event
+async def connect(sid, environ):
+    try:
+        # Support both header and query token
+        token = (
+            environ.get("HTTP_AUTHORIZATION", "").replace("Bearer ", "")
+            # elseparse_qs(environ.get("QUERY_STRING", "")).get("token", [""])[0]
+        )
+
+        if not token:
+            raise ConnectionRefusedError("No token provided")
+
+        # Verify token using your auth service
+        payload = verify_token(token)
+        if not payload:
+            raise ConnectionRefusedError("Invalid token")
+
+        await sio.save_session(
+            sid, {"user_id": payload["sub"], "is_guest": payload.get("is_guest", False)}
+        )
+
+    except Exception as e:
+        raise ConnectionRefusedError(str(e))
 
 
 @app.get("/")
 async def root():
-    """Root endpoint."""
-    return {"message": "Welcome to the game server!"}
+    return {"status": "API is running"}
+
+
+@app.get("/healthcheck")
+async def healthcheck():
+    return Response(status_code=200)
+
+
+# Proper ASGI mounting
+app.mount("/", socketio.ASGIApp(sio))
+
+
+def print_routes():
+    for route in app.routes:
+        if hasattr(route, "methods"):
+            print(f"{route.methods} {route.path}")
+        elif isinstance(route, Mount):
+            print(f"MOUNT {route.path} -> {route.app}")
+
+
+print_routes()
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, ws="websockets")

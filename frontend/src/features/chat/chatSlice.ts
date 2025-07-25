@@ -1,6 +1,6 @@
 // chatSlice.ts
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
-import { WS_CHAT_MESSAGE_RECEIVED } from '../websocket/actionTypes';
+import { WS_CHAT_MESSAGE_RECEIVED } from '../websocket/types/actionTypes';
 
 type ChatType = 'lobby' | 'game' | 'private';
 

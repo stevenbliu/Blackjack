@@ -1,6 +1,6 @@
 // src/features/lobby/lobbySlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { SEND_WS_MESSAGE } from '../websocket/actionTypes';
+import { SEND_WS_MESSAGE } from '../websocket/types/actionTypes';
 import type { RootState } from '../../app/store';
 
 export interface GameRoom {
@@ -34,7 +34,7 @@ export const initLobby = createAsyncThunk<void, void, { state: RootState }>(
   async (_, { dispatch }) => {
     // Subscribe to lobby updates
     // dispatch({ type: SEND_WS_MESSAGE, payload: { action: 'subscribe', room: 'lobby' } });
-
+    
     // Fetch current rooms list
     dispatch(fetchRooms({ page: 1, limit: 10 }));
   }

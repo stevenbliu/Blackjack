@@ -3,8 +3,7 @@ import { useAppDispatch } from '../../app/hooks';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
 import { initLobby, fetchRooms, createGame, setCurrentPage } from './lobbySlice';
-import { setGameId } from '../game/gameSlice';
-import { SEND_WS_MESSAGE } from '../websocket/actionTypes';
+import { SEND_WS_MESSAGE } from '../websocket/types/actionTypes';
 import RoomList from './components/RoomList/RoomList';
 import styles from './Lobby.module.css';
 
@@ -12,16 +11,69 @@ type LobbyProps = {
   currentPlayerId: string;
 };
 
+// Fake game rooms data
+const fakeGameRooms = [
+  {
+    id: 'room1',
+    name: 'Beginner Table',
+    players: [
+      { id: 'player1', name: 'Alice', ready: true },
+      { id: 'player2', name: 'Bob', ready: false }
+    ],
+    maxPlayers: 2,
+    createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 minutes ago,
+    date: '123213',
+  },
+  {
+    id: 'room2',
+    name: 'Tournament Qualifier',
+    players: [
+      { id: 'player3', name: 'Charlie', ready: true },
+      { id: 'player4', name: 'Dana', ready: true },
+      { id: 'player5', name: 'Eve', ready: false }
+    ],
+    maxPlayers: 4,
+    createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString() // 15 minutes ago
+  },
+  {
+    id: 'room3',
+    name: 'VIP High Stakes',
+    players: [{ id: 'player6', name: 'Frank', ready: false }],
+    maxPlayers: 2,
+    createdAt: new Date(Date.now() - 1000 * 60 * 2).toISOString() // 2 minutes ago
+  },
+  {
+    id: 'room4',
+    name: 'Casual Play',
+    players: [
+      { id: 'player7', name: 'Grace', ready: true },
+      { id: 'player8', name: 'Hank', ready: true }
+    ],
+    maxPlayers: 2,
+    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString() // 30 minutes ago
+  },
+  {
+    id: 'room5',
+    name: 'Learning Zone',
+    players: [{ id: 'player9', name: 'Ivy', ready: false }],
+    maxPlayers: 4,
+    createdAt: new Date(Date.now() - 1000 * 60 * 10).toISOString() // 10 minutes ago
+  }
+];
 
-
-const POLL_INTERVAL_MS = 105000; // 5 seconds polling
+const POLL_INTERVAL_MS = 5000; // 5 seconds polling
 const PAGE_LIMIT = 3;
 
 const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
   const dispatch = useAppDispatch();
-  const { gameRooms, loading, creating, socketError, currentPage, totalPages } = useSelector(
+  const { loading, creating, socketError, currentPage, totalPages } = useSelector(
     (state: RootState) => state.lobby
   );
+  
+  // Use fake data instead of Redux state
+  const [paginatedRooms, setPaginatedRooms] = useState(fakeGameRooms.slice(0, PAGE_LIMIT));
+  const [totalFakePages] = useState(Math.ceil(fakeGameRooms.length / PAGE_LIMIT));
+
   const pageRef = useRef(currentPage);
   pageRef.current = currentPage;
 
@@ -31,38 +83,38 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
 
   useEffect(() => {
     dispatch(initLobby());
-
-    // Initial fetch of first page
-    dispatch(fetchRooms({ page: 1, limit: PAGE_LIMIT }));
-
-    // Polling with current page param
-    console.log('[Polling] Fetching page:', pageRef.current);
+    
+    // Simulate polling with fake data
     const intervalId = setInterval(() => {
-      dispatch(fetchRooms({ page: pageRef.current, limit: PAGE_LIMIT }));
+      console.log('[Polling] Refreshing fake rooms');
+      updatePaginatedRooms(currentPage);
     }, POLL_INTERVAL_MS);
 
     return () => clearInterval(intervalId);
-  }, [dispatch]);
+  }, [dispatch, currentPage]);
 
+  const updatePaginatedRooms = (page: number) => {
+    const start = (page - 1) * PAGE_LIMIT;
+    const end = start + PAGE_LIMIT;
+    setPaginatedRooms(fakeGameRooms.slice(start, end));
+  };
 
   const handleCreateGame = async () => {
     try {
-      const result = await dispatch(createGame({ playerId: currentPlayerId, gameName, maxPlayers })).unwrap();
+      // Create a new fake room
+      const newRoom = {
+        id: `room${fakeGameRooms.length + 1}`,
+        name: gameName,
+        players: [{ id: currentPlayerId, name: 'You', ready: false }],
+        maxPlayers,
+        createdAt: new Date().toISOString()
+      };
       
-      if (result.game_id) {
-        dispatch(setGameId(result.game_id));
-        dispatch({
-          type: SEND_WS_MESSAGE,
-          payload: {
-            action: 'join_game',
-            game_id: result.game_id,
-            playerId: currentPlayerId,
-          },
-        });
-      }
-
+      fakeGameRooms.unshift(newRoom); // Add to beginning
+      updatePaginatedRooms(1); // Reset to first page
+      
       setShowCreateModal(false);
-      dispatch(fetchRooms({ page: 1, limit: PAGE_LIMIT }));
+      setGameName('');
     } catch (err) {
       console.error('Create game failed:', err);
       alert('Failed to create game: ' + err);
@@ -70,7 +122,8 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
   };
 
   const handleJoinGame = (gameId: string) => {
-    dispatch(setGameId(gameId));
+    // Simulate joining a game
+    console.log(`Joining game ${gameId}`);
     dispatch({
       type: SEND_WS_MESSAGE,
       payload: { action: 'join_game', gameId, playerId: currentPlayerId },
@@ -78,82 +131,88 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
   };
 
   const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      dispatch(setCurrentPage(newPage)); // 👈 ensure Redux state updates immediately
-      dispatch(fetchRooms({ page: newPage, limit: PAGE_LIMIT }));
+    if (newPage >= 1 && newPage <= totalFakePages) {
+      dispatch(setCurrentPage(newPage));
+      updatePaginatedRooms(newPage);
     }
   };
 
-  return (
-    <div className={styles.lobby}>
-      <h2>Lobby</h2>
+return (
+    <div className={styles.lobbyContainer}>
+      <div className={styles.lobbyHeader}>
+        <h2>Lobby</h2>
+        
+        <div className={styles.headerControls}>
+          <button 
+            onClick={() => setShowCreateModal(true)} 
+            disabled={creating}
+            className={styles.createButton}
+          >
+            {creating ? 'Creating...' : 'Create New Game'}
+          </button>
+          
+          <button 
+            onClick={() => updatePaginatedRooms(currentPage)} 
+            disabled={loading}
+            className={styles.refreshButton}
+          >
+            ⟲ Refresh
+          </button>
+        </div>
+      </div>
 
       {socketError && <div className={styles.error}>{socketError}</div>}
 
-    <button onClick={() => setShowCreateModal(true)} disabled={creating}>
-      {creating ? 'Creating...' : 'Create New Game'}
-    </button>
-
-
-    {showCreateModal && (
-  <div className={styles.modal}>
-    <h3>Create Game</h3>
-    <input
-      type="text"
-      placeholder="Game Name"
-      value={gameName}
-      onChange={(e) => setGameName(e.target.value)}
-      disabled={creating}
-    />
-    <select
-      value={maxPlayers}
-      onChange={(e) => setMaxPlayers(Number(e.target.value))}
-      disabled={creating}
-    >
-      <option value={2}>2 Players</option>
-      <option value={3}>3 Players</option>
-      {/* Add more options if needed */}
-    </select>
-    <button onClick={handleCreateGame} disabled={creating || !gameName.trim()}>
-      {creating ? 'Creating...' : 'Create'}
-    </button>
-    <button onClick={() => setShowCreateModal(false)} disabled={creating}>
-      Cancel
-    </button>
-  </div>
-    )}
-
-      <button onClick={() => dispatch(fetchRooms({ page: currentPage, limit: PAGE_LIMIT }))} disabled={loading}>
-        ⟲ Refresh
-      </button>
-
-      <h1> xx222xx </h1>
-
-      <div className={styles.roomList}>
-        {loading ? (
-          Array(5)
-            .fill(null)
-            .map((_, idx) => <div key={idx} className={styles.skeletonRoom}></div>)
-        ) : gameRooms.length > 0 ? (
-          <RoomList games={gameRooms} onJoin={handleJoinGame} />
-        ) : (
-          <div>No active games. Create one!</div>
-        )}
-      </div>
-
-      {/* Pagination Controls */}
-      <div className={styles.pagination}>
-        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage <= 1}>
+      {/* Pagination at the top */}
+      <div className={styles.paginationTop}>
+        <button 
+          onClick={() => handlePageChange(currentPage - 1)} 
+          disabled={currentPage <= 1}
+        >
           Prev
         </button>
         <span>
-          Page {currentPage} of {totalPages}
+          Page {currentPage} of {totalFakePages}
         </span>
-        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage >= totalPages}>
+        <button 
+          onClick={() => handlePageChange(currentPage + 1)} 
+          disabled={currentPage >= totalFakePages}
+        >
           Next
         </button>
       </div>
-    </div>
+
+      <div className={styles.roomListContainer}>
+        {loading ? (
+          Array(3)
+            .fill(null)
+            .map((_, idx) => <div key={idx} className={styles.skeletonRoom}></div>)
+        ) : paginatedRooms.length > 0 ? (
+          <RoomList games={paginatedRooms} onJoin={handleJoinGame} />
+        ) : (
+          <div className={styles.noGames}>No active games. Create one!</div>
+        )}
+      </div>
+
+      {/* Pagination at the bottom */}
+      <div className={styles.paginationBottom}>
+        <button 
+          onClick={() => handlePageChange(currentPage - 1)} 
+          disabled={currentPage <= 1}
+        >
+          Prev
+        </button>
+        <span>
+          Page {currentPage} of {totalFakePages}
+        </span>
+        <button 
+          onClick={() => handlePageChange(currentPage + 1)} 
+          disabled={currentPage >= totalFakePages}
+        >
+          Next
+        </button>
+      </div>
+      </div>
   );
 };
 

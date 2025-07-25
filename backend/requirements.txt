@@ -7,4 +7,6 @@ black
 flake8
 pre-commit
 python-socketio
-fastapi-socketio
+fastapi-socketio[asyncio]
+python-jose[cryptography]
+slowapi
