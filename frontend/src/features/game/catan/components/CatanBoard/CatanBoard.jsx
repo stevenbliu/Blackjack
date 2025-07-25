@@ -4,7 +4,8 @@ import { defineHex, spiral, hexToPoint, createHexOrigin } from 'honeycomb-grid'
 import { Hexagon } from './Hexagon'
 import styles from './CatanBoard.module.css' // <-- NEW
 import {typeColorMap, typeEmojiMap}  from '../../assets/temp_assets';
-import {Settlement} from './Settlement'
+import {Settlement} from './Settlement';
+import { RenderHexes, RenderSettlements } from './renders';
 
 const resourceTypeList = Object.keys(typeColorMap);
 
@@ -21,16 +22,16 @@ export default function CatanBoard() {
   })
 
   const onClickHex = (e, hex) => {
-  console.log('Hex clicked:', hex)
+    console.log('Hex clicked:', hex)
 
-  setBuildings(prev => ({
-    ...prev,
-    settlements: [...prev.settlements, {
-      position: [hex.q, hex.r],
-      // playerId: currentPlayerId
-    }]
-  }))
-}
+    setBuildings(prev => ({
+      ...prev,
+      settlements: [...prev.settlements, {
+        position: [hex.q, hex.r],
+        // playerId: currentPlayerId
+      }]
+    }))
+  }
 
   // Example data:
   // {
@@ -65,7 +66,7 @@ export default function CatanBoard() {
       <directionalLight position={[5, 10, 5]} intensity={0.8} />
 
       {/* 1. Render Hexes */}
-      {hexData.map(({ hex, terrainType, numberToken, hasRobber, highlight }, idx) => {
+      {/* {hexData.map(({ hex, terrainType, numberToken, hasRobber, highlight }, idx) => {
         const { x, y } = hexToPoint(hex)
         const position = [x, 0, y]
 
@@ -80,10 +81,12 @@ export default function CatanBoard() {
             onClick={(e) => onClickHex(e, hex)} // <--- CHANGE THIS LINE
           />
         )
-      })}
+      })} */}
+      <RenderHexes hexData={hexData} onClickHex={onClickHex} />
+
 
       {/* 2. Render Settlements */}
-      {buildings.settlements.map((settlement, idx) => {
+      {/* {buildings.settlements.map((settlement, idx) => {
       const hex = new Hex({ q: settlement.position[0], r: settlement.position[1] })
       const { x, y } = hexToPoint(hex)
         return (
@@ -94,7 +97,9 @@ export default function CatanBoard() {
             color = {'red'}
           />
         )
-      })}
+      })} */}
+
+      <RenderSettlements settlements={buildings.settlements} Hex={Hex} />
     </Canvas>
     </div>
   )
