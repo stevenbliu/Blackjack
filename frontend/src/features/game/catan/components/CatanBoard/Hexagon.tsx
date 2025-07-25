@@ -50,6 +50,8 @@ export function Hexagon(props: HexagonProps) {
           map={texture}
           roughness={0.4}
           metalness={0.1}
+          transparent={true}
+          opacity={0.1}
         />
       </mesh>
 

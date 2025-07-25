@@ -7,7 +7,9 @@ import { Hexagon } from './Hexagon'
 import styles from './CatanBoard.module.css' // <-- NEW
 import {typeColorMap, typeEmojiMap}  from '../../assets/temp_assets';
 import {Settlement} from './Settlement';
-import { RenderHexes, RenderSettlements, RenderPlaceableVertices, getPlaceableVertexPositions } from './renders';
+import { RenderHexes, RenderSettlements, RenderPlaceableVertices,
+   getPlaceableVertexPositions, RenderPlaceableEdges, getPlaceableEdgePositions,
+  RenderGridLines } from './renders';
 
 const resourceTypeList = Object.keys(typeColorMap);
 
@@ -16,10 +18,11 @@ const resourceTypeList = Object.keys(typeColorMap);
 // }
 // const resourceTypeList = ['forest', 'fields', 'pasture', 'hills', 'mountains', 'desert']
 
-
 function generateBoard(radius, resourceTypeList) {
   const origin = createHexOrigin('topLeft', { width: 0, height: 0 })
-  const Hex = defineHex({ dimensions: 1, orientation: 'pointy', origin })
+  const Hex = defineHex({ dimensions: 1, orientation: 'pointy',origin })
+  // const Hex = defineHex({ dimensions: 1,origin })
+
   const createHex = coords => new Hex(coords)
   const spiralTraverser = spiral({ start: [0, 0], radius })
 
@@ -52,34 +55,44 @@ export default function CatanBoard() {
   const onClickHex = (e, hex) => {
     console.log('Hex clicked:', hex)
 
-    setBuildings(prev => ({
-      ...prev,
-      settlements: [...prev.settlements, {
-        position: [hex.q, hex.r],
-        // playerId: currentPlayerId
-      }]
-    }))
+    // setBuildings(prev => ({
+    //   ...prev,
+    //   settlements: [...prev.settlements, {
+    //     position: [hex.q, hex.r],
+    //     // playerId: currentPlayerId
+    //   }]
+    // }))
   }
 
-  const {hexData, Hex} = useMemo(() => generateBoard(2, resourceTypeList), [resourceTypeList]);
+  const {hexData, Hex} = useMemo(() => generateBoard(0, resourceTypeList), [resourceTypeList]);
 
+  const placeableEdgePositions = useMemo(() => {
+    return getPlaceableEdgePositions(hexData, buildings.roads, Hex);
+    }, 
+    [hexData, buildings.roads, Hex]);
+
+  console.log('placeableEdgePositions:', placeableEdgePositions);
+  
   // Get all placeable settlement locations (vertex positions)
   const placeableVertexPositions = useMemo(() => {
     return getPlaceableVertexPositions(hexData, buildings.settlements, Hex);
   }, [hexData, buildings.settlements, Hex]);
 
+  console.log('placeableVertexPositions:', placeableVertexPositions);
+
   return (
   <div className={styles.canvasWrapper}> {/* <-- NEW */}
-    <Canvas orthographic camera={{ position: [0, 5, 10], zoom: 50 }}>
+    <Canvas orthographic camera={{ position: [10, 10, 10], zoom: 50 }}>
       {/* Three Canvas Settings */}
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 10, 5]} intensity={0.8} />
       <OrbitControls 
-        enableZoom={false} 
-        enablePan={false}
-        autoRotate 
+        enableZoom={true} 
+        enablePan={true}
+        // autoRotate 
         autoRotateSpeed={0.5} // You can adjust speed here
       />
+      <RenderGridLines size={10} spacing={1}/>
 
       
       {/* 1. Render Hexes */}
@@ -90,13 +103,20 @@ export default function CatanBoard() {
 
       {/* <RenderRoads roads={buildings.roads} Hex={Hex} /> */}
 
-      <RenderPlaceableVertices 
+      {/* <RenderPlaceableVertices 
       positions={placeableVertexPositions} 
       onClick={(pos) => {
         console.log('Clicked to place settlement at:', pos);
         // Convert back to closest hex + vertex combo if needed
-      }} 
-/>
+      }} /> */}
+
+      <RenderPlaceableEdges 
+      positions={placeableEdgePositions}
+      onClick={(pos) => {
+        console.log('Clicked to place edge at:', pos.start, pos.end);
+        // Convert back to closest hex + vertex combo if needed
+      }} />
+
 
 
     </Canvas>
