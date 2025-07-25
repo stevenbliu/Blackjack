@@ -12,6 +12,7 @@ import { RenderHexes, RenderSettlements, RenderPlaceableVertices,
   RenderGridLines } from './renders';
 
 const resourceTypeList = Object.keys(typeColorMap);
+const RADIUS = 1
 
 // const mockPlayers = {
 
@@ -64,7 +65,7 @@ export default function CatanBoard() {
     // }))
   }
 
-  const {hexData, Hex} = useMemo(() => generateBoard(0, resourceTypeList), [resourceTypeList]);
+  const {hexData, Hex} = useMemo(() => generateBoard(RADIUS, resourceTypeList), [resourceTypeList]);
 
   const placeableEdgePositions = useMemo(() => {
     return getPlaceableEdgePositions(hexData, buildings.roads, Hex);
@@ -113,7 +114,7 @@ export default function CatanBoard() {
       <RenderPlaceableEdges 
       positions={placeableEdgePositions}
       onClick={(pos) => {
-        console.log('Clicked to place edge at:', pos.start, pos.end);
+        console.log('Clicked to place edge at:', pos.start, pos.end, pos.midpoint);
         // Convert back to closest hex + vertex combo if needed
       }} />
 

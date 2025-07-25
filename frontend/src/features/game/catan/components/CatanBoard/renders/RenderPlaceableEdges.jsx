@@ -18,14 +18,14 @@ function getHexEdgesFromCenters(hexData) {
     const { x: cx, y: cy } = hexToPoint(hex)
     const numEdges = 6; //6
     for (let i = 0; i < numEdges; i++) {
-      const edgeAngle = (Math.PI / 3) * i //+ ANGLE_OFFSET
+      const edgeAngle = (Math.PI / 3) * i; //+ ANGLE_OFFSET
       // const edgeAngle = i // * + ANGLE_OFFSET;
 
       const start = [
         cx + HEX_RADIUS * Math.cos(edgeAngle),
         0,
         cy + HEX_RADIUS * Math.sin(edgeAngle),
-      ]
+      ];
       // const start = [
       //   cx + HEX_RADIUS * Math.cos(edgeAngle),
       //   cy + HEX_RADIUS * Math.sin(edgeAngle),
@@ -38,32 +38,51 @@ function getHexEdgesFromCenters(hexData) {
         cx + HEX_RADIUS * Math.cos(edgeAngle + Math.PI / 3),
         0,
         cy + HEX_RADIUS * Math.sin(edgeAngle + Math.PI / 3),
-      ]
+      ];
 
-      const midpoint = [
-        (start[0] + end[0]) / 2,
-        0,
-        (start[2] + end[2]) / 2,
-      ]
+      const midpoint = [(start[0] + end[0]) / 2, 0, (start[2] + end[2]) / 2];
 
       const length = Math.sqrt(
-        (end[0] - start[0]) ** 2 +
-        (end[2] - start[2]) ** 2
+        (end[0] - start[0]) ** 2 + (end[2] - start[2]) ** 2
         // (end[2] - start[2]) ** 2
-      )
+      );
 
-      const rotation = new Euler(Math.PI / 2, edgeAngle, 0, 'YXZ')
+      const rotation = new Euler(Math.PI / 2, edgeAngle, 0, "YXZ");
 
-      // Use sorted key to avoid duplicates later
-      const key = [start, end].sort((a, b) =>
-        a[0] - b[0] || a[2] - b[2]
-      ).map(p => p.join(',')).join('|')
+      function roundCoord(coord, decimals = 5) {
+  return Number(coord).toFixed(decimals);
+}
+    // edge key generation
+    function makeEdgeKey(start, end, gridSize = 0.0005) {
+      // Snap a coordinate to the grid
+      function snap(value) {
+        return Math.round(value / gridSize) * gridSize;
+      }
+
+      // Convert a point to a string with snapped coords
+      function pointToString(point) {
+        return point.map(coord => snap(coord).toFixed(5)).join(',');
+      }
+
+      // Sort points to make key direction-independent
+      const points = [start, end].slice().sort((a, b) => {
+        if (a[0] !== b[0]) return a[0] - b[0];
+        if (a[1] !== b[1]) return a[1] - b[1];
+        return a[2] - b[2];
+      });
+
+      // Join snapped point strings with separator
+      return points.map(pointToString).join('|');
+    }
+
+
+      const key = makeEdgeKey(start, end);
+
 
       console.log(`Hex center: (${cx.toFixed(2)}, ${cy.toFixed(2)})`);
       // console.log(`Edge ${i}: start=(${start[0].toFixed(2)}, ${start[2].toFixed(2)}), end=(${end[0].toFixed(2)}, ${end[2].toFixed(2)})`);
-      edges.push({ start, end, midpoint, length, rotation, key })
+      edges.push({ start, end, midpoint, length, rotation, key });
       // break; // debug to only show one edge
-
     }
   }
 
@@ -125,8 +144,20 @@ function getSharedEdges(hexData, Hex) {
  * avoiding duplicates.
  */
 function getAllEdgesWithFallback(hexData, Hex) {
-  const sharedEdges = getSharedEdges(hexData, Hex)
-  const centerEdges = getHexEdgesFromCenters(hexData)
+  // const sharedEdges = getSharedEdges(hexData, Hex)
+    const centerEdges = getHexEdgesFromCenters(hexData)
+
+    const seen = new Set()
+    const uniqueEdges = []
+
+    for (const edge of centerEdges) {
+      if (!seen.has(edge.key)) {
+        seen.add(edge.key)
+        uniqueEdges.push(edge)
+      }
+    }
+
+    return uniqueEdges
 
   // Put all shared edge keys in a Set to avoid duplicates
   const sharedKeys = new Set(sharedEdges.map(e => e.key))
@@ -168,7 +199,7 @@ export function RenderPlaceableEdges({ positions, onClick }) {
     return geo
   }, [])
 
-  const ANGLE = Math.PI/ 20 // fixed rotation offset if needed
+  // const ANGLE = Math.PI/ 20 // fixed rotation offset if needed
 
   return positions.map(({ start, end, midpoint, length, rotation }, idx) => {
     console.log(`Edge #${idx}`, {
@@ -179,13 +210,13 @@ export function RenderPlaceableEdges({ positions, onClick }) {
       length: length.toFixed(2),
     })
 
-    const adjustedRotation = new Euler(
-      rotation.x,
-      rotation.y + ANGLE,
-      // rotation.y,
-      rotation.z,
-      rotation.order
-    )
+    // const adjustedRotation = new Euler(
+    //   rotation.x,
+    //   rotation.y + ANGLE,
+    //   // rotation.y,
+    //   rotation.z,
+    //   rotation.order
+    // )
 
     function getRotationFromVector(start, end) {
       const startVec = new THREE.Vector3(...start);
@@ -204,7 +235,7 @@ export function RenderPlaceableEdges({ positions, onClick }) {
       const quaternion = new THREE.Quaternion().setFromUnitVectors(up, dir);
       const euler = new THREE.Euler().setFromQuaternion(quaternion);
 
-      console.log(`Rotation: [${euler.x}, ${euler.y}, ${euler.z}]`);
+      // console.log(`Rotation: [${euler.x}, ${euler.y}, ${euler.z}]`);
 
       return euler;
     }
@@ -219,7 +250,7 @@ return (
       position={midpoint}
       rotation={getRotationFromVector(start, end)}
       geometry={geometry}
-      onClick={() => onClick({ start, end })}
+      onClick={() => onClick({ start, end, midpoint })}
     >
       <meshStandardMaterial
         color="purple"
