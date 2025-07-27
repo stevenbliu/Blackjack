@@ -1,9 +1,11 @@
 // utils/hexVertices.ts
 import { hexToPoint } from 'honeycomb-grid'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useThree } from '@react-three/fiber'
+import { RenderBuildMenu } from './RenderBuildMenu' // adjust import path if needed
 
 const HEX_RADIUS = 1;
-const ANGLE_OFFSET = Math.PI / 3; 
+const ANGLE_OFFSET = Math.PI / 3;
 
 /**
  * Returns world-space corner positions of a given hex
@@ -25,14 +27,39 @@ export function getHexCornerPositions(hex) {
 
 // components/renders/RenderPlaceableVertices.tsx
 
-export function RenderPlaceableVertices({ positions, onClick }) {
+export function RenderPlaceableVertices({ positions, setSelectedVertex }) {
+  // const [selectedVertex, setSelectedVertex] = useState(null)
+  // const [screenPos, setScreenPos] = useState({ x: 0, y: 0 })
+  // const { camera, size } = useThree()
+
+  const clickVertex = (e, pos, type) => {
+    console.log(`Build ${type} at`, pos)
+    // Call your actual build logic here
+
+    e.stopPropagation()
+    setSelectedVertex(pos)
+    // setSelectedVertex(null)
+  }
+
+
+
   return positions.map((pos, idx) => (
-    <mesh key={`placeable-${idx}`} position={pos} onClick={() => onClick(pos)}>
-      <sphereGeometry args={[0.2, 20, 20]} />
-      <meshStandardMaterial color="green" emissive="yellow" emissiveIntensity={2.5} />
-    </mesh>
+    // <>
+      <mesh key={`placeable-${idx}`} position={pos} onClick={(e) => {
+        clickVertex(e, pos, 'vertex')
+      }
+      }>
+        <sphereGeometry args={[0.2, 20, 20]} />
+        <meshStandardMaterial color="green" emissive="yellow" emissiveIntensity={2.5} />
+      </mesh>
+
+
+
+    // </>
   ))
 }
+
+
 
 // utils
 const isTooClose = (pos1, pos2, threshold = 0.8) => {
@@ -64,6 +91,8 @@ export function getPlaceableVertexPositions(hexData, settlements, Hex) {
 
   const placeableVertexPositions = allVertexPositions.filter(vertexPos => {
     return !settlements.some(settlement => {
+      if (!settlement.position || settlement.position.length < 2) return false;
+
       const hex = new Hex({ q: settlement.position[0], r: settlement.position[1] });
       const { x, y } = hexToPoint(hex);
       const settlementPos = [x, 0.4, y];

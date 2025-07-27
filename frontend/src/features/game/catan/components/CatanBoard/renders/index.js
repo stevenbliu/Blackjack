@@ -17,3 +17,8 @@ export {
 export {
   RenderGridLines
 } from './RenderGridLines';
+
+export {
+  RenderBuildMenu
+} from './RenderBuildMenu';
+

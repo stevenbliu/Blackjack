@@ -12,6 +12,7 @@ import { clearError } from './features/error/errorSlice';
 import { selectAuthStatus } from './features/auth/authSlice';
 import styles from './App.module.css'
 import CatanGame from './features/game/catan/catan'
+import { initSocket  } from './features/websocket/websocketMiddleware';
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -20,10 +21,15 @@ const App: React.FC = () => {
   const errorMessage = useAppSelector(state => state.error.message);
 
   useEffect(() => {
+    console.log("Checking authentication status...");
     if (isAuthenticated) {
       setShowLogin(false);
     }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    initSocket();
+  }, []);
 
   if (showLogin) {
     return (

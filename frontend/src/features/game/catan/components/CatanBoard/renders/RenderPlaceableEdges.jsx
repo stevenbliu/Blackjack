@@ -79,7 +79,7 @@ function getHexEdgesFromCenters(hexData) {
       const key = makeEdgeKey(start, end);
 
 
-      console.log(`Hex center: (${cx.toFixed(2)}, ${cy.toFixed(2)})`);
+      // console.log(`Hex center: (${cx.toFixed(2)}, ${cy.toFixed(2)})`);
       // console.log(`Edge ${i}: start=(${start[0].toFixed(2)}, ${start[2].toFixed(2)}), end=(${end[0].toFixed(2)}, ${end[2].toFixed(2)})`);
       edges.push({ start, end, midpoint, length, rotation, key });
       // break; // debug to only show one edge
@@ -176,7 +176,7 @@ const isTooClose = (pos1, pos2, threshold = 0.5) => {
 
 export function getPlaceableEdgePositions(hexData, roads, Hex) {
   const allEdges = getAllEdgesWithFallback(hexData, Hex)
-  console.log(`All edges count: ${allEdges.length}`)
+  // console.log(`All edges count: ${allEdges.length}`)
 
   return allEdges.filter(({ midpoint }) => {
     return !roads.some(road => {
@@ -202,13 +202,13 @@ export function RenderPlaceableEdges({ positions, onClick }) {
   // const ANGLE = Math.PI/ 20 // fixed rotation offset if needed
 
   return positions.map(({ start, end, midpoint, length, rotation }, idx) => {
-    console.log(`Edge #${idx}`, {
-      start,
-      end,
-      midpoint,
-      rotationDegY: MathUtils.radToDeg(rotation.y).toFixed(1),
-      length: length.toFixed(2),
-    })
+    // console.log(`Edge #${idx}`, {
+    //   start,
+    //   end,
+    //   midpoint,
+    //   rotationDegY: MathUtils.radToDeg(rotation.y).toFixed(1),
+    //   length: length.toFixed(2),
+    // })
 
     // const adjustedRotation = new Euler(
     //   rotation.x,

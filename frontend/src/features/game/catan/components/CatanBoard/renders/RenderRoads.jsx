@@ -1,7 +1,7 @@
 // RenderRoads.jsx
 import React from 'react'
 import { hexToPoint } from 'honeycomb-grid'
-import { Road } from '../Road' // You'll need to define this
+import { Road } from '../Buildings' // You'll need to define this
 
 export function RenderRoads({ roads, Hex }) {
   return roads.map((road, idx) => {
