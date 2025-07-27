@@ -3,6 +3,10 @@ import { useLoginAsGuestMutation } from '../../api/authApi';
 import Button from '../../../../shared/ui/Button/Button';
 import styles from './styles.module.css';
 
+import { setCredentials } from '../../authSlice';
+import { useDispatch } from 'react-redux';
+
+
 interface GuestLoginProps {
   onLogin: () => void;
   onSwitchToCredentials: () => void;
@@ -17,10 +21,22 @@ export function GuestLogin({
   onSwitchToSocial 
 }: GuestLoginProps) {
   const [loginAsGuest, { isLoading }] = useLoginAsGuestMutation();
+  const dispatch = useDispatch();
 
   const handleGuestLogin = async () => {
     try {
-      await loginAsGuest().unwrap();
+      const response = await loginAsGuest().unwrap();
+      console.log('Guest login successful:', response);
+
+      if (response.access_token && response.guest_id) {
+        dispatch(
+          setCredentials({
+            token: response.access_token,
+            isGuest: true,
+            userId: response.guest_id,
+          })
+        );
+      }
       onLogin();
     } catch (error) {
       console.error('Guest login failed:', error);

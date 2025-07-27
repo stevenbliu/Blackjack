@@ -66,17 +66,20 @@ export default function CatanBoard() {
 
   // send messages to websocket
   const dispatch = useDispatch();
-  // dispatch({
-  //   type: SEND_WS_MESSAGE,
-  //   payload: {
-  //     type: 'build',
-  //     payload: {
-  //       type: 'settlement',
-  //       position: [3.5, 0, 2.598],
-  //       playerId: 1,
-  //     },
-  //   },
-  // });
+  useEffect(() => {
+    dispatch({
+      type: SEND_WS_MESSAGE,
+      payload: {
+        type: 'build',
+        payload: {
+          type: 'settlement',
+          position: [3.5, 0, 2.598],
+          playerId: 1,
+        },
+      },
+    });
+  }, []);
+
 
   const [selectedVertex, setSelectedVertex] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);

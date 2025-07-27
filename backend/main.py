@@ -7,6 +7,8 @@ from auth.routes import router
 import uvicorn
 from urllib.parse import parse_qs  # For query string parsing
 
+from auth.service import verify_token
+
 # Initialize Socket.IO server FIRST
 sio = socketio.AsyncServer(
     async_mode="asgi",
@@ -31,18 +33,25 @@ app.include_router(router)  # Remove prefix since it's already in routes.py
 
 # WebSocket Connection Handler
 @sio.event
-async def connect(sid, environ):
+async def connect(sid, environ, auth):
+    print(f"Client connected: {sid}")
+    print(environ)
+    print(auth)
     try:
-        # Support both header and query token
-        token = (
-            environ.get("HTTP_AUTHORIZATION", "").replace("Bearer ", "")
-            # elseparse_qs(environ.get("QUERY_STRING", "")).get("token", [""])[0]
-        )
+        # token might be in auth dict (recommended way)
+        token = auth.get("token") if auth else None
+
+        # fallback to query string or headers if needed
+        if not token:
+            # try parsing environ query string if token is there
+            from urllib.parse import parse_qs
+
+            qs = parse_qs(environ.get("QUERY_STRING", ""))
+            token = qs.get("token", [None])[0]
 
         if not token:
             raise ConnectionRefusedError("No token provided")
 
-        # Verify token using your auth service
         payload = verify_token(token)
         if not payload:
             raise ConnectionRefusedError("Invalid token")
@@ -66,7 +75,7 @@ async def healthcheck():
 
 
 # Proper ASGI mounting
-app.mount("/", socketio.ASGIApp(sio))
+app.mount("/socket.io", socketio.ASGIApp(sio))
 
 
 def print_routes():

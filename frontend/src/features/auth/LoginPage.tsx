@@ -22,7 +22,7 @@ export function LoginPage() {
         <LoginForm 
           loginType={loginType} 
           setLoginType={setLoginType}
-          onSuccess={() => navigate('/lobby')}
+          onSuccess={() => navigate('/')}
         />
       </div>
     </div>

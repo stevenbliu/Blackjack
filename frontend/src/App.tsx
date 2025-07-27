@@ -13,23 +13,34 @@ import { selectAuthStatus } from './features/auth/authSlice';
 import styles from './App.module.css'
 import CatanGame from './features/game/catan/catan'
 import { initSocket  } from './features/websocket/websocketMiddleware';
+import { useSelector } from 'react-redux';
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
-  const [showLogin, setShowLogin] = useState(true);
+  const [showLogin, setShowLogin] = useState(false);
   const isAuthenticated = useAppSelector(selectAuthStatus);
   const errorMessage = useAppSelector(state => state.error.message);
 
+  const token = useSelector((state: RootState) => state.auth.token);
+
   useEffect(() => {
-    console.log("Checking authentication status...");
-    if (isAuthenticated) {
+    console.log("Checking authentication status...", isAuthenticated);
+    if (isAuthenticated === 'succeeded') {
       setShowLogin(false);
+    }
+    else {
+      setShowLogin(true);
     }
   }, [isAuthenticated]);
 
   useEffect(() => {
-    initSocket();
-  }, []);
+    if (isAuthenticated === 'succeeded' && token) {
+      console.log("Initializing WebSocket connection with...", token);
+      initSocket(token);
+    } else {
+      console.log("WebSocket connection not initialized.");
+    };
+  }, [isAuthenticated, token]);
 
   if (showLogin) {
     return (

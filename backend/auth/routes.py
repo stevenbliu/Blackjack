@@ -16,9 +16,12 @@ limiter = Limiter(key_func=get_remote_address)
 @router.post("/guest")
 async def create_guest_session():
     """Create a temporary guest account"""
+
     try:
+        print("Creating guest session...")
         guest_id = generate_guest_id()
         token = create_access_token(guest_id, is_guest=True)
+        print("Guest session created successfully")
         return {
             "access_token": token,
             "token_type": "bearer",  # Standard OAuth2 response

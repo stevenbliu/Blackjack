@@ -1,3 +1,4 @@
+import { selectCurrentToken } from '@features/auth/authSlice';
 import { io, Socket } from 'socket.io-client';
 
 
@@ -77,10 +78,11 @@ export class SocketIOManager extends EventEmitter {
   }
 
   public async connect(): Promise<void> {
+    console.log("Connecting ws state" + this.state)
+
     if (this.state === 'connected' || this.state === 'connecting') {
       return;
     }
-    console.log("Connecting")
     this.setState('connecting');
 
     return new Promise((resolve, reject) => {
@@ -99,10 +101,11 @@ export class SocketIOManager extends EventEmitter {
         reconnection: this.config.autoReconnect,
         reconnectionAttempts: this.config.reconnectAttempts,
         reconnectionDelay: this.config.reconnectDelay,
-        auth: this.config.authToken ? { token: this.config.authToken } : undefined
+        auth: {token: this.config.authToken}
       });
 
       this.socket.on('connect', () => {
+        console.log('[WebSocket] ✅ Successfully connected to server');
         clearTimeout(connectTimeout);
         this.setState('connected');
         this.setupHeartbeat();
@@ -111,6 +114,7 @@ export class SocketIOManager extends EventEmitter {
       });
 
       this.socket.on('disconnect', () => {
+        console.log('[WebSocket] ❌ Disconnected from server');
         this.setState('disconnected');
         this.cleanupHeartbeat();
       });

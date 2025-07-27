@@ -12,8 +12,9 @@ interface WSAction {
 const socket = SocketIOManager.getInstance();
 
 // Exportable init function
-export const initSocket = () => {
-  const token = localStorage.getItem('token') || 'temp-token';
+export const initSocket = (token: string) => {
+  // const token = localStorage.getItem('token') || 'temp-token';
+  socket.updateAuthToken(token);
 
   socket.on('connect', () => {
     console.log('WebSocket connected');
@@ -35,9 +36,11 @@ export const initSocket = () => {
     });
   });
 
-  socket.connect(token).catch((err) => {
+  socket.connect().catch((err) => {
     console.error('Initial connection failed:', err);
   });
+
+  return socket;
 };
 
 // Capture dispatch to use in the above initSocket
