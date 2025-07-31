@@ -6,7 +6,6 @@ export interface CardData {
   value: string;
   suit: string;
   faceUp: boolean;
-  imageUrl?: string;
 }
 
 interface TabletopState {
@@ -69,6 +68,16 @@ function generateDeck() {
   }
   return deck;
 }
+
+export const sendCardDragStart = (cardId: string, playerId: string) => ({
+  type: 'ws/send',
+  payload: {
+    type: 'card_drag_start',
+    cardId,
+    playerId,
+    timestamp: Date.now(),
+  },
+});
 
 
 

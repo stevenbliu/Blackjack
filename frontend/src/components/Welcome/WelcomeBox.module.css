@@ -1,7 +1,7 @@
-/* WelcomeBox.module.css */
+ /* WelcomeBox.module.css */
 
 .welcomeBox {
-    width: 300px; /* Default width */
+    width: 300px; 
     background: black;
     padding: 20px;
     border-radius: 10px;
@@ -9,7 +9,7 @@
     overflow: visible;
     text-align: center;
     color: #00e676;
-    /* margin: 0 auto; Center align the box */
+    margin: 0 auto;
     transition: width 0.3s ease; /* Smooth transition for width change */
     
     /* Make the box a flex container */
@@ -33,7 +33,7 @@
     align-items: center;
     width: 100%;
     margin-top: 10px;
-    padding: 40px;
+    /* padding: 40px; */
   }
   
   /* Tablet */
@@ -51,4 +51,4 @@
       padding: 12px;
     }
   }
-  
+   

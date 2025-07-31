@@ -53,15 +53,17 @@ async def websocket_endpoint(websocket: WebSocket, game_manager: GameManager):
                 elif action == "create_game":
                     game_id = await create_game(player_id, websocket, game_manager)
                     logging.info(f"Player {player_id} created game {game_id}")
-                    await websocket.send_text(
-                        json.dumps(
-                            {
-                                "action": "game_created",
-                                "gameId": game_id,
-                                "requestId": request_id,
-                            }
-                        )
+                    response = json.dumps(
+                        {
+                            "action": "game_created",
+                            "gameId": game_id,
+                            "requestId": data.get("requestId", None),
+                            "success": True,
+                        }
                     )
+                    logging.info(f"Create game response: {response}")
+
+                    await websocket.send_text(response)
 
                     page = data.get("page", 1)
                     limit = data.get("limit", 10)

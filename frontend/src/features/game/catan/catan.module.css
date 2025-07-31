@@ -1,0 +1,27 @@
+/* CatanGame.module.css */
+
+.container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  user-select: none;
+  text-align: center;
+  color: #333;
+}
+
+
+/* Add this */
+
+.catanBoardWrapper {
+  height: 600px; /* or whatever height you want */
+  margin: 20px 0; /* optional spacing */
+  border: 1px solid #ddd; /* optional border to see the area */
+  /* if using Canvas from react-three-fiber, set width 100% too */
+  width: 100%;
+}

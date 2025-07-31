@@ -1,0 +1,74 @@
+/* Lobby Page Specific Styles */
+.lobbyPageContainer {
+  display: flex;
+  flex-direction: column;
+  /* min-height: calc(100vh - 120px); Adjust based on header/footer height
+   */
+  height:100%;
+  width: 100%;
+  /* max-width: 1400px; */
+  margin: 0 auto;
+  /* padding: 2rem 1rem; */
+  position: relative;
+}
+
+.lobbyContent {
+  flex: 1;
+  background: rgba(15, 23, 42, 0.7); /* Dark blue background */
+  border-radius: 16px;
+  /* padding: 2rem; */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  height: 50%;
+}
+
+.lobbyContent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right, #4361ee, #3a0ca3);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .lobbyPageContainer {
+    padding: 1.5rem;
+  }
+  
+  .lobbyContent {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .lobbyPageContainer {
+    padding: 1rem;
+    min-height: calc(100vh - 80px);
+  }
+  
+  .lobbyContent {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+}
+
+/* Animation for lobby entrance */
+@keyframes lobbyEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lobby-enter {
+  animation: lobbyEntrance 0.5s ease-out forwards;
+}

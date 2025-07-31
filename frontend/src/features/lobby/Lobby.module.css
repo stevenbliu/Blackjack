@@ -1,79 +1,121 @@
-.lobby {
-  padding: 2rem;
-  text-align: center;
-}
-
-.createButton {
-  margin-bottom: 1.5rem;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.createButton:disabled {
-  background-color: #9e9e9e;
-}
-
-.roomList {
+/* Main Container */
+.lobbyContainer {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  gap: 1.5rem;
+}
+
+/* Header Styles */
+.lobbyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 1rem;
-  align-items: center;
 }
 
-.room {
-  width: 300px;
-  padding: 1rem;
-  border: 2px solid #2196f3;
-  border-radius: 10px;
-  background-color: blueviolet;
+.headerControls {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  gap: 1rem;
 }
 
-.joinButton {
-  margin-top: 0.5rem;
+/* Room List Container */
+.roomListContainer {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 300px;
+  padding: 1rem 0;
+}
+
+/* Pagination Styles */
+.paginationTop,
+.paginationBottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  position: sticky;
+  z-index: 10;
+}
+
+.paginationTop {
+  top: 0;
+}
+
+.paginationBottom {
+  bottom: 0;
+}
+
+.paginationTop button,
+.paginationBottom button {
   padding: 0.5rem 1rem;
-  background-color: #2196f3;
+  min-width: 80px;
+  background: rgba(33, 150, 243, 0.2);
   color: white;
-  border: none;
+  border: 1px solid rgba(33, 150, 243, 0.5);
   border-radius: 6px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.skeletonRoom {
-  width: 300px;
-  height: 100px;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
+.paginationTop button:hover:not(:disabled),
+.paginationBottom button:hover:not(:disabled) {
+  background: rgba(33, 150, 243, 0.4);
 }
 
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
+.paginationTop button:disabled,
+.paginationBottom button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.paginationTop span,
+.paginationBottom span {
+  min-width: 100px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* No Games Message */
+.noGames {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+}
+
+/* Existing button, error, and modal styles remain the same... */
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .lobbyContainer {
+    padding: 1rem;
   }
-  100% {
-    background-position: -200% 0;
+  
+  .lobbyHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .headerControls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .paginationTop,
+  .paginationBottom {
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+  
+  .paginationTop button,
+  .paginationBottom button {
+    padding: 0.5rem;
+    min-width: 60px;
   }
 }
-
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  background: white;
-  border-radius: 8px;
-  padding: 1rem;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  z-index: 100;
-}
-

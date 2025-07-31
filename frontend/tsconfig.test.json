@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "strict": false,
+    "noImplicitAny": false, // 👈 Disable strict checks
+    "strictNullChecks": false
+  },
+  "include": ["**/*.test.ts", "**/*.test.tsx"] // Only apply to tests
+}

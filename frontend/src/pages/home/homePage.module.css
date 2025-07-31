@@ -1,0 +1,363 @@
+/* Add to your homePage.module.css */
+.cardStack {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
+}
+
+.playingCard, .cardBack {
+  position: relative;
+  width: 100px;
+  height: 150px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  background: white;
+  transform-style: preserve-3d;
+}
+
+.cardBack {
+  background: linear-gradient(135deg, #d10000 0%, #8a0000 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+}
+
+/* Reset and Base Styles */
+.homePage {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #0a192f 0%, #172a45 100%);
+  color: white;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Hero Section - Fixed Height */
+.hero {
+  /* flex: 0 10vh; */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3%;
+  position: relative;
+}
+
+.heroContent {
+  max-width: 50%;
+  z-index: 2;
+  height: 100%;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.hero h1 span {
+  color: #4facfe;
+}
+
+.hero p {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+/* Card Animation Container */
+.cardAnimation {
+  position: relative;
+  width: 40%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
+.cardPattern {
+  width: 80%;
+  height: 80%;
+  border: 3px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+}
+
+.cardValue {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: bold;
+  color: #333;
+}
+
+.cardSuit {
+  font-size: clamp(2rem, 4vw, 3rem);
+  align-self: flex-end;
+}
+
+/* Position each card individually */
+.playingCard:nth-child(1) { transform: translateX(-20%) rotate(-5deg); }
+.playingCard:nth-child(2) { transform: translateX(0%) rotate(2deg); }
+.playingCard:nth-child(3) { transform: translateX(20%) rotate(5deg); }
+.cardBack { transform: translateX(0%) rotate(-2deg); }
+
+/* Combined Content Section */
+.combinedSection {
+  flex: 0 0 40vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 2% 5%;
+  background: rgba(10, 25, 47, 0.7);
+  backdrop-filter: blur(5px);
+}
+
+/* Features Grid */
+.features {
+  padding-right: 2rem;
+}
+
+.features h2, .liveStats h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 1.5rem;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.featureCard {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s;
+}
+
+.featureCard:hover {
+  transform: translateY(-5px);
+}
+
+.featureIcon {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Live Stats */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.statValue {
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: bold;
+  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Buttons */
+.ctaButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.primaryButton, .secondaryButton {
+  padding: 0.8rem 1.5rem;
+  border-radius: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+
+.primaryButton {
+  background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+  color: white;
+}
+
+.secondaryButton {
+  background: transparent;
+  color: #4facfe;
+  border: 2px solid #4facfe;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .hero {
+    flex-direction: column;
+    padding-top: 2rem;
+  }
+  
+  .heroContent {
+    max-width: 100%;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+/* Card Animation Container */
+.cardAnimation {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.cardPattern {
+  width: 80%;
+  height: 80%;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+}
+
+/* Fan Out Cards Horizontally */
+.playingCard:nth-child(1) {
+  left: 10%;
+  transform: rotate(-20deg);
+  z-index: 4;
+  background: linear-gradient(135deg, black 100%, #f8f8f8 100%);
+}
+
+.playingCard:nth-child(2) {
+  left: 30%;
+  transform: rotate(-10deg);
+  z-index: 3;
+  background: linear-gradient(135deg, green 100%, #f8f8f8 100%);
+}
+
+.playingCard:nth-child(3) {
+  left: 50%;
+  transform: rotate(0deg);
+  z-index: 2;
+  background: linear-gradient(135deg, white 0%, #f8f8f8 100%);
+}
+
+.playingCard:nth-child(4) {
+  left: 70%;
+  transform: rotate(10deg);
+  z-index: 1;
+  background: linear-gradient(135deg, white 0%, #f8f8f8 100%);
+}
+
+.playingCard:nth-child(5) {
+  left: 90%;
+  transform: rotate(20deg);
+  z-index: 0;
+  background: linear-gradient(135deg, white 0%, #f8f8f8 100%);
+}
+
+/* Card Content */
+.cardValue {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.cardSuit {
+  font-size: 2rem;
+  align-self: flex-end;
+}
+
+/* Suit Colors */
+.playingCard:nth-child(1) .cardSuit,
+.playingCard:nth-child(3) .cardSuit {
+  color: #e74c3c; /* Red */
+}
+
+.playingCard:nth-child(2) .cardSuit,
+.playingCard:nth-child(4) .cardSuit,
+.playingCard:nth-child(5) .cardSuit {
+  color: #2c3e50; /* Black */
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.playingCard, .cardBack {
+  animation: float 3s ease-in-out infinite;
+}
+
+.playingCard:nth-child(1) { animation-delay: 0s; }
+.playingCard:nth-child(2) { animation-delay: 0.2s; }
+.playingCard:nth-child(3) { animation-delay: 0.4s; }
+.playingCard:nth-child(4) { animation-delay: 0.6s; }
+.playingCard:nth-child(5) { animation-delay: 0.8s; }
+.cardBack { animation-delay: 1s; }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .cardStack {
+    width: 300px;
+    height: 200px;
+  }
+  
+  .playingCard, .cardBack {
+    width: 80px;
+    height: 120px;
+  }
+  
+  .playingCard:nth-child(1) { left: 5%; }
+  .playingCard:nth-child(2) { left: 25%; }
+  .playingCard:nth-child(3) { left: 45%; }
+  .playingCard:nth-child(4) { left: 65%; }
+  .playingCard:nth-child(5) { left: 85%; }
+}
+  
+  .combinedSection {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+  
+  .features {
+    padding-right: 0;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .featureGrid, .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .playingCard, .cardBack {
+    width: 70px;
+    height: 105px;
+  }
+  
+  .ctaButtons {
+    justify-content: center;
+  }
+}
+

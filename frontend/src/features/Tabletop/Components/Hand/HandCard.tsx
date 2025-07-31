@@ -24,7 +24,11 @@ export const HandCard = ({ card }: HandCardProps) => {
         cursor: 'move',
       }}
     >
-      <Card card={card} faceUp draggable />
+      <Card card={card}
+      faceUp 
+      draggableId={card.id} 
+      onDragStart={(e) => e.dataTransfer.setData('cardId', card.id)}
+      />
     </div>
   );
 };

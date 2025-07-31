@@ -1,0 +1,29 @@
+/* Hexagon.module.css */
+.hexagonGroup {
+  transition: all 0.2s ease;
+}
+
+.hexMaterial {
+  transition: all 0.3s ease;
+}
+
+.highlighted {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+.numberToken {
+  user-select: none;
+  pointer-events: none;
+  font-weight: 800;
+}
+
+.robber {
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 5px rgba(255,0,0,0.5));
+}

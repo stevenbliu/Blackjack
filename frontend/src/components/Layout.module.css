@@ -1,0 +1,143 @@
+/* Root layout container */
+.layout {
+  display: flex;
+  flex-direction: column;
+  /* height: 100dvh; */
+  width: 100%;
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh; /* Fallback for modern browsers */
+  overflow: hidden; /* Contain all scrolling */
+  position: relative;
+}
+
+/* Main content area (between header and footer) */
+.mainContent {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  position: relative;
+  overflow: hidden; /* Contain all scrolling */
+  /* padding: 5\0; */
+
+}
+
+.childrenContainer {
+  flex: 1;
+  /* padding: 1rem; */
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: auto;
+  position: inherit;
+}
+
+.chatContainer {
+  /* Layout & Structure */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 500px;
+  width: 100%;
+  max-width: 350px;
+  background: rgba(25, 28, 36, 0.9);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  
+  /* Animation */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  
+  /* Positioning (adjust as needed) */
+  position: fixed;
+  /* top: 20px; */
+  right: 20px;
+  z-index: 1000;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chatContainer {
+    max-width: 300px;
+    bottom: 10px;
+    right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chatContainer {
+    max-width: 100%;
+    width: calc(100% - 20px);
+    bottom: 0;
+    right: 10px;
+    border-radius: 12px 12px 0 0;
+    max-height: 50vh;
+  }
+}
+
+/* Optional: Collapsed state */
+.chatContainer.collapsed {
+  height: 50px !important;
+  max-height: 50px !important;
+  cursor: pointer;
+}
+
+/* Optional: Different theme variants */
+.chatContainer.theme-dark {
+  background: rgba(10, 12, 18, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chatContainer.theme-transparent {
+  background: rgba(15, 20, 30, 0.7);
+  backdrop-filter: blur(15px);
+}
+
+/* Animation for message updates */
+@keyframes messagePop {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.new-message {
+  animation: messagePop 0.3s ease-out;
+}
+
+/* Responsive layout adjustments */
+@media (max-width: 768px) {
+  .mainContent {
+    flex-direction: column;
+  }
+}
+
+/* Guest banner (positioned at top) */
+.guestBanner {
+  background-color: #ffeb3b;
+  padding: 8px;
+  text-align: center;
+  z-index: 100;
+}
+
+.guestBanner button {
+  background: none;
+  border: none;
+  color: #2196f3;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+/* Login overlay */
+.loginOverlay {
+  /* position: fixed; */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(245, 245, 245, 0.95);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

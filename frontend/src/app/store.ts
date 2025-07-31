@@ -9,10 +9,14 @@ import errorReducer from '../features/error/errorSlice';
 import websocketReducer from '../features/websocket/websocketSlice'
 import tabletopReducer from '../features/Tabletop/tabletopSlice'
 
-import { websocketMiddleware } from '../features/websocket/websocketMiddleware';
-import { wsResponseMiddleware } from '../features/websocket/wsResponseMiddleware';
+import { socketMiddleware } from '../features/websocket/socketMiddleware';
+import { socketResponseMiddleware } from '../features/websocket/wsResponseMiddleware';
 
-export const store = configureStore({
+import authReducer from '../features/auth/authSlice'
+import { authApi } from '../features/auth/api/authApi'; // Import your API slice
+import { chatApi } from '../features/chat/api/chatApi'; // Import your API slice
+
+export const store: any = configureStore({
   reducer: {
     game: gameReducer,
     lobby: lobbyReducer,
@@ -21,10 +25,18 @@ export const store = configureStore({
     error: errorReducer,
     websocket: websocketReducer,
     tabletop: tabletopReducer,
-    
+    [authApi.reducerPath]: authApi.reducer,
+    [chatApi.reducerPath]: chatApi.reducer,
+    // Add other reducers here, e.g., [authApi.reducerPath]: authApi.reducer, 
+    auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(websocketMiddleware, wsResponseMiddleware),
+    getDefaultMiddleware().concat(
+      authApi.middleware,
+      chatApi.middleware,
+      socketMiddleware,
+      socketResponseMiddleware
+    ),
 });
 
 // Typed types

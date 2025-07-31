@@ -1,0 +1,38 @@
+/* components/SocialLoginButton/SocialLoginButton.module.css */
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-bottom: 0.75rem;
+}
+
+.button:hover {
+  opacity: 0.9;
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.icon {
+  font-size: 1.25rem;
+}
+
+/* Provider-specific colors */
+.google {
+  background-color: #DB4437;
+}
+
+.discord {
+  background-color: #5865F2;
+}
