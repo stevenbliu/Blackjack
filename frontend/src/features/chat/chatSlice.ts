@@ -1,77 +1,84 @@
 // chatSlice.ts
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
 import { WS_CHAT_MESSAGE_RECEIVED } from '../websocket/types/actionTypes';
+import { ChatMessagePayload, ChatEvents } from './socketEvents';
+import { ChatMessage } from "./dataTypes";
+
+// chatSlice.ts
 
 type ChatType = 'lobby' | 'game' | 'private';
 
-interface ChatMessage {
-  id: string;         // message id
-  from: string;       // sender player id
-  to?: string;        // recipient player id for private messages
-  content: string;
-  timestamp: number;
-  type: 'lobby' | 'game' | 'private';
-}
 
 
-interface ChatState {
-  messagesByUser: Record<string, ChatMessage[]>;
-  currentChatTarget: string; // 'lobby' or playerId
-}
+type ChatState = {
+  messagesByContext: {
+    [roomId: string]: ChatMessage[];
+  };
+  roomId: string; // e.g. "lobby" or "game-123"
+};
 
 const initialState: ChatState = {
-  messagesByUser: {
-    lobby: [],
-  },
-  currentChatTarget: 'lobby',
+  messagesByContext : {},
+  roomId: 'lobby', // e.g. "lobby" or "game-123"
 };
 
 const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    setCurrentChatTarget(state, action: PayloadAction<string>) {
-      state.currentChatTarget = action.payload;
+    setRoomId(state, action: PayloadAction<string>) {
+      state.roomId = action.payload;
     },
-    addOutgoingMessage(state, action: PayloadAction<ChatMessage>) {
-      const target = action.payload.to ?? 'lobby';
-      if (!state.messagesByUser[target]) {
-        state.messagesByUser[target] = [];
+    addMessage(state, action: PayloadAction<ChatMessagePayload>) {
+      const {
+        room_id = 'chat_lobby',
+        user_id,
+        username,
+        message,
+        timestamp,
+      } = action.payload;
+
+      const chatMessage: ChatMessage = {
+        id: crypto.randomUUID(), // Or whatever ID scheme you prefer
+        user_id: user_id,
+        text: message,
+        timestamp: typeof timestamp === 'string' ? new Date(timestamp).getTime() : timestamp,
+      };
+
+      if (!state.messagesByContext[room_id]) {
+        state.messagesByContext[room_id] = [];
       }
-      state.messagesByUser[target].push(action.payload);
+
+      state.messagesByContext[room_id].push(chatMessage);
     },
   },
   extraReducers: (builder) => {
     builder.addCase(
       createAction<ChatMessage>(WS_CHAT_MESSAGE_RECEIVED),
       (state, action) => {
-        const { from, to, type } = action.payload;
+        const { id, senderId, text, timestamp } = action.payload;
 
         let target = 'lobby';
         if (type === 'private' && to) {
-          // Determine which user chat this message belongs to
-          // If the current chat is with 'from', message belongs to 'from'
-          // Otherwise, message belongs to 'to'
-          target = (state.currentChatTarget === from) ? from : to;
+          target = (state.roomId === user_id) ? user_id : to;
         } else if (type === 'game') {
-          // Handle game chat target logic here if needed
-          target = 'game'; // or some game id or group key
+          target = 'game'; // or your game room id
         } else {
           target = 'lobby';
         }
 
-        if (!state.messagesByUser[target]) {
-          state.messagesByUser[target] = [];
+        if (!state.messagesByContext[target]) {
+          state.messagesByContext[target] = [];
         }
 
-        state.messagesByUser[target].push(action.payload);
+        state.messagesByContext[target].push(action.payload);
 
         // Optional: sort by timestamp ascending
-        state.messagesByUser[target].sort((a, b) => a.timestamp - b.timestamp);
+        state.messagesByContext[target].sort((a, b) => a.timestamp - b.timestamp);
       }
     );
   },
 });
 
-export const { setCurrentChatTarget, addOutgoingMessage } = chatSlice.actions;
+export const { setRoomId, addMessage } = chatSlice.actions;
 export default chatSlice.reducer;

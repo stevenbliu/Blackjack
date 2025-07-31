@@ -1,0 +1,115 @@
+.container {
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+}
+
+.tabList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.tabButton {
+  padding: 6px 10px;
+  background-color: #f0f0f0;
+  color: black;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  margin-right: 6px;
+  border-radius: 6px;
+  font-weight: normal;
+  position: relative;
+}
+
+.tabButtonSelected {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+.unreadDot {
+  margin-left: 6px;
+  color: red;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.closePrivateTab {
+  position: absolute;
+  top: 0;
+  right: -6px;
+  color: red;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.messageList {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.noMessages {
+  color: #666;
+}
+
+.messageContainer {
+  margin-bottom: 8px;
+}
+
+.messageLeft {
+  text-align: left;
+}
+
+.messageRight {
+  text-align: right;
+}
+
+.senderName {
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.messageBubbleLeft {
+  display: inline-block;
+  background-color: #e5e5ea;
+  color: black;
+  border-radius: 12px;
+  padding: 6px 12px;
+  max-width: 80%;
+  word-wrap: break-word;
+  font-size: 14px;
+}
+
+.messageBubbleRight {
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  border-radius: 12px;
+  padding: 6px 12px;
+  max-width: 80%;
+  word-wrap: break-word;
+  font-size: 14px;
+}
+
+.messageTimestamp {
+  font-size: 10px;
+  color: #999;
+}
+
+.textarea {
+  resize: none;
+  padding: 6px;
+  font-size: 14px;
+}
+
+.sendButton {
+  margin-top: 6px;
+}

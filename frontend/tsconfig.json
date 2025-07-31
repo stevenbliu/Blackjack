@@ -6,19 +6,28 @@
     "moduleResolution": "node",
     "baseUrl": "./src",
     "noEmit": true,
+    "isolatedModules": true,
 
+    // Absolute import aliases
     "paths": {
       "@features/*": ["features/*"],
       "@components/*": ["components/*"],
       "@redux/*": ["redux/*"],
       "@websockets/*": ["websockets/*"]
     },
-    "types": ["vite/client"], // Removed "node"
+
+    // Add support for Vite + Jest globals
+    "types": ["vite/client", "jest"],
+
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true
   },
+
+  // Include source and test configs (if tests are colocated in src)
   "include": ["src"],
+
+  // Exclude build and dependencies
   "exclude": ["node_modules", "dist"]
 }

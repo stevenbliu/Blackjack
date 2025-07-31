@@ -9,6 +9,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 limiter = Limiter(key_func=get_remote_address)
+import logging
 
 
 # @router.post("/auth/guest")
@@ -18,14 +19,13 @@ async def create_guest_session():
     """Create a temporary guest account"""
 
     try:
-        print("Creating guest session...")
-        guest_id = generate_guest_id()
-        token = create_access_token(guest_id, is_guest=True)
-        print("Guest session created successfully")
+        user_id = generate_guest_id()
+        token = create_access_token(user_id, is_guest=True)
+        logging.info("Guest session created successfully")
         return {
             "access_token": token,
             "token_type": "bearer",  # Standard OAuth2 response
-            "guest_id": guest_id,
+            "user_id": user_id,
         }
     except Exception as e:
         raise HTTPException(
@@ -46,7 +46,7 @@ def get_user_id(username):
     return "user_1"
 
 
-@router.post("/auth/login")
+@router.post("/login")
 async def login(username: str, password: str):
     """Regular user login (simplified example)"""
     # Add your actual user authentication logic here

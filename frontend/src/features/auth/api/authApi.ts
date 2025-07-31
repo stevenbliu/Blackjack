@@ -6,6 +6,7 @@ interface RegisterCredentials {
   email: string;
   password: string;
   name: string;
+  username: string;
 }
 
 export const authApi = createApi({
@@ -23,8 +24,9 @@ export const authApi = createApi({
   endpoints: (builder) => ({
     loginAsGuest: builder.mutation<{
       access_token: string;
-      guest_id: string;
+      user_id: string;
       expires_in: number;
+      username: string;
     }, void>({
       query: () => ({
         url: '/guest',

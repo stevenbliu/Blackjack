@@ -2,6 +2,7 @@ import styles from './catan.module.css'
 import CatanBoard from './components/CatanBoard/CatanBoard'
 import { TurnController } from './components/TurnController'
 import { PlayerPanel } from './components/PlayerPanel'
+import ChatRoom from "../../chat/ChatRoom";
 
 export default function CatanGame() {
   return (
@@ -12,6 +13,7 @@ export default function CatanGame() {
         <CatanBoard />
       </div>
       <PlayerPanel />
+      <ChatRoom />
     </div>
-  )
+  );
 }

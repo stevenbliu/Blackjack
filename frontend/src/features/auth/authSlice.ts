@@ -7,6 +7,7 @@ interface AuthState {
   token: string | null;
   isGuest: boolean;
   userId: string | null;
+  username: string | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
   guestExpiresAt: number | null; // Track guest session expiry
@@ -18,7 +19,8 @@ const initialState: AuthState = {
   userId: null,
   status: 'idle',
   error: null,
-  guestExpiresAt: null // Track guest session expiry
+  guestExpiresAt: null, // Track guest session expiry
+  username: null
 
 };
 
@@ -49,10 +51,12 @@ const authSlice = createSlice({
       token: string;
       isGuest: boolean;
       userId: string;
+      username: string;
     }>) => {
       state.token = action.payload.token;
       state.isGuest = action.payload.isGuest;
       state.userId = action.payload.userId;
+      state.username = action.payload.username;
     },
     logout: (state) => {
       state.token = null;
@@ -87,7 +91,7 @@ const authSlice = createSlice({
         (state, {payload}) => {
         state.token = payload.access_token;
         state.isGuest = true;
-        state.userId = payload.guest_id;
+        state.userId = payload.user_id;
         state.guestExpiresAt = Date.now() + (payload.expires_in * 1000);
         state.status = 'succeeded';
         }

@@ -4,6 +4,7 @@ import { selectCurrentUser, selectAuthStatus } from '../../features/auth/authSli
 import React, { useEffect, useState, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout } from '../../features/auth/authSlice';
+import { useSelector } from 'react-redux';
 
 const Navbar: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -11,8 +12,11 @@ const Navbar: React.FC = () => {
   // const { isGuest, tokens } = useAppSelector(selectCurrentUser);
   // const authStatus = useAppSelector(selectAuthStatus);
   const dispatch = useAppDispatch();
+  const userId = useSelector((state) => state.auth.userId);
+  const isGuest = useSelector((state) => state.auth.isGuest);
 
-  const isGuest = false;
+
+  // const isGuest = false;
   const authStatus = 'succeeded';
   const tokens = 3232;
   
@@ -35,24 +39,33 @@ const Navbar: React.FC = () => {
       <div className={styles.logo}>
         <Link to="/">GameHub</Link>
       </div>
-      
-      <div className={styles.navLinks}>
-        <Link to="/" className={styles.navLink}>Home</Link>
-        <Link to="/lobby" className={styles.navLink}>Lobby</Link>
-        <Link to="/leaderboard" className={styles.navLink}>Leaderboard</Link>
-        <Link to="/store" className={styles.navLink}>Store</Link>
-        <Link to="/catan" className={styles.navLink}>Catan</Link>
 
+      <div className={styles.navLinks}>
+        <Link to="/" className={styles.navLink}>
+          Home
+        </Link>
+        <Link to="/lobby" className={styles.navLink}>
+          Lobby
+        </Link>
+        <Link to="/leaderboard" className={styles.navLink}>
+          Leaderboard
+        </Link>
+        <Link to="/store" className={styles.navLink}>
+          Store
+        </Link>
+        <Link to="/catan" className={styles.navLink}>
+          Catan
+        </Link>
       </div>
 
       <div className={styles.authSection}>
-        {authStatus === 'loading' && (
+        {authStatus === "loading" && (
           <div className={styles.loadingIndicator}>Loading...</div>
         )}
 
-        {authStatus === 'succeeded' ? (
+        {authStatus === "succeeded" ? (
           <div className={styles.userInfoContainer} ref={dropdownRef}>
-            <div 
+            <div
               className={styles.userInfo}
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
@@ -62,13 +75,17 @@ const Navbar: React.FC = () => {
                 </span>
               )}
               <span className={styles.userType}>
-                {isGuest ? 'Guest' : 'Member'}
-                <span className={`${styles.dropdownArrow} ${isDropdownOpen ? styles.rotated : ''}`}>
+                {isGuest ? `GuestId: ${userId}` : `MemberId: ${userId}`}
+                <span
+                  className={`${styles.dropdownArrow} ${
+                    isDropdownOpen ? styles.rotated : ""
+                  }`}
+                >
                   ▼
                 </span>
               </span>
             </div>
-            
+
             {isDropdownOpen && (
               <div className={styles.dropdownMenu}>
                 {!isGuest && (
@@ -85,7 +102,7 @@ const Navbar: React.FC = () => {
                     <div className={styles.dropdownDivider}></div>
                   </>
                 )}
-                <button 
+                <button
                   className={styles.dropdownItem}
                   onClick={handleLogoutClick}
                 >
@@ -95,12 +112,12 @@ const Navbar: React.FC = () => {
             )}
           </div>
         ) : (
-          <button 
+          <button
             onClick={() => {}} // Replace with your login handler
             className={styles.authButton}
-            disabled={authStatus === 'loading'}
+            disabled={authStatus === "loading"}
           >
-            {authStatus === 'failed' ? 'Retry Login' : 'Login'}
+            {authStatus === "failed" ? "Retry Login" : "Login"}
           </button>
         )}
       </div>

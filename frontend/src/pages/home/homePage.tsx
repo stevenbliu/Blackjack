@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import styles from './homePage.module.css';
+import { useSelector } from 'react-redux';
 
 // Card Back Component
 const CardBack = ({ delay = 0 }: { delay?: number }) => (
@@ -53,6 +54,8 @@ export default function HomePage() {
     games: 0,
     tournaments: 0
   });
+
+
 
   useEffect(() => {
     const interval = setInterval(() => {

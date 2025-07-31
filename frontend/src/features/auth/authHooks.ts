@@ -33,7 +33,8 @@ export const useAuth = () => {
       return { 
         success: true, 
         token: result.access_token,
-        guestId: result.guest_id
+        user_id: result.user_id,
+        username: result.username
       };
     } catch (err) {
       return {

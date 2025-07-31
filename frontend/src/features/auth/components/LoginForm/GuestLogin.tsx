@@ -28,12 +28,14 @@ export function GuestLogin({
       const response = await loginAsGuest().unwrap();
       console.log('Guest login successful:', response);
 
-      if (response.access_token && response.guest_id) {
+      if (response.access_token && response.user_id) {
+        console.log(`Setting credentials...  with response:`, response);
         dispatch(
           setCredentials({
             token: response.access_token,
             isGuest: true,
-            userId: response.guest_id,
+            userId: response.user_id,
+            username: 'temp user'
           })
         );
       }

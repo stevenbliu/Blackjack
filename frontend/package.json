@@ -10,7 +10,11 @@
     "preview": "vite preview",
     "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
     "start:frontend": "vite",
-    "start:backend": "cd .. && uvicorn backend.main:app --port 8000"
+    "start:backend": "cd .. && uvicorn backend.main:app --port 8000",
+    "test": "jest --config jest.config.cjs",
+    "test:ws": "jest websocket.test.ts --runInBand",
+    "test:file": "jest --testPathPatterns='$filename",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.0.0",
@@ -36,18 +40,25 @@
   "devDependencies": {
     "@eslint/js": "^9.22.0",
     "@types/gsap": "^1.20.2",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.0.14",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "@types/ws": "^8.18.1",
     "@vitejs/plugin-react": "^4.6.0",
     "@vitejs/plugin-react-swc": "^3.10.2",
+    "axios": "^1.11.0",
     "concurrently": "^9.1.2",
     "eslint": "^9.22.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "jest": "^30.0.5",
+    "jest-environment-jsdom": "^30.0.5",
+    "ts-jest": "^29.4.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
-    "vite": "^6.3.1"
+    "vite": "^6.3.1",
+    "ws": "^8.18.3"
   }
 }

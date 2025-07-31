@@ -14,6 +14,9 @@ import { select } from 'three/tsl'
 
 import {addVertexBuilding, addEdgeBuilding, handleBuild} from './BuildManager'
 
+// import { socket, initSocket  } from './features/websocket/websocketMiddleware';
+
+
 // import {RootState} from '@/store'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux';
@@ -61,24 +64,34 @@ export default function CatanBoard() {
     roads: [],
   });
 
+    // useEffect(() => {
+    //   if (isAuthenticated === 'succeeded' && token) {
+    //     console.log("Initializing WebSocket connection with...", token);
+        
+    //     initSocket(token);
+    //   } else {
+    //     console.log("WebSocket connection not initialized.");
+    //   };
+    // }, [isAuthenticated, token]);
+
   // used to receive messagesfrom websocket
   const socketMessages = useSelector((state) => state.websocket.messages);
 
   // send messages to websocket
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch({
-      type: SEND_WS_MESSAGE,
-      payload: {
-        type: 'build',
-        payload: {
-          type: 'settlement',
-          position: [3.5, 0, 2.598],
-          playerId: 1,
-        },
-      },
-    });
-  }, []);
+  // const dispatch = useDispatch();
+  // useEffect(() => {
+  //   dispatch({
+  //     type: SEND_WS_MESSAGE,
+  //     payload: {
+  //       type: 'build',
+  //       payload: {
+  //         type: 'settlement',
+  //         position: [3.5, 0, 2.598],
+  //         playerId: 1,
+  //       },
+  //     },
+  //   });
+  // }, []);
 
 
   const [selectedVertex, setSelectedVertex] = useState(null);

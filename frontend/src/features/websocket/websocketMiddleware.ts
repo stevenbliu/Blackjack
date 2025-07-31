@@ -9,12 +9,46 @@ interface WSAction {
   payload: SocketMessage;
 }
 
-const socket = SocketIOManager.getInstance();
+export const socket = SocketIOManager.getInstance();
 
 // Exportable init function
-export const initSocket = (token: string) => {
-  // const token = localStorage.getItem('token') || 'temp-token';
-  socket.updateAuthToken(token);
+export async function initSocket(token?: string, namespace?: string) {
+  if (!token) return;
+
+  if (namespace) socket.setNamespace(namespace);
+
+  if (socket.getConnectionState() === 'connected') {
+    await socket.disconnect();
+  }
+
+  // const token2 = store.getState().auth.token;
+  // console.log("B3" + token2);
+  console.log("tk before connect" + token);
+  await socket.connect(token);
+
+  // Register default namespace handler
+  socket.registerNamespace("/", (message) => {
+    storeDispatch({
+      type: WS_RECEIVED,
+      payload: message
+    });
+  });
+
+  // Register chat namespace handler
+  socket.registerNamespace("/chat", (message) => {
+    storeDispatch({
+      type: WS_RECEIVED,
+      payload: { ...message, namespace: "/chat" }
+    });
+  });
+
+  // Register game namespace handler
+  socket.registerNamespace("/game", (message) => {
+    storeDispatch({
+      type: WS_RECEIVED,
+      payload: { ...message, namespace: "/game" }
+    });
+  });
 
   socket.on('connect', () => {
     console.log('WebSocket connected');
@@ -28,17 +62,11 @@ export const initSocket = (token: string) => {
     console.error('Connection error:', err);
   });
 
-  // Handle incoming messages
-  socket.on('message', (message: SocketMessage) => {
-    storeDispatch({
-      type: WS_RECEIVED,
-      payload: message
-    });
-  });
-
-  socket.connect().catch((err) => {
-    console.error('Initial connection failed:', err);
-  });
+  if (token) {
+    socket.updateAuthToken(token);
+    await socket.connect();
+    console.log("Connected to the WS");
+  }
 
   return socket;
 };
@@ -52,19 +80,29 @@ export const socketMiddleware: Middleware<{}, RootState> = (store) => {
   return (next) => async (action: WSAction) => {
     if (action.type === SEND_WS_MESSAGE) {
       try {
-        await socket.send(action.payload);
+        await socket.send({
+          type: 'message type',
+          payload: action.payload,
+          namespace: action.payload.namespace || "/"
+        });
       } catch (error) {
-        console.error('WebSocket send error:', error);
+        console.error(
+          'WebSocket send error:',
+          error,
+          'Payload:',
+          JSON.stringify(action.payload, null, 2)
+        );
         store.dispatch({
           type: WS_RECEIVED,
           payload: {
-            action: 'error',
+            action: "error",
             payload: {
-              code: 'SEND_FAILED',
-              message: 'Failed to send message',
-              originalError: error
-            }
-          }
+              code: "SEND_FAILED",
+              message: "Failed to send message",
+              originalError: error,
+            },
+            namespace: action.payload.namespace || "/"
+          },
         });
       }
     }
