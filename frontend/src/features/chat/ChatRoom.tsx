@@ -22,14 +22,12 @@ const ChatRoom = () => {
  const username = useSelector(state => state.auth.username);
   // const roomId = useSelector((state: RootState) => state.chat.roomId);
   const messagesByContext = useSelector((state: RootState) => state.chat.messagesByContext);
-  console.log("messages by context", messagesByContext, 'user id:', userId);
-  const roomId = 'chat_lobby'
+  // console.log("messages by context", messagesByContext, 'user id:', userId);
+  const roomId = 'lobby'
 
   useChatRoom(userId, username);
-
   // Hook up the socket namespace and message listener
   useChatNamespace(roomId, userId, username);
-
   const currentMessages = messagesByContext[roomId] ?? [];
 
   return (

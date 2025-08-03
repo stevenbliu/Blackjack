@@ -9,6 +9,7 @@ import { ChatMessage } from "./dataTypes";
 type ChatType = 'lobby' | 'game' | 'private';
 
 
+const initialRoom = 'chat_lobby'
 
 type ChatState = {
   messagesByContext: {
@@ -19,7 +20,7 @@ type ChatState = {
 
 const initialState: ChatState = {
   messagesByContext : {},
-  roomId: 'lobby', // e.g. "lobby" or "game-123"
+  roomId: initialRoom, // e.g. "lobby" or "game-123"
 };
 
 const chatSlice = createSlice({
@@ -31,7 +32,7 @@ const chatSlice = createSlice({
     },
     addMessage(state, action: PayloadAction<ChatMessagePayload>) {
       const {
-        room_id = 'chat_lobby',
+        room_id,
         user_id,
         username,
         message,
@@ -48,7 +49,8 @@ const chatSlice = createSlice({
       if (!state.messagesByContext[room_id]) {
         state.messagesByContext[room_id] = [];
       }
-
+      console.log(`addMessage: chatMessage ${chatMessage} pushed to room_id: ${room_id}`);
+      // Add the new message to the room's message list
       state.messagesByContext[room_id].push(chatMessage);
     },
   },
@@ -58,19 +60,19 @@ const chatSlice = createSlice({
       (state, action) => {
         const { id, senderId, text, timestamp } = action.payload;
 
-        let target = 'lobby';
+        let target = initialRoom;
         if (type === 'private' && to) {
           target = (state.roomId === user_id) ? user_id : to;
         } else if (type === 'game') {
           target = 'game'; // or your game room id
         } else {
-          target = 'lobby';
+          target = initialRoom;
         }
 
         if (!state.messagesByContext[target]) {
           state.messagesByContext[target] = [];
         }
-
+        console.log(`Extra Reducer: chatMessage ${action.payload} pushed to room_id: ${target}`);
         state.messagesByContext[target].push(action.payload);
 
         // Optional: sort by timestamp ascending
@@ -81,4 +83,5 @@ const chatSlice = createSlice({
 });
 
 export const { setRoomId, addMessage } = chatSlice.actions;
+export {initialRoom}
 export default chatSlice.reducer;

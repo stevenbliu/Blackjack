@@ -9,7 +9,7 @@ from typing import Optional, Dict
 SECRET_KEY = "your-secret-key"  # Use env var in production
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-GUEST_PREFIX = "guest_"
+# GUEST_PREFIX = "guest_"
 
 # OAuth2 scheme for token dependency
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
@@ -21,7 +21,7 @@ def create_access_token(user_id: str, is_guest: bool = False) -> str:
     expire = datetime.utcnow() + expires_delta
 
     to_encode = {
-        "sub": f"{GUEST_PREFIX}{user_id}" if is_guest else user_id,
+        "sub": user_id,
         "exp": expire,
         "is_guest": is_guest,
         "jti": str(uuid4()),  # Unique token identifier

@@ -19,7 +19,7 @@ async def create_guest_session():
     """Create a temporary guest account"""
 
     try:
-        user_id = generate_guest_id()
+        user_id = "guest_" + generate_guest_id()
         token = create_access_token(user_id, is_guest=True)
         logging.info("Guest session created successfully")
         return {
@@ -46,6 +46,10 @@ def get_user_id(username):
     return "user_1"
 
 
+def get_username(user_id):
+    return "user_1"
+
+
 @router.post("/login")
 async def login(username: str, password: str):
     """Regular user login (simplified example)"""
@@ -56,15 +60,6 @@ async def login(username: str, password: str):
     user_id = get_user_id(username)  # Your DB lookup
     token = create_access_token(user_id)
     return {"access_token": token}
-
-
-# @router.post("/auth/guest")
-# async def login(username: str, password: str):
-#     """Guest login (simplified example)"""
-
-#     user_id = generate_guest_id(username)  # Your DB lookup
-#     token = create_access_token(user_id)
-#     return {"access_token": token}
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):

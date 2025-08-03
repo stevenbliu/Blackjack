@@ -5,6 +5,8 @@ from fastapi.routing import Mount  # Add this import
 import jwt
 from jwt import ExpiredSignatureError
 
+# from jwt.exceptions import ExpiredSignatureError
+
 from auth.routes import router as auth_router
 from game.routes import router as game_router
 from chat.routes import router as chat_router
@@ -21,10 +23,13 @@ from session.SessionManager import SessionManager
 from chat.namespace import ChatNamespace
 from game.namespace import GameNamespace
 
-import datetime
+from datetime import datetime
 from collections import defaultdict
 import logging
 import asyncio
+from pydantic import BaseModel, ValidationError
+
+# from auth.middleware import SocketAuth #//implmenet http and socket middleware later
 
 logging.basicConfig(
     level=logging.INFO,
@@ -45,7 +50,16 @@ sio = socketio.AsyncServer(
     async_mode="asgi",
     cors_allowed_origins="*",
     engineio_logging=True,  # Enable for debugging
+    transports=["websocket"],  # Enforce WebSocket-only
+    async_handlers=True,
+    logger=True,
+    ping_timeout=60,
+    ping_interval=25,
+    # always_connect=True,
 )
+
+
+# auth = SocketAuth(sio)
 
 
 app = FastAPI()
@@ -91,74 +105,79 @@ game_namespace = GameNamespace(
     connection_manager=connection_manager,
 )
 
+from auth.models import *
+from functools import wraps  # ✅ required for custom decorators like with_auth
+
+
+TEST_MODE = False  # Enable for test tokens
+
+
+def with_auth(handler):
+    @wraps(handler)
+    async def wrapper(sid, environ, auth):
+        # logging.info(f"[ROOT] Auth Middleware: {auth}")
+        try:
+            logging.info(f"[ROOT] Auth Middleware: {auth}")
+
+            # ✅ Validate the auth dict using AuthPayload model
+            validated_auth = AuthPayload(**auth)
+            logging.info(
+                f"Passing validated_auth: {validated_auth} of type {type(validated_auth)}"
+            )
+            if TEST_MODE and auth.get("token") == "test-token":
+                await sio.save_session(sid, {"user_id": "test-user-id"})
+                return await handler(sid, environ, validated_auth)
+
+            if not auth or "token" not in auth:
+                raise ConnectionRefusedError("Missing or invalid auth")
+
+            # ✅ Verify token
+            payload = verify_token(validated_auth.token)
+            user_id = payload.get("sub")
+            await sio.save_session(sid, {"user_id": user_id})
+            return await handler(
+                sid, environ, validated_auth
+            )  # <- Pass validated model
+
+        except ValidationError as e:
+            logging.warning(f"[AUTH VALIDATION ERROR] {e}")
+            raise ConnectionRefusedError("Invalid auth format")
+        except ExpiredSignatureError:
+            logging.warning(f"[AUTH] Token expired for sid={sid}")
+            raise ConnectionRefusedError("Token expired")
+        except Exception as e:
+            logging.error(f"[AUTH] Token verification failed: {e}")
+            raise ConnectionRefusedError("Auth failed")
+
+    return wrapper
+
 
 # Root namespace connection handler
 @sio.event
-async def connect(sid, environ, auth=None):
-    """Root namespace connection handler supporting multiple auth sources."""
-    logging.info("ws connection")
+@with_auth
+async def connect(sid, environ, auth: AuthPayload = None):
+    """Root namespace connection handler with token auth"""
     try:
         logging.info(f"Root WS Connection SID: {sid}, auth={auth}")
 
-        token = None
-        username = None
-        user_id = None
-
-        # 1. Preferred: from auth param
-        if auth and isinstance(auth, dict):
-            token = auth.get("token")
-            username = auth.get("username")
-            user_id = auth.get("user_id")
-            logging.info(
-                f"Auth from handshake: token={token}, username={username}, user_id={user_id}"
-            )
-
-        # 2. Fallback: query string
-        if not token and environ.get("QUERY_STRING"):
-            params = parse_qs(environ["QUERY_STRING"])
-            token = params.get("token", [None])[0]
-            username = params.get("username", [None])[0]
-            user_id = params.get("user_id", [None])[0]
-            logging.info(
-                f"Auth from query string: token={token}, username={username}, user_id={user_id}"
-            )
-
-        # 3. Fallback: HTTP headers
-        if not token and environ.get("headers"):
-            headers = (
-                dict(environ["headers"])
-                if isinstance(environ["headers"], list)
-                else environ["headers"]
-            )
-            auth_header = headers.get("authorization") or headers.get("Authorization")
-            if auth_header and auth_header.startswith("Bearer "):
-                token = auth_header[7:]
-                logging.info(f"Token from headers for {sid}")
-
-        if not token or not username or not user_id:
-            logging.warning(
-                f"Missing auth fields. Token: {token}, Username: {username}, User ID: {user_id}"
-            )
-            raise ConnectionRefusedError("Missing or incomplete auth parameters")
-
-        # Optional: verify token (uncomment to enable JWT checks)
-        # payload = verify_token(token)
-        # user_id = payload["sub"]
-        # username = payload.get("username")
+        # Retrieve saved session with trusted user_id
+        # session = await sio.get_session(sid)
+        token = auth.token
+        username = auth.username or "anonymous"
+        user_id = auth.user_id
 
         session_data = {
             "user_id": user_id,
             "username": username,
             "authenticated": True,
-            "__main__": True,
             "token": token,
+            "__main__": True,
         }
 
-        # Save session and initialize connection tracking
         await asyncio.gather(
             sio.save_session(sid, session_data),
             session_manager.create_session(sid, token),
-            connection_manager.add_connection(sid=sid),  # You can include user_id etc.
+            connection_manager.add_connection(sid=sid),
         )
 
         logging.info(
@@ -168,12 +187,9 @@ async def connect(sid, environ, auth=None):
         await sio.emit("root_test", {"data": "Connected", "sid": sid}, to=sid)
         return True
 
-    except ExpiredSignatureError:
-        logging.error(f"❌ Expired token for sid={sid}")
-        raise ConnectionRefusedError("Token expired")
     except Exception as e:
         logging.error(f"❌ Connection error for sid={sid}: {e}")
-        raise ConnectionRefusedError("Authentication failed")
+        return False
 
 
 @sio.event
@@ -193,30 +209,76 @@ async def disconnect(sid):
 #     # You can now handle or broadcast the message
 #     await sio.emit("chat_message", data, room=sid)  # echo back or broadcast
 
+
+from models import *
+
 subscriptions = defaultdict(set)  # event_name: set of sids
 
 
-@sio.on("subscribe")
-async def subscribe(event, sid, payload):
-    logging.info(
-        f"Received [ALL EVENTS] Event: {event}, SID: {sid}, payload: {payload}"
-    )
-    # event = data['event']
-    subscriptions[event].add(sid)
+@sio.event
+async def subscribe(sid, data):
+    try:
+        # Validate incoming payload
+        payload = SubscribePayload(**data)
 
-    await sio.emit(
-        "subscription:ack",
-        {"event": event, "status": "success", "timestamp": datetime.now().isoformat()},
-        to=sid,
-    )
+        # Optionally, check if the user is authorized to subscribe to this event
+        # if not is_authorized(sid, payload.event):
+        #     await sio.emit(f"{payload.event}:ack", {"success": False, "reason": "unauthorized"}, to=sid)
+        #     return
+
+        # Track the subscription
+        subscriptions[payload.event].add(sid)
+
+        logging.info(f"SID {sid} subscribed to event {payload.event}")
+
+        # Acknowledge success
+        # await sio.emit(f"{payload.event}:ack", {"success": True}, to=sid)
+        return {"success": True, "event": payload.event, "sid": sid}
+
+    except ValidationError as ve:
+        logging.warning(
+            f"Validation error for subscription payload from SID {sid}: {ve}"
+        )
+        await sio.emit("error", {"message": "Invalid subscription payload"}, to=sid)
+        return {"success": False, "error": "Invalid subscription payload"}
+    except Exception as e:
+        logging.error(f"Unexpected error during subscribe: {e}")
+        # await sio.emit("error", {"message": str(e)}, to=sid)
+        return {"success": False, "error": str(e)}
 
 
 @sio.on("*")
-async def catch_all(event, sid, payload):
-    logging.info(
-        f"Received [ALL EVENTS] Event: {event}, SID: {sid}, payload: {payload}"
-    )
-    await sio.emit(event, {payload: "Connected", sid: sid}, to=sid)
+async def catch_all(event, sid, data):
+    logging.info(f"Received [ALL EVENTS] Event: {event}, SID: {sid}, data: {data}")
+
+    # await sio.emit(event, data, to=sid)
+    # await sio.emit(event, {"data": data, "sid": sid})
+    # await sio.emit(event, data)
+    await connection_manager.send_to_room(event, data)
+
+    return {
+        "success": False,
+        "error": f"No handler for event: {event}",
+        "timestamp": datetime.now().isoformat(),
+        "from": "ROOT EVENTS trigger",
+    }
+
+
+# @sio.on("*", namespace="/chat")
+# async def catch_all_chat(event, sid, data):
+#     logging.info(f"Received [ALL CHAT] Event: {event}, SID: {sid}, data: {data}")
+
+#     # await sio.emit(event, data, to=sid)
+#     # await sio.emit(event, {"data": data, "sid": sid})
+#     # await sio.emit(event, data)
+#     # await connection_manager.send_to_room(event, data)
+
+#     return {
+#         "success": True,
+#         "event": event,
+#         "timestamp": datetime.now().isoformat(),
+#         "namespace": "chat",
+#     }
 
 
 # HTTP endpoints
@@ -236,6 +298,17 @@ async def get_connection_stats():
     return connection_manager.get_stats()
 
 
+@app.middleware("http")
+async def catch_websocket_errors(request, call_next):
+    try:
+        return await call_next(request)
+    except ValueError as e:
+        if "Invalid transport" in str(e):
+            return Response(
+                status_code=400, content={"detail": "WebSocket transport required"}
+            )
+
+
 # sio.register_namespace(game_namespace)
 
 
@@ -249,7 +322,8 @@ chat_namespace = ChatNamespace(
 sio.register_namespace(chat_namespace)
 
 # Proper ASGI mounting
-app.mount("/socket.io", socketio.ASGIApp(sio))
+# app.mount("/socket.io", socketio.ASGIApp(sio))
+app.mount("/socket.io", socketio.ASGIApp(sio, socketio_path="socket.io"))
 
 
 def print_routes():

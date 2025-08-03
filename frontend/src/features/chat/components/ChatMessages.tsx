@@ -1,51 +1,77 @@
-// components/ChatMessages.tsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import styles from '../ChatRoom.module.css';
-import {ChatMessage} from '../dataTypes';
 
+const ChatMessages: React.FC = () => {
+  const roomId = useSelector((state: RootState) => state.chat.roomId);
+  const userId = useSelector((state: RootState) => state.auth.userId);
 
+  const messages = useSelector(
+    (state: RootState) => state.chat.messagesByContext[roomId]
+  );
 
-type Props = {
-  messages: ChatMessage[];
-  userId: string;
-};
+  const memoizedMessages = useMemo(() => messages || [], [messages]);
 
-const ChatMessages: React.FC<Props> = ({ messages, userId }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    console.log("message component ", messages);
-  }, [messages]);
+  }, [memoizedMessages]);
 
   return (
     <div className={styles.messageList}>
-      {messages.length === 0 && (
+      {memoizedMessages.length === 0 && (
         <p className={styles.noMessages}>No messages in this chat yet.</p>
       )}
 
-      {messages.map((msg) => {
+      {memoizedMessages.map((msg) => {
         const isMe = msg.user_id === userId;
-        console.log("message ids", msg.user_id, userId)
         const displayText = msg.text ?? msg.message ?? '[empty message]';
-        const formattedTime = new Date(msg.timestamp).toLocaleTimeString();
+        const formattedTime = new Date(msg.timestamp).toLocaleTimeString(undefined, {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+
+        const initials = msg.user_id
+          ? msg.user_id
+              .split(' ')
+              .map((word) => word[0])
+              .join('')
+              .toUpperCase()
+          : '?';
 
         return (
           <div
-            key={msg.id}
-            className={`${styles.messageContainer} ${
+            key={msg.id || `${msg.user_id}-${msg.timestamp}`}
+            className={`${styles.messageRow} ${
               isMe ? styles.messageRight : styles.messageLeft
             }`}
           >
-            {!isMe && <div className={styles.senderName}>{msg.username}</div>}
-            <div
-              className={
-                isMe ? styles.messageBubbleRight : styles.messageBubbleLeft
-              }
-            >
-              {displayText}
+            {!isMe && (
+              <div className={styles.avatarBlock}>
+                <div className={styles.avatarCircle}>{initials}</div>
+              </div>
+            )}
+            <div className={styles.messageBlock}>
+              {!isMe && (
+                <div className={styles.senderInfo}>
+                  <span className={styles.senderName}>{msg.user_id}</span>
+                  <span className={styles.messageTimestamp}>{formattedTime}</span>
+                </div>
+              )}
+              <div
+                className={
+                  isMe ? styles.messageBubbleRight : styles.messageBubbleLeft
+                }
+              >
+                {displayText}
+              </div>
+              {isMe && (
+                <div className={styles.messageTimestampRight}>
+                  {formattedTime}
+                </div>
+              )}
             </div>
-            <div className={styles.messageTimestamp}>{formattedTime}</div>
           </div>
         );
       })}

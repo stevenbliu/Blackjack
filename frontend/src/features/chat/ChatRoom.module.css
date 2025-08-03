@@ -113,3 +113,62 @@
 .sendButton {
   margin-top: 6px;
 }
+
+.messageRow {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.messageLeft {
+  flex-direction: row;
+}
+
+.messageRight {
+  flex-direction: row-reverse;
+}
+
+.avatarBlock {
+  margin-right: 8px;
+  margin-left: 8px;
+}
+
+.avatarCircle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #ccc;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.messageBlock {
+  max-width: 70%;
+}
+
+.senderInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.senderName {
+  font-weight: bold;
+}
+
+.messageTimestamp,
+.messageTimestampRight {
+  font-size: 0.7rem;
+  color: #888;
+  margin-top: 4px;
+}
+
+.messageTimestampRight {
+  text-align: right;
+}
