@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 interface ChatTabsProps {
   currentChatTarget: string;
   onChange?: (key: string) => void;
+  // roomId: string;
   // openPrivateTabs?: string[];
   // unreadMap?: Record<string, boolean>;
   // setOpenPrivateTabs?: React.Dispatch<React.SetStateAction<string[]>>;

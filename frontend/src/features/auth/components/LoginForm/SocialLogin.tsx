@@ -1,6 +1,6 @@
 // features/auth/components/LoginForm/SocialLogin.tsx
 import { useSocialLoginMutation } from '../../api/authApi';
-// import { Button } from '../../../../shared/ui/Button/Button';
+import { Button } from '../../../../shared/ui/Button/Button';
 // import Button from '../../../../shared/ui/Button/Button';
 import SocialLoginButton from '../../../../components/SocialLoginButton'
 import styles from './styles.module.css';
@@ -20,7 +20,7 @@ export default function SocialLogin({
 
   const handleSocialLogin = async (provider: 'google' | 'discord') => {
     try {
-      await socialLogin(provider).unwrap();
+      await socialLogin({provider}).unwrap();
       onLogin();
     } catch (error) {
       console.error(`${provider} login failed:`, error);

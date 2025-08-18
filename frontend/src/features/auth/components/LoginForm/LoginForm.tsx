@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import GuestLogin from './GuestLogin';
 import CredentialsForm from './CredentialsForm';
 import SocialLogin from './SocialLogin';
-import styles from './styles.module.css';
+// import styles from './styles.module.css';
 
 interface LoginFormProps {
   loginType: 'guest' | 'credentials' | 'social';
@@ -23,6 +23,7 @@ export default function LoginForm({ loginType, setLoginType, onSuccess }: LoginF
         >
           <GuestLogin 
             onLogin={onSuccess}
+            onSwitchToRegistration={() => setLoginType('guest')}
             onSwitchToCredentials={() => setLoginType('credentials')}
             onSwitchToSocial={() => setLoginType('social')}
           />

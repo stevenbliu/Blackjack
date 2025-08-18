@@ -1,12 +1,24 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+  // "compilerOptions": {
+  //   "target": "esnext",
+  //   "module": "esnext",
+  //   "jsx": "react-jsx",
+  //   "moduleResolution": "node",
+  //   "baseUrl": ".",
+  //   "noEmit": true,
+  //   "isolatedModules": true,
+    "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
     "jsx": "react-jsx",
     "moduleResolution": "node",
     "baseUrl": ".",
     "noEmit": true,
     "isolatedModules": true,
+    "strict": true,                 // catch more errors in VSCode
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
 
     // Absolute import aliases
     "paths": {
@@ -14,17 +26,14 @@
       "@components/*": ["components/*"],
       "@redux/*": ["redux/*"],
       "@websockets/*": ["websockets/*"],
+      // "@store/*": ["src/app/store/*"],
+      "@utils/*": ["utils/*"],
       "@/*": ["./src/*"]
 
     },
 
     // Add support for Vite + Jest globals
     "types": ["vite/client", "jest"],
-
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true
   },
 
   // Include source and test configs (if tests are colocated in src)

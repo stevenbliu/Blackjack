@@ -10,6 +10,7 @@ import { clearError } from './features/error/errorSlice';
 import styles from './App.module.css';
 import socketService from './features/websocket/socketServiceSingleton';
 import { useSelector } from 'react-redux';
+import type { RootState } from './app/store'; // ✅ Make sure this points to your store
 
 const HomePage = lazy(() => import('./pages/home/homePage'));
 const LobbyPage = lazy(() => import('./pages/lobby/lobbyPage'));
@@ -43,7 +44,9 @@ const App: React.FC = () => {
   if (showLogin) {
     return (
       <div className={styles.loginOverlay}>
-        <Login onSuccess={() => setShowLogin(false)} />
+        {/* <Login onSuccess={() => setShowLogin(false)} /> */}
+        <Login/>
+
       </div>
     );
   }

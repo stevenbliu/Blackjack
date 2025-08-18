@@ -1,12 +1,12 @@
 // chatSlice.ts
 import { createSlice, PayloadAction, createAction } from '@reduxjs/toolkit';
 import { WS_CHAT_MESSAGE_RECEIVED } from '../websocket/types/actionTypes';
-import { ChatMessagePayload, ChatEvents } from './socketEvents';
+import { ChatMessagePayload } from './socketEvents';
 import { ChatMessage } from "./dataTypes";
 
 // chatSlice.ts
 
-type ChatType = 'lobby' | 'game' | 'private';
+// type ChatType = 'lobby' | 'game' | 'private';
 
 
 const initialRoom = 'chat_lobby'
@@ -34,7 +34,7 @@ const chatSlice = createSlice({
       const {
         room_id,
         user_id,
-        username,
+        // username,
         message,
         timestamp,
       } = action.payload;
@@ -58,25 +58,27 @@ const chatSlice = createSlice({
     builder.addCase(
       createAction<ChatMessage>(WS_CHAT_MESSAGE_RECEIVED),
       (state, action) => {
-        const { id, senderId, text, timestamp } = action.payload;
+        console.log(`Extra Reducer: chatMessage ${action.payload} pushed to room_id: ${state.roomId}`);
+        state.messagesByContext[state.roomId].push(action.payload);
+        // const { id, senderId, text, timestamp, user_id } = action.payload;
 
-        let target = initialRoom;
-        if (type === 'private' && to) {
-          target = (state.roomId === user_id) ? user_id : to;
-        } else if (type === 'game') {
-          target = 'game'; // or your game room id
-        } else {
-          target = initialRoom;
-        }
+        // let target = initialRoom;
+        // if (type === 'private' && to) {
+        //   target = (state.roomId === user_id) ? user_id : 'none';
+        // } else if (type === 'game') {
+        //   target = 'game'; // or your game room id
+        // } else {
+        //   target = initialRoom;
+        // }
 
-        if (!state.messagesByContext[target]) {
-          state.messagesByContext[target] = [];
-        }
-        console.log(`Extra Reducer: chatMessage ${action.payload} pushed to room_id: ${target}`);
-        state.messagesByContext[target].push(action.payload);
+        // if (!state.messagesByContext[target]) {
+        //   state.messagesByContext[target] = [];
+        // }
+        // console.log(`Extra Reducer: chatMessage ${action.payload} pushed to room_id: ${target}`);
+        // state.messagesByContext[target].push(action.payload);
 
-        // Optional: sort by timestamp ascending
-        state.messagesByContext[target].sort((a, b) => a.timestamp - b.timestamp);
+        // // Optional: sort by timestamp ascending
+        // state.messagesByContext[target].sort((a, b) => a.timestamp - b.timestamp);
       }
     );
   },
