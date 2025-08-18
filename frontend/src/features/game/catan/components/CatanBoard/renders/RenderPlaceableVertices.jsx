@@ -49,7 +49,7 @@ export function RenderPlaceableVertices({ positions, setSelectedVertex }) {
         clickVertex(e, pos, 'vertex')
       }
       }>
-        <sphereGeometry args={[0.2, 20, 20]} />
+        <sphereGeometry args={[0.25, 20, 20]} />
         <meshStandardMaterial color="green" emissive="yellow" emissiveIntensity={2.5} />
       </mesh>
 

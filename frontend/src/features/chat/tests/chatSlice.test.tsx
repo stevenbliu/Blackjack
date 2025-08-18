@@ -1,5 +1,5 @@
-import chatReducer, { setRoomId, addMessage } from './chatSlice';
-import { ChatMessagePayload } from './socketEvents'; // adjust import path as needed
+import chatReducer, { setRoomId, addMessage } from '../chatSlice';
+import { ChatMessagePayload } from '../socketEvents'; // adjust import path as needed
 
 describe('chatSlice', () => {
   it('should handle initial state', () => {

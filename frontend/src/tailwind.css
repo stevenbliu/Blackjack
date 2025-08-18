@@ -1,0 +1,144 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.625rem;
+  
+  /* Dark background with neon glow feel */
+  --background: #0a0a23;            /* Deep dark blue/black */
+  --foreground: #e0e0ff;            /* Soft light lavender for text */
+  --card: #1a1a40;                  /* Slightly lighter dark blue for cards */
+  --card-foreground: #cfcfff;       /* Lighter lavender text on cards */
+  --popover: #1a1a40;
+  --popover-foreground: #cfcfff;
+  
+  /* Neon cyberpunk colors */
+  --primary: #ff00ff;               /* Neon pink (hot magenta) */
+  --primary-foreground: #1a1a40;    /* Dark text on neon button */
+  
+  --secondary: #00fff7;             /* Neon cyan / aqua */
+  --secondary-foreground: #0a0a23;
+  
+  --muted: #666688;                /* Muted bluish gray */
+  --muted-foreground: #9999bb;
+  
+  --accent: #ff4d6d;               /* Neon coral pink */
+  --accent-foreground: #1a1a40;
+  
+  --destructive: #ff004d;          /* Intense neon red */
+  
+  --border: #00ffc8;               /* Dark purple border */
+  --input: #00ffc8;
+  --ring: #ff00ff;                 /* Neon pink ring */
+  
+  /* Charts - neon palette */
+  --chart-1: #ff00ff;
+  --chart-2: #00fff7;
+  --chart-3: #ff4d6d;
+  --chart-4: #a300a3;
+  --chart-5: #00cccc;
+  
+  /* Sidebar */
+  --sidebar: #0a0a23;
+  --sidebar-foreground: #cfcfff;
+  --sidebar-primary: #ff00ff;
+  --sidebar-primary-foreground: #0a0a23;
+  --sidebar-accent: #00fff7;
+  --sidebar-accent-foreground: #0a0a23;
+  --sidebar-border: #330033;
+  --sidebar-ring: #ff00ff;
+}
+
+.dark {
+  --background: #0a0a23;
+  --foreground: #e0e0ff;
+  --card: #1a1a40;
+  --card-foreground: #cfcfff;
+  --popover: #1a1a40;
+  --popover-foreground: #cfcfff;
+  
+  --primary: #ff00ff;
+  --primary-foreground: #1a1a40;
+  
+  --secondary: #00fff7;
+  --secondary-foreground: #0a0a23;
+  
+  --muted: #666688;
+  --muted-foreground: #9999bb;
+  
+  --accent: #ff4d6d;
+  --accent-foreground: #1a1a40;
+  
+  --destructive: #ff004d;
+  
+  --border: #330033;
+  --input: #330033;
+  --ring: #ff00ff;
+  
+  --chart-1: #ff00ff;
+  --chart-2: #00fff7;
+  --chart-3: #ff4d6d;
+  --chart-4: #a300a3;
+  --chart-5: #00cccc;
+  
+  --sidebar: #0a0a23;
+  --sidebar-foreground: #cfcfff;
+  --sidebar-primary: #ff00ff;
+  --sidebar-primary-foreground: #0a0a23;
+  --sidebar-accent: #00fff7;
+  --sidebar-accent-foreground: #0a0a23;
+  --sidebar-border: #330033;
+  --sidebar-ring: #ff00ff;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

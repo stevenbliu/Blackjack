@@ -4,7 +4,7 @@ import { useThree } from '@react-three/fiber'
 import { Vector3 } from 'three'
 import BuildMenu from '../BuildMenu/BuildMenu'
 
-export function RenderBuildMenu({onBuild, onCancel }) {
+export function RenderBuildMenu({position, onBuild, onCancel }) {
   console.log("RenderBuildMenu");
 
   // if (!screenPos || screenPos.x == null || screenPos.y == null) {
@@ -12,7 +12,11 @@ export function RenderBuildMenu({onBuild, onCancel }) {
   //   return null // or return a loading spinner or placeholder
   // }
 
-  return <BuildMenu onBuild={onBuild} onCancel={() => onCancel(null)} />;
+  const handleBuild = (type) => {
+    onBuild(type, position); // Injects edge or vertex context
+  };
+
+  return <BuildMenu onBuild={handleBuild} onCancel={() => onCancel(null)} />;
 }
 
 

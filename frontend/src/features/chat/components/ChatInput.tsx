@@ -1,5 +1,6 @@
-import React, { KeyboardEvent, ChangeEvent } from 'react';
-import styles from '../ChatRoom.module.css';
+import React, { KeyboardEvent, ChangeEvent } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 interface ChatInputProps {
   value: string;
@@ -9,11 +10,11 @@ interface ChatInputProps {
 
 const ChatInput: React.FC<ChatInputProps> = ({ value, setValue, onSend }) => {
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       if (value.trim()) {
         onSend(value.trim());
-        setValue('');
+        setValue("");
       }
     }
   };
@@ -25,30 +26,30 @@ const ChatInput: React.FC<ChatInputProps> = ({ value, setValue, onSend }) => {
   const handleSendClick = () => {
     if (value.trim()) {
       onSend(value.trim());
-      setValue('');
+      setValue("");
     }
   };
 
   return (
-    <div className={styles.chatInputContainer}>
-      <textarea
+    <div className="flex items-center space-x-2 p-4 border-t border-muted-foreground/20">
+      <Textarea
         rows={2}
         value={value}
         placeholder="Type your message..."
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className={styles.textarea}
         aria-label="Chat message input"
+        className="resize-none flex-grow"
       />
-      <button
+      <Button
         onClick={handleSendClick}
         disabled={!value.trim()}
-        className={styles.sendButton}
         aria-label="Send chat message"
         type="button"
+        className="bg-secondary hover:bg-secondary/90 px-4 py-2 rounded-md"
       >
         Send
-      </button>
+      </Button>
     </div>
   );
 };

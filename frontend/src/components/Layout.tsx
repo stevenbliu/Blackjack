@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { selectAuthStatus, selectCurrentUser } from '../features/auth/authSlice';
 import styles from './Layout.module.css'
-import ChatRoom from '../features/chat/ChatRoom';
+import ChatRoom from '../features/chat/components/ChatRoom';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 

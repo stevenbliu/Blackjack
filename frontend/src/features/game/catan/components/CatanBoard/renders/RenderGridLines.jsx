@@ -103,7 +103,7 @@ export function RenderGridLines({ size = 5, spacing = 1 }) {
                   anchorY="middle"
                   depthTest={false}
                 >
-                  {label} asdasda
+                  {label}
                 </Text>
               </Billboard>
             </>

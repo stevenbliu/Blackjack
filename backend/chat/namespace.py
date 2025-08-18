@@ -4,12 +4,35 @@ from typing import Dict, Any
 from socketio import AsyncNamespace
 import asyncio
 
+# from prometheus_client import generate_latest, Counter, Gauge, Histogram
+
 from MockManagers import MockSessionManager, MockConnectionManager
 from chat.service import chat_rooms
 from chat.decorators import validate_payload
 from chat.modelsSocket import *
 
+from metrics import (
+    active_ws_connections,
+    ws_message_processing_seconds,
+    ws_messages_received,
+)
+
 logger = logging.getLogger(__name__)
+
+# Define metrics with 'chat' namespace label fixed for this namespace
+# active_ws_connections = Gauge(
+#     "ws_active_connections", "Number of active websocket connections", ["namespace"]
+# )
+# ws_messages_received = Counter(
+#     "ws_messages_received_total",
+#     "Total websocket messages received",
+#     ["namespace", "event"],
+# )
+# ws_message_processing_seconds = Histogram(
+#     "ws_message_processing_seconds",
+#     "WebSocket message processing time",
+#     ["namespace", "event"],
+# )
 
 
 class ChatNamespace(AsyncNamespace):
@@ -28,6 +51,7 @@ class ChatNamespace(AsyncNamespace):
 
     async def on_connect(self, sid, environ, auth):
         logging.info(f"[CHAT NAMEPSACE] CONNECT: sid={sid}, auth={auth}")
+        active_ws_connections.labels(namespace="/chat").inc()
 
         # if not auth or "token" not in auth or "username" not in auth:
         #     logging.info("[CHAT] No Auth provided")
@@ -40,6 +64,8 @@ class ChatNamespace(AsyncNamespace):
         token = auth["token"]
         username = auth["username"]
         user_id = auth["user_id"]
+        # need auths
+
         # Store session with sid as user_id and username from client
         await self.sm.create_session(sid, token)
         self.sm.sessions[sid]["user_sid"] = sid  # user_id = sid
@@ -51,6 +77,7 @@ class ChatNamespace(AsyncNamespace):
     async def on_disconnect(self, sid):
         """Handle client disconnection from /chat namespace"""
         logging.info(f"[CHAT NAMEPSACE] DISCONNECT: sid={sid}")
+        active_ws_connections.labels(namespace="/chat").dec()
 
         try:
             # Get session data before cleanup
@@ -94,100 +121,115 @@ class ChatNamespace(AsyncNamespace):
 
     @validate_payload(JoinRoomPayload)
     async def on_join_room(self, sid, data: JoinRoomPayload):
-        logger.info(f"[CHAT NAMESPACE] JOIN ROOM - SID: {sid} data: {data}")
-        session = await self.sm.get_session(sid)
-        if not session:
-            await self._emit_error(sid, "Unauthorized")
-            return {
-                "success": False,
-                "namespace": self.namespace,
-                "error": "Unauthorized, session not found",
-            }
+        event_name = "join_room"
+        ws_messages_received.labels(namespace="/chat", event=event_name).inc()
+        with ws_message_processing_seconds.labels(
+            namespace="/chat", event=event_name
+        ).time():
+            logger.info(f"[CHAT NAMESPACE] JOIN ROOM - SID: {sid} data: {data}")
+            session = await self.sm.get_session(sid)
+            if not session:
+                await self._emit_error(sid, "Unauthorized")
+                return {
+                    "success": False,
+                    "namespace": self.namespace,
+                    "error": "Unauthorized, session not found",
+                }
 
-        if "chat_" not in data.room_id:
-            room_id = f"chat_{data.room_id}"
-        else:
-            room_id = data.room_id
-
-        if room_id not in chat_rooms:
-            await self._emit_error(
-                sid,
-                f"Room '{room_id}' does not exist. Current rooms: {chat_rooms}",
+            room_id = (
+                data.room_id if "chat_" in data.room_id else f"chat_{data.room_id}"
             )
-            return {
-                "success": False,
-                "namespace": self.namespace,
-                "error": " Room does not exist",
-            }
 
-        success = await self.cm.join_room(sid, room_id, namespace=self.namespace)
-        if success:
-            logger.info(f"SID {sid} joined room {room_id}")
-            # Notify only this client that they joined
-            await self.emit("room_joined", {"room_id": room_id}, room=sid)
-            await self._send_room_history(sid, room_id)
-            return {"success": True, "namespace": self.namespace, "error": None}
-        else:
-            await self._emit_error(sid, "Failed to join room")
-            return {
-                "success": False,
-                "namespace": self.namespace,
-                "error": "Failed to join room",
-            }
+            if room_id not in chat_rooms:
+                await self._emit_error(sid, f"Room '{room_id}' does not exist.")
+                return {
+                    "success": False,
+                    "namespace": self.namespace,
+                    "error": " Room does not exist",
+                }
+
+            success = await self.cm.join_room(sid, room_id, namespace=self.namespace)
+            if success:
+                logger.info(f"SID {sid} joined room {room_id}")
+                await self.emit("room_joined", {"room_id": room_id}, room=sid)
+                await self._send_room_history(sid, room_id)
+                return {"success": True, "namespace": self.namespace, "error": None}
+            else:
+                await self._emit_error(sid, "Failed to join room")
+                return {
+                    "success": False,
+                    "namespace": self.namespace,
+                    "error": "Failed to join room",
+                }
 
     @validate_payload(MessagePayload)
     async def on_message(self, sid, data: MessagePayload, *args):
-        logger.info(
-            f"[CHAT NAMESPACE] MESSAGE from SID: {sid} data: {data}, args: {args}"
-        )
+        event_name = "message"
+        ws_messages_received.labels(namespace="/chat", event=event_name).inc()
+        with ws_message_processing_seconds.labels(
+            namespace="/chat", event=event_name
+        ).time():
+            logger.info(
+                f"[CHAT NAMESPACE] MESSAGE from SID: {sid} data: {data}, args: {args}"
+            )
 
-        session = await self.sm.get_session(sid)
-        if not session:
-            logging.info(f"SID {sid} not found)")
-            await self._emit_error(sid, "Session not found")
+            session = await self.sm.get_session(sid)
+            if not session:
+                logging.info(f"SID {sid} not found")
+                await self._emit_error(sid, "Session not found")
+                return {
+                    "success": False,
+                    "namespace": self.namespace,
+                    "error": "Session not found",
+                    "from": "chat message",
+                }
+
+            room_id = (
+                data.room_id if "chat_" in data.room_id else f"chat_{data.room_id}"
+            )
+
+            if room_id not in self.cm.get_user_rooms(sid):
+                logging.info(f"SID {sid} not in room {room_id}")
+                await self._emit_error(sid, "Not in room")
+                return {
+                    "success": False,
+                    "namespace": self.namespace,
+                    "error": "Not in room",
+                }
+
+            message = {
+                "user_id": session["user_id"],
+                "username": session.get("username", ""),
+                "message": data.message,
+                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "room_id": room_id,
+            }
+
+            self._store_message(room_id, message)
+
+            await self.cm.send_to_room(
+                event="new_message",
+                data=message,
+                namespace=self.namespace,
+                room_id=room_id,
+            )
+
+            logging.info(f"[CHAT NAMESPACE] Message successfuly sent to room")
             return {
-                "success": False,
+                "success": True,
                 "namespace": self.namespace,
-                "error": "Session not found",
                 "from": "chat message",
+                "error": None,
             }
 
-        if "chat_" not in data.room_id:
-            room_id = f"chat_{data.room_id}"
-        else:
-            room_id = data.room_id
-
-        if room_id not in self.cm.get_user_rooms(sid):
-            logging.info(f"SID {sid} not in room {room_id}")
-            await self._emit_error(sid, "Not in room")
-            return {
-                "success": False,
-                "namespace": self.namespace,
-                "error": "Not in room",
-            }
-
-        message = {
-            "user_id": session["user_id"],
-            "username": session.get("username", ""),
-            "message": data.message,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
-            "room_id": room_id,
-            # "room_name": chat_rooms[room_id],
-        }
-
-        self._store_message(room_id, message)
-
-        # Broadcast to all clients in the room, including sender
-        await self.cm.send_to_room(
-            event="new_message", data=message, namespace=self.namespace, room_id=room_id
-        )
-
-        return {
-            "success": True,
-            "namespace": self.namespace,
-            "from": "chat message",
-            "error": None,
-        }
+    async def on_test_message(self, sid, data: MessagePayload, *args):
+        event_name = "test_message"
+        ws_messages_received.labels(namespace="/chat", event=event_name).inc()
+        with ws_message_processing_seconds.labels(
+            namespace="/chat", event=event_name
+        ).time():
+            logging.info(f"Received test message from {sid}: {data}")
+            return {"success": True, "from": "chat test message"}
 
     # Helpers
 

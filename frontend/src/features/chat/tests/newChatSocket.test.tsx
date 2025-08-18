@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ChatMessage } from "../dataTypes";
 import { NamespacePayload } from '@features/websocket/types/socketTypes';
 import { JoinRoomPayload } from '../socketEvents';
+import { doesNotReject } from 'assert';
 
 describe('WEB SOCKET TESTING', () => {
   let socketService: SocketService;
@@ -122,6 +123,43 @@ describe('WEB SOCKET TESTING', () => {
       });
 
 });
+  describe.only('SKIP Root connection', () => {
+
+      test('chatSocket should emit test_message and receive a success response', (done) => {
+        const chatSocket = io('http://localhost:8000/chat', {
+          transports: ['websocket'],
+          upgrade: false,
+          auth: {
+            token: mockToken,
+            username: mockUsername,
+            user_id: mockUserId,
+          },
+        });
+
+        chatSocket.on('connect', () => {
+          chatSocket.emit("test_message", {
+            room_id: "123",
+            message: "hello",
+          }, (response: any) => {
+            try {
+              expect(response).toHaveProperty('success', true);
+              expect(response).toHaveProperty('from', 'chat test message');
+              // Optional:
+              // expect(response).toHaveProperty('message', 'hello');
+              done();
+            } catch (error) {
+              done(error);
+            } finally {
+              chatSocket.disconnect();
+            }
+          });
+        });
+      });
+
+    });
+
+
+
 
   describe('Multi Socket.IO Connections', () => {
     let socket: Socket;
@@ -177,7 +215,7 @@ describe('WEB SOCKET TESTING', () => {
   });
 
 
-  describe.only("SocketService Connections", () => {
+  describe("SocketService Connections", () => {
     let socket: Socket;
     let chatSocket: Socket;
     let socketService: SocketService;
@@ -213,7 +251,7 @@ describe('WEB SOCKET TESTING', () => {
 
     });
 
-      test.only("Main.py : Fail to connect with suscribe handler with invalid payload ", async () => {
+      test("Main.py : Fail to connect with suscribe handler with invalid payload ", async () => {
         socket.on("connect", () => {
           expect(socket.connected).toBe(true);
         });
@@ -278,7 +316,7 @@ describe('WEB SOCKET TESTING', () => {
     });
 
 
-    test.only("Namespace Connection: Message Sending (with emit)", async () => {
+    test("Namespace Connection: Message Sending (with emit)", async () => {
 
       socket.on("connect", () => {
         expect(socket.connected).toBe(true);
@@ -306,7 +344,7 @@ describe('WEB SOCKET TESTING', () => {
     });
 
 
-  test.only("Namespace Connection: Message Sending (with socketService.send)", async () => {
+  test("Namespace Connection: Message Sending (with socketService.send)", async () => {
     // Wait for main socket connection (optional, if needed)
     await new Promise<void>((resolve) => {
       socket.on("connect", () => {

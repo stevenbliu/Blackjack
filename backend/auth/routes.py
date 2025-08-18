@@ -80,3 +80,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise HTTPException(
             status_code=401, detail=f"Token verification failed: {str(e)}"
         )
+
+
+@router.get("/protected")
+async def protected_route(user=Depends(get_current_user)):
+    return {"message": "Hello!", "user": user}

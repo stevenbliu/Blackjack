@@ -31,13 +31,13 @@ export interface SendChatMessagePayload {
 }
 
 export interface ChatMessagePayload {
-  id: string;
+  id?: string;
   user_id: string;
   username: string;
   to?: string;
   message: string;
-  timestamp: number;
-  type: 'lobby' | 'game' | 'private';
+  timestamp: number | string;
+  type?: 'lobby' | 'game' | 'private';
   messageStatus?: 'sent' | 'delivered' | 'read';
   room_id: string;
 }

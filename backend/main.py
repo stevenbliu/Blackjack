@@ -4,6 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import Mount  # Add this import
 import jwt
 from jwt import ExpiredSignatureError
+from prometheus_fastapi_instrumentator import Instrumentator
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    generate_latest,
+    PROCESS_COLLECTOR,
+    PLATFORM_COLLECTOR,
+    GC_COLLECTOR,
+)
 
 # from jwt.exceptions import ExpiredSignatureError
 
@@ -62,7 +70,12 @@ sio = socketio.AsyncServer(
 # auth = SocketAuth(sio)
 
 
-app = FastAPI()
+# app = FastAPI()
+app = FastAPI(openapi_prefix="/api")  # <-- this tells FastAPI all paths are under /api
+
+# Prometheus metrics
+instrumentator = Instrumentator()
+instrumentator.instrument(app).expose(app)
 
 # CORS Middleware - Must come before routes
 app.add_middleware(
@@ -105,11 +118,39 @@ game_namespace = GameNamespace(
     connection_manager=connection_manager,
 )
 
+from metrics import (
+    active_ws_connections,
+    ws_messages_received,
+    ws_message_processing_seconds,
+)
+
+# from prometheus_client import Counter, Gauge, Histogram
+
+# # Number of active WebSocket connections (gauge)
+# active_ws_connections = Gauge(
+#     "ws_active_connections", "Number of active websocket connections", ["namespace"]
+# )
+
+# # Total WebSocket messages received (counter)
+# ws_messages_received = Counter(
+#     "ws_messages_received_total",
+#     "Total websocket messages received",
+#     ["namespace", "event"],
+# )
+
+# # Histogram for message processing duration (optional)
+# ws_message_processing_seconds = Histogram(
+#     "ws_message_processing_seconds",
+#     "WebSocket message processing time",
+#     ["namespace", "event"],
+# )
+
+
 from auth.models import *
 from functools import wraps  # ✅ required for custom decorators like with_auth
 
 
-TEST_MODE = False  # Enable for test tokens
+TEST_MODE = True  # Enable for test tokens
 
 
 def with_auth(handler):
@@ -203,13 +244,6 @@ async def disconnect(sid):
         logging.error(f"Error during disconnect for {sid}: {str(e)}")
 
 
-# @sio.event
-# async def chat_message(sid, data):
-#     logging.info(f"Received message from {sid}: {data}")
-#     # You can now handle or broadcast the message
-#     await sio.emit("chat_message", data, room=sid)  # echo back or broadcast
-
-
 from models import *
 
 subscriptions = defaultdict(set)  # event_name: set of sids
@@ -264,23 +298,6 @@ async def catch_all(event, sid, data):
     }
 
 
-# @sio.on("*", namespace="/chat")
-# async def catch_all_chat(event, sid, data):
-#     logging.info(f"Received [ALL CHAT] Event: {event}, SID: {sid}, data: {data}")
-
-#     # await sio.emit(event, data, to=sid)
-#     # await sio.emit(event, {"data": data, "sid": sid})
-#     # await sio.emit(event, data)
-#     # await connection_manager.send_to_room(event, data)
-
-#     return {
-#         "success": True,
-#         "event": event,
-#         "timestamp": datetime.now().isoformat(),
-#         "namespace": "chat",
-#     }
-
-
 # HTTP endpoints
 @app.get("/")
 async def root():
@@ -289,7 +306,7 @@ async def root():
 
 @app.get("/healthcheck")
 async def healthcheck():
-    return Response(status_code=200)
+    return {"status": "ok"}
 
 
 @app.get("/connections/stats")
@@ -337,3 +354,23 @@ def print_routes():
 print_routes()
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, ws="websockets")
+
+
+from fastapi import APIRouter
+
+
+metrics_router = APIRouter()
+
+
+@metrics_router.get("/metrics")
+async def custom_metrics():
+    data = generate_latest()
+    return Response(content=data, media_type=CONTENT_TYPE_LATEST)
+
+
+from prometheus_client import REGISTRY
+
+# REGISTRY.register(PROCESS_COLLECTOR)
+# REGISTRY.register(PLATFORM_COLLECTOR)
+# REGISTRY.register(GC_COLLECTOR)
+app.include_router(metrics_router, prefix="")

@@ -13,8 +13,8 @@ interface City {
 }
 
 interface Road {
-  from: Position
-  to: Position
+  start: Position
+  end: Position
   playerId: number
 }
 
@@ -32,8 +32,8 @@ type BuildParams =
     }
   | {
       type: 'road'
-      from: [number, number, number]
-      to: [number, number, number]
+      start: [number, number, number]
+      end: [number, number, number]
       playerId: number
     }
 
@@ -75,19 +75,20 @@ export function addVertexBuilding(
 
 export function addEdgeBuilding(
   buildings: Buildings,
-  from: Position,
-  to: Position,
+  // start: Position,
+  // end: Position,
+  position: { start: Position; end: Position },
   playerId: number
 ): Buildings {
-  if (hasRoadBetween(buildings, from, to)) return buildings
+  const start = position.start;
+  const end = position.end;
+  console.log("addEdgeBuilding", start, end, playerId);
+  if (hasRoadBetween(buildings, start, end)) return buildings;
 
   return {
     ...buildings,
-    roads: [
-      ...buildings.roads,
-      { from, to, playerId }
-    ]
-  }
+    roads: [...buildings.roads, { start, end, playerId }],
+  };
 }
 
 /**
@@ -95,7 +96,8 @@ export function addEdgeBuilding(
  */
 export function handleBuild(
   buildings: Buildings,
-  params: BuildParams
+  params: BuildParams,
+
 ): Buildings {
 
   console.log("handleBuild", params);
@@ -108,7 +110,11 @@ export function handleBuild(
   }
 
   if (type === 'road') {
-    return addEdgeBuilding(buildings, params.from, params.to, playerId)
+    // return addEdgeBuilding(buildings, params.position, playerId)
+      params.position.mesh.material.opacity = 1;
+      params.position.mesh.material.transparent = false;
+      params.position.mesh.material.color.set("orange");
+
   }
 
   console.warn(`Unhandled build type: ${type}`)
@@ -117,7 +123,7 @@ export function handleBuild(
 
 
 // Helpers
-function arePositionsEqual(a: Position, b: Position, tolerance = 0.01) {
+export function arePositionsEqual(a: Position, b: Position, tolerance = 0.01) {
   return (
     Math.abs(a[0] - b[0]) < tolerance &&
     Math.abs(a[1] - b[1]) < tolerance &&
@@ -133,9 +139,9 @@ function hasCityAt(buildings: Buildings, position: Position): boolean {
   return buildings.cities.some(c => arePositionsEqual(c.position, position))
 }
 
-function hasRoadBetween(buildings: Buildings, from: Position, to: Position): boolean {
+function hasRoadBetween(buildings: Buildings, start: Position, end: Position): boolean {
   return buildings.roads.some(r =>
-    (arePositionsEqual(r.from, from) && arePositionsEqual(r.to, to)) ||
-    (arePositionsEqual(r.from, to) && arePositionsEqual(r.to, from)) // bidirectional
+    (arePositionsEqual(r.start, start) && arePositionsEqual(r.end, end)) ||
+    (arePositionsEqual(r.start, end) && arePositionsEqual(r.end, start)) // bidirectional
   )
 }
