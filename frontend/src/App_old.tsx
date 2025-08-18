@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from './app/hooks';
 import SidebarRules from './components/Sidebar/SidebarRules';
 import WelcomeBox from './components/Welcome/WelcomeBox';
 import Lobby from './features/lobby/Lobby';
-import ChatRoom from './features/chat/ChatRoom';
+import ChatRoom from './features/chat/components/ChatRoom';
 import styles from './App.module.css';
 import ErrorBanner from './features/ErrorBanner/ErrorBanner';
 import { clearError } from './features/error/errorSlice';

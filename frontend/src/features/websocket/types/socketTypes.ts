@@ -35,3 +35,8 @@ export interface ServerToClientEvents {
 
   // Add other server-to-client events here
 }
+
+export interface NamespacePayload<T = any> {
+  event: string;
+  data: T;
+}

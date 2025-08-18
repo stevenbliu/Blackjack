@@ -1,0 +1,40 @@
+config:
+  target: "http://localhost:8000/chat"   # base URL (HTTP scheme fine, socket.io uses it)
+  phases:
+    - duration: 60
+      arrivalRate: 20
+      rampTo: 60
+  users: 100
+
+  engines:
+    socketio:
+      transport: websocket      # force websocket transport
+  socketio:
+    # namespace: "/chat"          # specify your namespace here
+    transports: ["websocket"]   # force websocket transport
+    upgrade: false              # optional: disable upgrade fallback to polling
+    auth:
+      token: "test-token"
+      username: "test-user"
+      user_id: "test-user"
+  plugins:
+    expect: {}
+scenarios:
+  - engine: socketio
+    flow:
+      # - loop:
+          # - count: "{{ randomInt(10, 30) }}"
+        - emit:
+            channel: "test_message"
+            data:
+              room_id: "123"
+              message: "hello from artillery"
+          ack: true
+            # - think:
+            #     wait: 
+            #       min: 0.3
+            #       max: 1.5
+        # - expect:
+        #     response:
+        #       success: true
+        #       from: "chat test message"

@@ -4,7 +4,7 @@
     "module": "esnext",
     "jsx": "react-jsx",
     "moduleResolution": "node",
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "noEmit": true,
     "isolatedModules": true,
 
@@ -13,7 +13,9 @@
       "@features/*": ["features/*"],
       "@components/*": ["components/*"],
       "@redux/*": ["redux/*"],
-      "@websockets/*": ["websockets/*"]
+      "@websockets/*": ["websockets/*"],
+      "@/*": ["./src/*"]
+
     },
 
     // Add support for Vite + Jest globals

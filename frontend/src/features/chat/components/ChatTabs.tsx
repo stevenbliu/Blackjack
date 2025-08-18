@@ -1,66 +1,85 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-// import { setCurrentChatTarget } from '../chatSlice';
-import styles from '../ChatRoom.module.css';
+import React from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ChatTabsProps {
   currentChatTarget: string;
-  // openPrivateTabs: string[];
-  // unreadMap: Record<string, boolean>;
-  // dispatch?: ReturnType<typeof useDispatch>; // optional if passed manually
-  // setOpenPrivateTabs: React.Dispatch<React.SetStateAction<string[]>>;
-  // setUnreadMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  onChange?: (key: string) => void;
+  // openPrivateTabs?: string[];
+  // unreadMap?: Record<string, boolean>;
+  // setOpenPrivateTabs?: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 const ChatTabs: React.FC<ChatTabsProps> = ({
   currentChatTarget,
-  // openPrivateTabs,
-  // unreadMap,
-  // dispatch,
+  onChange,
+  // openPrivateTabs = [],
+  // unreadMap = {},
   // setOpenPrivateTabs,
 }) => {
+  const handleTabChange = (key: string) => {
+    if (onChange) onChange(key);
+  };
 
-  // const handleTabClick = (key: string) => {
-  //   dispatch?.(setCurrentChatTarget(key));
+  // Example close button for private tabs (uncomment and modify if needed)
+  // const renderCloseButton = (key: string) => {
+  //   if (key === "lobby" || key === "game") return null;
+  //   return (
+  //     <button
+  //       onClick={() =>
+  //         setOpenPrivateTabs?.((prev) => prev.filter((id) => id !== key))
+  //       }
+  //       aria-label={`Close chat with ${key}`}
+  //       type="button"
+  //       className="ml-2 text-red-500 hover:text-red-700"
+  //     >
+  //       ❌
+  //     </button>
+  //   );
   // };
-
-  // const handleCloseTab = (key: string) => {
-  //   setOpenPrivateTabs((prev) => prev.filter((id) => id !== key));
-  // };
-
-  const renderTabButton = (key: string, label: string) => (
-    <div key={key} className={styles.tabButtonWrapper}>
-      <button
-        type="button"
-        // onClick={() => handleTabClick(key)}
-        className={`${styles.tabButton} ${
-          currentChatTarget === key ? styles.tabButtonSelected : ''
-        }`}
-        aria-selected={currentChatTarget === key}
-        role="tab"
-      >
-        {label}
-        {/* {unreadMap[key] && <span className={styles.unreadDot} aria-label="Unread message">•</span>} */}
-      </button>
-      {key !== 'lobby' && key !== 'game' && (
-        <button
-          // onClick={() => handleCloseTab(key)}
-          className={styles.closePrivateTab}
-          aria-label={`Close chat with ${label}`}
-          type="button"
-        >
-          ❌
-        </button>
-      )}
-    </div>
-  );
 
   return (
-    <div className={styles.tabList} role="tablist">
-      {renderTabButton('lobby', 'Lobby')}
-      {renderTabButton('game', 'Game')}
-      {/* {openPrivateTabs.map((pid) => renderTabButton(pid, `User: ${pid}`))} */}
-    </div>
+    <Tabs
+      value={currentChatTarget}
+      onValueChange={handleTabChange}
+      className="w-full"
+    >
+      <TabsList className="flex space-x-2 border-b border-gray-300 dark:border-gray-700">
+        <TabsTrigger
+          value="lobby"
+          className="px-4 py-2 text-sm font-medium text-gray-700 rounded-t-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+        >
+          Lobby
+          {/* {unreadMap?.['lobby'] && (
+            <span className="ml-1 text-red-500">•</span>
+          )} */}
+        </TabsTrigger>
+        <TabsTrigger
+          value="game"
+          className="px-4 py-2 text-sm font-medium text-gray-700 rounded-t-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+        >
+          Game
+          {/* {unreadMap?.['game'] && (
+            <span className="ml-1 text-red-500">•</span>
+          )} */}
+        </TabsTrigger>
+
+        {/* Uncomment for private tabs */}
+        {/* {openPrivateTabs?.map((pid) => (
+          <div key={pid} className="flex items-center">
+            <TabsTrigger
+              value={pid}
+              className="px-4 py-2 text-sm font-medium text-gray-700 rounded-t-lg hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+            >
+              User: {pid}
+              {unreadMap?.[pid] && (
+                <span className="ml-1 text-red-500">•</span>
+              )}
+            </TabsTrigger>
+            {renderCloseButton(pid)}
+          </div>
+        ))} */}
+      </TabsList>
+    </Tabs>
   );
 };
 

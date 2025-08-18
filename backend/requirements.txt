@@ -10,3 +10,6 @@ python-socketio
 fastapi-socketio[asyncio]
 python-jose[cryptography]
 slowapi
+PyJWT
+prometheus-fastapi-instrumentator
+prometheus-client

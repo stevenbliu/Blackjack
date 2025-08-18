@@ -1,6 +1,7 @@
 # from socketio import AsyncServer
 
 import socketio
+import logging
 
 
 class MockSessionManager:
@@ -47,10 +48,20 @@ class MockConnectionManager:
         return True
 
     async def send_to_room(self, event, data, namespace=None, room_id=None):
-        if room_id:
+        if namespace and room_id:
+            # Most specific case - send to room within namespace
             await self.sio.emit(event, data, room=room_id, namespace=namespace)
-        else:
+        elif namespace:
+            # Send to all clients in namespace
             await self.sio.emit(event, data, namespace=namespace)
+        elif room_id:
+            # Send to room in default namespace
+            await self.sio.emit(event, data, room=room_id)
+        else:
+            # Broadcast to all clients in default namespace
+
+            logging.info(f"sent to ...{event} {data}")
+            await self.sio.emit(event, data)
 
     def get_user_rooms(self, sid):
         return list(self.rooms.get(sid, []))

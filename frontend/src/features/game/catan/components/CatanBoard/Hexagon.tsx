@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Text } from '@react-three/drei';
+import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import {typeColorMap, typeEmojiMap, ResourceType}  from '../../assets/temp_assets';
-
+import { useFrame } from '@react-three/fiber';
+import { typeColorMap, typeEmojiMap, ResourceType } from '../../assets/temp_assets';
 
 interface HexagonProps {
   position: [number, number, number];
@@ -13,32 +14,38 @@ interface HexagonProps {
   highlight?: boolean;
 }
 
-
-
 export function Hexagon(props: HexagonProps) {
   const [hovered, setHover] = useState(false);
+  const textRef = useRef<any>(null);
+  const { camera } = useThree();
+
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = 256;
     const ctx = canvas.getContext('2d')!;
-    
-    // Draw hex background
     ctx.fillStyle = props.highlight ? '#e0ffe0' : typeColorMap[props.terrainType];
     ctx.fillRect(0, 0, 256, 256);
-    
+
     if (props.highlight) {
       ctx.strokeStyle = '#00ff00';
       ctx.lineWidth = 10;
       ctx.strokeRect(5, 5, 246, 246);
     }
-    
+
     return new THREE.CanvasTexture(canvas);
   }, [props.terrainType, props.highlight]);
+
+  // Billboard logic: rotate text to face camera
+  useFrame(() => {
+    if (textRef.current) {
+      textRef.current.quaternion.copy(camera.quaternion);
+    }
+  });
 
   return (
     <group position={props.position}>
       <mesh
-        rotation={[0, Math.PI/6, 0]}
+        rotation={[0, Math.PI / 6, 0]}
         castShadow
         receiveShadow
         onClick={props.onClick}
@@ -46,17 +53,18 @@ export function Hexagon(props: HexagonProps) {
         onPointerOut={() => setHover(false)}
       >
         <cylinderGeometry args={[1.0, 1.0, 0.3, 6]} />
-        <meshStandardMaterial 
+        <meshStandardMaterial
           map={texture}
           roughness={0.4}
           metalness={0.1}
           transparent={true}
-          opacity={0.1}
+          opacity={0.5}
         />
       </mesh>
 
       {props.numberToken && (
         <Text
+          ref={textRef}
           position={[0, 0.35, 0]}
           fontSize={0.5}
           color={props.numberToken === 6 || props.numberToken === 8 ? '#ff0000' : '#000000'}
@@ -70,8 +78,8 @@ export function Hexagon(props: HexagonProps) {
       {props.hasRobber && (
         <mesh position={[0, 0.5, 0]}>
           <cylinderGeometry args={[0.5, 0.5, 1, 6]} />
-          <meshStandardMaterial 
-            color="#333" 
+          <meshStandardMaterial
+            color="#333"
             roughness={0.7}
             emissive="#ff0000"
             emissiveIntensity={hovered ? 0.5 : 0}

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { Canvas} from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei' // ✔️ This is correct
 
@@ -95,7 +95,10 @@ export default function CatanBoard() {
 
 
   const [selectedVertex, setSelectedVertex] = useState(null);
+  const vertexMeshesRef = useRef({})
+
   const [selectedEdge, setSelectedEdge] = useState(null);
+  const edgeMeshesRef = useRef({})
 
   // const [screenPos, setScreenPos] = useState({ x: 0, y: 0 })
   // const { camera, size } = useThree()
@@ -116,15 +119,32 @@ export default function CatanBoard() {
     }
   }, [selectedVertex]);
 
+    useEffect(() => {
+    if (selectedEdge) {
+      console.log("Selected Edge updated:", selectedEdge);
+
+      // Trigger your building logic here, for example:
+      // setBuildings((prev) => ({
+      //   ...prev,
+      //   settlements: [...prev.settlements, selectedVertex],
+      // }))
+
+      // Optionally clear the selection if you only want one-time activation:
+      // setSelectedVertex(null)
+    }
+  }, [selectedEdge]);
+
   // type:: 'settlement' | 'city' | 'road'
-  const onBuild = (type) => {
+  const onBuild = (type, position) => {
     // console.log("Building:", type, data);
     setBuildings((prevBuildings) => {
-      return handleBuild(prevBuildings, {
-        type: type,
-        position: selectedVertex,
-        playerId: 1,
-      });
+      return handleBuild(
+        prevBuildings, 
+        { type: type, position: position, playerId: 1,}
+      );
+
+
+
     });
     setSelectedVertex(null);
     setSelectedEdge(null);
@@ -161,10 +181,14 @@ export default function CatanBoard() {
   // console.log('placeableVertexPositions:', placeableVertexPositions);
 
   return (
-    <div className={styles.canvasWrapper}>
+    <div className="w-full max-w-6xl aspect-[4/2] p-3">
       {" "}
       {/* <-- NEW */}
-      <Canvas orthographic camera={{ position: [10, 10, 10], zoom: 50 }}>
+      <Canvas
+        className="w-full h-full"
+        orthographic
+        camera={{ position: [10, 10, 10], zoom: 50 }}
+      >
         {/* Three Canvas Settings */}
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 10, 5]} intensity={0.8} />
@@ -194,15 +218,23 @@ export default function CatanBoard() {
 
         <RenderPlaceableEdges
           positions={placeableEdgePositions}
-          onClick={(pos) => {
-            console.log(
-              "Clicked to place edge at:",
-              pos.start,
-              pos.end,
-              pos.midpoint
-            );
-            // Convert back to closest hex + vertex combo if needed
+          setSelectedEdge={setSelectedEdge}
+          edgeMeshes={edgeMeshesRef}
+          onClick={({ mesh, key, start, end }) => {
+            // console.log("Clicked Edge:", key);
+            // handleBuild({ mesh, key });
           }}
+
+          // onClick={(pos) => {
+          //   console.log(
+          //     "Clicked to place edge at:",
+          //     pos.start,
+          //     pos.end,
+          //     pos.midpoint
+          //   );
+            
+          //   // Convert back to closest hex + vertex combo if needed
+          // }}
         />
 
         {/* {selectedVertex && (
@@ -217,6 +249,13 @@ export default function CatanBoard() {
           position={selectedVertex}
           onBuild={onBuild}
           onCancel={() => setSelectedVertex(null)}
+        />
+      )}
+      {selectedEdge && (
+        <RenderBuildMenu
+          position={selectedEdge}
+          onBuild={onBuild}
+          onCancel={() => setSelectedEdge(null)}
         />
       )}
     </div>

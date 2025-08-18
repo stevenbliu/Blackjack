@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef } from 'react'
 import { hexToPoint } from 'honeycomb-grid'
 import { CylinderGeometry, Euler, MathUtils } from 'three'
 import { Text, Billboard, Line } from '@react-three/drei'
@@ -26,6 +26,7 @@ function getHexEdgesFromCenters(hexData) {
         0,
         cy + HEX_RADIUS * Math.sin(edgeAngle),
       ];
+      
       // const start = [
       //   cx + HEX_RADIUS * Math.cos(edgeAngle),
       //   cy + HEX_RADIUS * Math.sin(edgeAngle),
@@ -174,17 +175,17 @@ const isTooClose = (pos1, pos2, threshold = 0.5) => {
   return Math.sqrt(dx * dx + dz * dz) < threshold
 }
 
-export function getPlaceableEdgePositions(hexData, roads, Hex) {
-  const allEdges = getAllEdgesWithFallback(hexData, Hex)
-  // console.log(`All edges count: ${allEdges.length}`)
+import { arePositionsEqual } from '../BuildManager' // or wherever you keep it
 
-  return allEdges.filter(({ midpoint }) => {
-    return !roads.some(road => {
-      const hex = new Hex({ q: road.position[0], r: road.position[1] })
-      const { x, y } = hexToPoint(hex)
-      const roadPos = [x, 0, y]
-      return isTooClose(midpoint, roadPos)
-    })
+export function getPlaceableEdgePositions(hexData, roads) {
+  const allEdges = getAllEdgesWithFallback(hexData) // your existing function
+
+  return allEdges.filter(({ start, end, midpoint }) => {
+    // Exclude edges already occupied by roads (bidirectional check)
+    return !roads.some(road => 
+      (arePositionsEqual(road.start, start) && arePositionsEqual(road.end, end)) ||
+      (arePositionsEqual(road.start, end) && arePositionsEqual(road.end, start))
+    )
   })
 }
 
@@ -192,53 +193,49 @@ export function getPlaceableEdgePositions(hexData, roads, Hex) {
  * Render placeable edges as cylinders correctly rotated and scaled,
  * applying a fixed rotation offset to all edges.
  */
-export function RenderPlaceableEdges({ positions, onClick }) {
+export function RenderPlaceableEdges({ positions, setSelectedEdge, edgeMeshes, onClick}) {
   const geometry = useMemo(() => {
-    const geo = new CylinderGeometry(0.05, 0.05, 1, 8)
+    const geo = new CylinderGeometry(0.1, 0.1, 1, 10)
     // geo.rotateZ(Math.PI / 2) // Lie cylinder on X-axis by default
     return geo
   }, [])
 
   // const ANGLE = Math.PI/ 20 // fixed rotation offset if needed
+  // setSelectedEdge(positions)
+
+  // const edgeMeshes = useRef({})
+
+  function getKey(start, end) {
+    return `${start.join(',')}-${end.join(',')}`
+  }
+
+  function getRotationFromVector(start, end) {
+    const startVec = new THREE.Vector3(...start);
+    const endVec = new THREE.Vector3(...end);
+    
+    const dir = new THREE.Vector3().subVectors(endVec, startVec);
+    
+    if (dir.length() === 0) {
+      console.warn('Start and end points are identical.');
+      return new THREE.Euler(0, 0, 0);
+    }
+    
+    dir.normalize();
+
+    const up = new THREE.Vector3(0, 1, 0);
+    const quaternion = new THREE.Quaternion().setFromUnitVectors(up, dir);
+    const euler = new THREE.Euler().setFromQuaternion(quaternion);
+
+    // console.log(`Rotation: [${euler.x}, ${euler.y}, ${euler.z}]`);
+    // 
+    return euler;
+  }
 
   return positions.map(({ start, end, midpoint, length, rotation }, idx) => {
-    // console.log(`Edge #${idx}`, {
-    //   start,
-    //   end,
-    //   midpoint,
-    //   rotationDegY: MathUtils.radToDeg(rotation.y).toFixed(1),
-    //   length: length.toFixed(2),
-    // })
+    const key = getKey(start, end)
+    const eulerRotation = getRotationFromVector(start, end)
 
-    // const adjustedRotation = new Euler(
-    //   rotation.x,
-    //   rotation.y + ANGLE,
-    //   // rotation.y,
-    //   rotation.z,
-    //   rotation.order
-    // )
 
-    function getRotationFromVector(start, end) {
-      const startVec = new THREE.Vector3(...start);
-      const endVec = new THREE.Vector3(...end);
-      
-      const dir = new THREE.Vector3().subVectors(endVec, startVec);
-      
-      if (dir.length() === 0) {
-        console.warn('Start and end points are identical.');
-        return new THREE.Euler(0, 0, 0);
-      }
-      
-      dir.normalize();
-
-      const up = new THREE.Vector3(0, 1, 0);
-      const quaternion = new THREE.Quaternion().setFromUnitVectors(up, dir);
-      const euler = new THREE.Euler().setFromQuaternion(quaternion);
-
-      // console.log(`Rotation: [${euler.x}, ${euler.y}, ${euler.z}]`);
-
-      return euler;
-    }
 
 
     // GRIDLINES
@@ -247,18 +244,35 @@ export function RenderPlaceableEdges({ positions, onClick }) {
 return (
   <React.Fragment key={`placeable-edge-${idx}`}>
     <mesh
+        key={key}
+        ref={el => {
+          if (el) edgeMeshes.current[key] = el
+        }}
       position={midpoint}
       rotation={getRotationFromVector(start, end)}
       geometry={geometry}
-      onClick={() => onClick({ start, end, midpoint })}
+      onClick={(e) => {
+        e.stopPropagation();
+
+        const mesh = edgeMeshes.current[key]
+        if (onClick) {
+          onClick({mesh, key, start, end, midpoint});
+        }
+
+        setSelectedEdge({ mesh, key }); // ✅ store mesh & key
+        console.log(`setting Selected edge: ${idx, start, end, midpoint, mesh, key}`)}
+    }
     >
+      <primitive object={geometry}/>
+
       <meshStandardMaterial
         color="purple"
         emissive="purple"
         transparent={true}
         opacity={0.2}
       />
-      <Billboard>
+      {/* Debug Numbers */}
+      {/* <Billboard>
         <Text
           position={[0, 0, 1]}
           fontSize={0.5}
@@ -268,11 +282,11 @@ return (
         >
           {idx}
         </Text>
-      </Billboard>
+      </Billboard> */}
     </mesh>
 
     {/* Debug spheres */}
-    {(idx === 0 || idx === 0) && (
+    {/* {(idx === 0 || idx === 0) && (
       <>
         <mesh position={start}>
           <sphereGeometry args={[0.05, 8, 8]} />
@@ -287,7 +301,7 @@ return (
           <meshBasicMaterial color="green" />
         </mesh>
       </>
-    )}
+    )} */}
   </React.Fragment>
 );
 

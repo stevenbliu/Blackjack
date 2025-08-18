@@ -1,7 +1,8 @@
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
-// import { purchaseItem } from '../features/store/storeSlice';
-import styles from '../Pages.module.css';
-import sstyles from './storePage.module.css'
+import { useAppSelector, useAppDispatch } from '@/app/hooks';
+// import { purchaseItem } from '@/features/store/storeSlice';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 const fakeStoreItems = [
   {
@@ -36,59 +37,59 @@ const fakeStoreItems = [
   },
 ];
 
-
 export default function StorePage() {
   const dispatch = useAppDispatch();
-//   const storeItems = useAppSelector(state => state.store.items);
-//   const playerCurrency = useAppSelector(state => state.player.currency);
-//   const ownedItems = useAppSelector(state => state.player.inventory);
 
-    const storeItems = fakeStoreItems;
-    const playerCurrency = 425;
-    const ownedItems = ['potion001', 'hat001'];
+  const storeItems = fakeStoreItems;
+  const playerCurrency = 425;
+  const ownedItems = ['potion001', 'hat001'];
 
   const handlePurchase = (itemId: string) => {
     // dispatch(purchaseItem(itemId));
-    return console.log('handlePurchase');
+    console.log('Purchased:', itemId);
   };
 
   return (
-    <div className={`${styles.pageContainer} ${sstyles.storePage} ${sstyles.pageTransition}`}>
-      <div className={sstyles.storeHeader}>
-        <h1 className={sstyles.sectionTitle}>Item Shop</h1>
-        <div className={sstyles.currencyDisplay}>
-          <span className={sstyles.currencyAmount}>{playerCurrency}</span>
-          <span className={sstyles.currencyIcon}>🪙</span>
+    <div className="max-w-6xl mx-auto px-6 py-10 space-y-8 bg-background text-foreground min-h-screen">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-primary">Item Shop</h1>
+        <div className="flex items-center gap-2 text-lg font-medium">
+          <span className="text-accent">{playerCurrency}</span>
+          <span role="img" aria-label="coin">🪙</span>
         </div>
       </div>
 
-      <div className={sstyles.storeGrid}>
-        {storeItems.map(item => (
-          <div key={item.id} className={sstyles.storeItem}>
-            <div className={sstyles.itemImageContainer}>
-              <img 
-                src={item.imageUrl} 
-                alt={item.name} 
-                className={styles.itemImage}
-              />
-              {ownedItems.includes(item.id) && (
-                <div className={sstyles.ownedBadge}>OWNED</div>
-              )}
-            </div>
-            <h3 className={sstyles.itemName}>{item.name}</h3>
-            <p className={sstyles.itemDescription}>{item.description}</p>
-            <div className={sstyles.itemFooter}>
-              <span className={sstyles.itemPrice}>{item.price} 🪙</span>
-              <button
-                onClick={() => handlePurchase(item.id)}
-                disabled={ownedItems.includes(item.id) || playerCurrency < item.price}
-                className={sstyles.purchaseButton}
-              >
-                {ownedItems.includes(item.id) ? 'Owned' : 'Buy'}
-              </button>
-            </div>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {storeItems.map(item => {
+          const owned = ownedItems.includes(item.id);
+          const canAfford = playerCurrency >= item.price;
+
+          return (
+            <Card key={item.id} className="bg-card text-card-foreground relative shadow-md">
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center text-lg font-semibold">
+                  {item.name}
+                  {owned && <Badge variant="secondary">Owned</Badge>}
+                </CardTitle>
+              </CardHeader>
+
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
+              </CardContent>
+
+              <CardFooter className="flex justify-between items-center mt-2">
+                <span className="font-semibold text-accent">{item.price} 🪙</span>
+                <Button
+                  variant="default"
+                  onClick={() => handlePurchase(item.id)}
+                  disabled={owned || !canAfford}
+                >
+                  {owned ? 'Owned' : 'Buy'}
+                </Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

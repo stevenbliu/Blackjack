@@ -1,14 +1,14 @@
-import { useEffect } from 'react';
-import  socketService from '../../websocket/socketServiceSingleton';
+import { useEffect, useCallback } from 'react';
+import socketService from '../../websocket/socketServiceSingleton';
 import {
   ChatEvents,
   JoinRoomPayload,
   ChatMessagePayload,
   SendChatMessagePayload,
 } from '../socketEvents';
-import { addMessage } from '../chatSlice';
-import { useAppDispatch } from '../../..//app/hooks'; // or however your hooks are structured
-
+import { addMessage, initialRoom } from '../chatSlice';
+import { useAppDispatch } from '../../../app/hooks';
+import { socket } from '@features/websocket/websocketMiddleware';
 
 export function useChatNamespace(
   roomId: string | null,
@@ -18,72 +18,98 @@ export function useChatNamespace(
 ): {
   sendMessage: (msg: SendChatMessagePayload) => void;
 } {
-
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-  if (!roomId || !currentUserId || !currentUsername) return;
-
-  const joinPayload: JoinRoomPayload = {
-    room_id: roomId,
-    user_id: currentUserId,
-    username: currentUsername,
-  };
-
-  let chatSocket: Awaited<ReturnType<typeof socketService.addNamespace>> | null = null;
-
-  const messageHandler =
+  // ✅ Memoized handler (shared reference for add/remove listeners)
+  const messageHandler = useCallback(
     onMessage ||
-    ((msg: ChatMessagePayload) => {
-      console.log('[Namespace] Received message:', msg);
-      dispatch(addMessage(msg));
-    });
+      ((msg: ChatMessagePayload) => {
+        console.log('[💬] Dispatching message:', msg);
+        dispatch(addMessage(msg));
+      }),
+    [onMessage, dispatch]
+  );
 
-  const connectAndJoin = async () => {
-    try {
-      chatSocket = await socketService.addNamespace('/chat');
-
-      chatSocket.off(ChatEvents.MESSAGE); // 👈 clean up previous handlers
-      chatSocket.off(ChatEvents.NEW_MESSAGE);
-
-      chatSocket.on(ChatEvents.MESSAGE, messageHandler);
-      chatSocket.on(ChatEvents.NEW_MESSAGE, messageHandler);
-
-      chatSocket.emit(ChatEvents.JOIN_ROOM, {
-        room_id: 'lobby',
-        user_id: currentUserId,
-        username: currentUsername,
-      });
-
-      chatSocket.emit(ChatEvents.JOIN_ROOM, joinPayload);
-    } catch (err) {
-      console.error('❌ Failed to connect to /chat namespace:', err);
-    }
-  };
-
-  connectAndJoin();
-
-  return () => {
-    if (chatSocket) {
-      chatSocket.off(ChatEvents.MESSAGE, messageHandler);
-      chatSocket.off(ChatEvents.NEW_MESSAGE, messageHandler);
-      chatSocket.emit(ChatEvents.LEAVE_ROOM, {
-        room_id: roomId,
-        user_id: currentUserId,
-      });
-    }
-  };
-}, [roomId, currentUserId, currentUsername]);
-
-  // Optionally get the socket again here when sending
-  const sendMessage = (msg: SendChatMessagePayload) => {
-    const socket = socketService.getNamespace('/chat');
-    // const socket = null;
-    if (!socket) {
-      console.warn('❌ No socket available for /chat namespace');
+  useEffect(() => {
+    if (!roomId || !currentUserId || !currentUsername) {
+      console.log('⏸ Skipping useChatNamespace — missing inputs');
       return;
     }
-    socket.emit(ChatEvents.MESSAGE, msg);
+
+    console.log('🔌 useChatNamespace initializing for', roomId);
+
+    const joinPayload: JoinRoomPayload = {
+      room_id: roomId,
+      user_id: currentUserId,
+      username: currentUsername,
+    };
+
+    let chatSocket: Awaited<ReturnType<typeof socketService.addNamespace>> | null = null;
+    let isMounted = true;
+
+    const connectAndJoin = async () => {
+      try {
+        chatSocket = await socketService.addNamespace('/chat');
+
+        if (!isMounted || !chatSocket) return;
+
+        // Remove any old listeners (with same handler)
+        chatSocket.off(ChatEvents.MESSAGE, messageHandler);
+        chatSocket.off(ChatEvents.NEW_MESSAGE, messageHandler);
+
+        // Attach new listeners
+        chatSocket.on(ChatEvents.MESSAGE, messageHandler);
+        chatSocket.on(ChatEvents.NEW_MESSAGE, messageHandler);
+
+        // Join rooms
+        chatSocket.emit(ChatEvents.JOIN_ROOM, {
+          room_id: initialRoom,
+          user_id: currentUserId,
+          username: currentUsername,
+        });
+
+        chatSocket.emit(ChatEvents.JOIN_ROOM, joinPayload);
+
+        console.log('✅ Joined rooms:', initialRoom, roomId);
+      } catch (err) {
+        console.error('❌ Socket error:', err);
+      }
+    };
+
+    connectAndJoin();
+
+    return () => {
+      isMounted = false;
+
+      if (chatSocket) {
+        console.log('🧹 Cleaning up socket for room:', roomId);
+        chatSocket.off(ChatEvents.MESSAGE, messageHandler);
+        chatSocket.off(ChatEvents.NEW_MESSAGE, messageHandler);
+        chatSocket.emit(ChatEvents.LEAVE_ROOM, {
+          room_id: roomId,
+          user_id: currentUserId,
+        });
+      }
+    };
+  // }, [roomId, currentUserId, currentUsername, messageHandler]);
+  }, []);
+
+  // Send message via the current socket
+  const sendMessage = (msg: SendChatMessagePayload) => {
+
+    const payload = {
+      event: ChatEvents.MESSAGE, 
+      data: msg
+    }
+    
+    socketService.sendToNamespace("/chat", payload);
+    // const socket = socketService.getNamespace('/chat');
+    // if (!socket) {
+    //   console.warn('❌ No /chat socket available');
+    //   return;
+    // }
+
+    // socket.emit(ChatEvents.MESSAGE, msg);
   };
 
   return { sendMessage };

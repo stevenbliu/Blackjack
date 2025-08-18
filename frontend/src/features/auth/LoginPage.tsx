@@ -1,10 +1,10 @@
 // features/auth/LoginPage.tsx
-import { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { selectAuthStatus } from './authSlice';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner/LoadingSpinner';
-import LoginForm from './components/LoginForm/LoginForm';
+const LoginForm = React.lazy(() => import('./components/LoginForm/LoginForm'));
 import styles from './components/LoginForm/styles.module.css';
 
 export function LoginPage() {
@@ -18,12 +18,13 @@ export function LoginPage() {
         <h2>Welcome to Tabletop Arena</h2>
         
         {authStatus === 'loading' && <LoadingSpinner />}
-        
-        <LoginForm 
-          loginType={loginType} 
-          setLoginType={setLoginType}
-          onSuccess={() => navigate('/')}
-        />
+        <Suspense fallback={<LoadingSpinner />}>
+          <LoginForm 
+            loginType={loginType} 
+            setLoginType={setLoginType}
+            onSuccess={() => navigate('/')}
+          />
+        </Suspense>
       </div>
     </div>
   );

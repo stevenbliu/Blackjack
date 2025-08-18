@@ -1,6 +1,11 @@
 from uuid import uuid4
 from typing import Dict, List
-from chat.models import ChatRoom, CreateRoomRequest  # adjust import path if needed
+from chat.modelsHttp import (
+    ChatRoom,
+    CreateRoomRequest,
+)  # adjust import path if needed
+import logging
+from fastapi import HTTPException, status
 
 chat_rooms: Dict[str, ChatRoom] = {}
 
@@ -14,7 +19,7 @@ class ChatRoomService:
         """Create static/global rooms on startup like 'lobby'."""
         static_rooms = [
             {
-                "room_id": "lobby",
+                "room_id": "chat_lobby",
                 "name": "Lobby",
                 "creator_id": "system",
                 "max_participants": 1000,
@@ -37,8 +42,11 @@ class ChatRoomService:
         room_id = data.room_id if getattr(data, "room_id", None) else str(uuid4())[:8]
 
         if room_id in chat_rooms:
-            raise ValueError(f"Room with ID '{room_id}' already exists.")
-
+            logging.info(f"Room with ID '{room_id}' already exists. Skipping creation.")
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Room with ID '{room_id}' already exists.",
+            )
         new_room = ChatRoom(
             room_id=room_id,
             name=data.name,
@@ -50,6 +58,7 @@ class ChatRoomService:
                 }
             ],
             max_participants=data.max_participants,
+            # success=True,
         )
 
         chat_rooms[room_id] = new_room

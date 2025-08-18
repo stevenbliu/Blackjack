@@ -13,6 +13,13 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload  # example for FastAPI
     networks:
       - app-network
+      - monitoring
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
 
   frontend:
     build:
@@ -32,6 +39,78 @@ services:
     networks:
       - app-network
 
+  nginx:
+    # image: openresty/openresty:alpine
+    build:
+      context: /nginx
+      dockerfile: Dockerfile.nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - ./nginx/jwt.lua:/usr/local/openresty/nginx/jwt.lua:ro
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+      - app-network
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+  # Monitors Memory/CPU usage
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    ports:
+    - "9100:9100"
+    # restart: unless-stopped
+    # network_mode: host          # recommended for Node Exporter to access host metrics
+    # pid: "host"                # to get process info
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($|/)"'
+    networks:
+      - monitoring
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - monitoring
+
+      
+
 networks:
   app-network:
+    driver: bridge
+  monitoring:
     driver: bridge
