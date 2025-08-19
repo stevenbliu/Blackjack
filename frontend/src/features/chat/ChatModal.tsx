@@ -2,7 +2,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import ChatRoom from "./components/ChatRoom";
 
-import { FaComments, FaTimes } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import { MdMessage } from "react-icons/md";
 
 export function ChatModal() {
@@ -10,7 +10,7 @@ export function ChatModal() {
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant="primary"
+          variant="default"
           className="fixed bottom-6 right-6 rounded-full p-10 bg-white shadow-lg"
           aria-label="Open chat"
         >
@@ -25,11 +25,15 @@ export function ChatModal() {
       >
         <div className="relative bg-card h-[600px] flex flex-col">
             <button
-              onClick={() => document.activeElement?.blur()} // to close focus after click (optional)
               aria-label="Close"
               className="absolute top-3 right-3 p-1 rounded hover:bg-muted/20 transition"
-              onClick={(e) => e.stopPropagation()} // prevent popover from immediately closing
-            >
+              onClick={(e) => {
+                e.stopPropagation(); // prevent popover from closing
+
+                if (document.activeElement instanceof HTMLElement) {
+                  document.activeElement.blur();
+                }             
+                }}            >
               <FaTimes className="w-5 h-5" />
             </button>
 

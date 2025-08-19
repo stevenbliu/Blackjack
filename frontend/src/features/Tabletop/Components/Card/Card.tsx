@@ -27,7 +27,7 @@ const Card: React.FC<CardProps> = ({
   const handleDragStart = (e: React.DragEvent) => {
     if (draggableId) {
       e.dataTransfer.setData("cardId", draggableId);
-      dispatch(sendCardDragStart(card.id, playerId));
+      dispatch(sendCardDragStart(card.id, playerId!));
     }
     if (onDragStart) onDragStart(e);
   };

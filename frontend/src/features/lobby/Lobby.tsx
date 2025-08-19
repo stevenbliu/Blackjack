@@ -7,9 +7,9 @@ import { SEND_WS_MESSAGE } from '../websocket/types/actionTypes';
 import RoomList from './components/RoomList/RoomList';
 import styles from './Lobby.module.css';
 
-type LobbyProps = {
-  currentPlayerId: string;
-};
+// type LobbyProps = {
+//   // currentPlayerId: string;
+// };
 
 // Fake game rooms data
 const fakeGameRooms = [
@@ -64,15 +64,24 @@ const fakeGameRooms = [
 const POLL_INTERVAL_MS = 5000; // 5 seconds polling
 const PAGE_LIMIT = 3;
 
-const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
+const Lobby: React.FC<any> = () => {
   const dispatch = useAppDispatch();
+
+  const currentPlayerId = useSelector(
+    (state: RootState) => state.auth.userId
+  );
+
   const { loading, creating, socketError, currentPage } = useSelector(
     (state: RootState) => state.lobby
   );
-  
+
   // Use fake data instead of Redux state
-  const [paginatedRooms, setPaginatedRooms] = useState(fakeGameRooms.slice(0, PAGE_LIMIT));
-  const [totalFakePages] = useState(Math.ceil(fakeGameRooms.length / PAGE_LIMIT));
+  const [paginatedRooms, setPaginatedRooms] = useState(
+    fakeGameRooms.slice(0, PAGE_LIMIT)
+  );
+  const [totalFakePages] = useState(
+    Math.ceil(fakeGameRooms.length / PAGE_LIMIT)
+  );
 
   const pageRef = useRef(currentPage);
   pageRef.current = currentPage;
@@ -83,10 +92,10 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
 
   useEffect(() => {
     dispatch(initLobby());
-    
+
     // Simulate polling with fake data
     const intervalId = setInterval(() => {
-      console.log('[Polling] Refreshing fake rooms');
+      console.log("[Polling] Refreshing fake rooms");
       updatePaginatedRooms(currentPage);
     }, POLL_INTERVAL_MS);
 
@@ -109,10 +118,10 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
   //       maxPlayers,
   //       createdAt: new Date().toISOString()
   //     };
-      
+
   //     fakeGameRooms.unshift(newRoom); // Add to beginning
   //     updatePaginatedRooms(1); // Reset to first page
-      
+
   //     setShowCreateModal(false);
   //     setGameName('');
   //   } catch (err) {
@@ -126,7 +135,7 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
     console.log(`Joining game ${gameId}`);
     dispatch({
       type: SEND_WS_MESSAGE,
-      payload: { action: 'join_game', gameId, playerId: currentPlayerId },
+      payload: { action: "join_game", gameId, playerId: currentPlayerId },
     });
   };
 
@@ -137,22 +146,22 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
     }
   };
 
-return (
+  return (
     <div className={styles.lobbyContainer}>
       <div className={styles.lobbyHeader}>
         <h2>Lobby</h2>
-        
+
         <div className={styles.headerControls}>
-          <button 
-            // onClick={() => setShowCreateModal(true)} 
+          <button
+            // onClick={() => setShowCreateModal(true)}
             disabled={creating}
             className={styles.createButton}
           >
-            {creating ? 'Creating...' : 'Create New Game'}
+            {creating ? "Creating..." : "Create New Game"}
           </button>
-          
-          <button 
-            onClick={() => updatePaginatedRooms(currentPage)} 
+
+          <button
+            onClick={() => updatePaginatedRooms(currentPage)}
             disabled={loading}
             className={styles.refreshButton}
           >
@@ -165,8 +174,8 @@ return (
 
       {/* Pagination at the top */}
       <div className={styles.paginationTop}>
-        <button 
-          onClick={() => handlePageChange(currentPage - 1)} 
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage <= 1}
         >
           Prev
@@ -174,8 +183,8 @@ return (
         <span>
           Page {currentPage} of {totalFakePages}
         </span>
-        <button 
-          onClick={() => handlePageChange(currentPage + 1)} 
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage >= totalFakePages}
         >
           Next
@@ -186,20 +195,22 @@ return (
         {loading ? (
           Array(3)
             .fill(null)
-            .map((_, idx) => <div key={idx} className={styles.skeletonRoom}></div>)
+            .map((_, idx) => (
+              <div key={idx} className={styles.skeletonRoom}></div>
+            ))
         ) : paginatedRooms.length > 0 ? (
           <RoomList games={paginatedRooms} onJoin={handleJoinGame} />
+        ) : (
           // <h1> asdsad </h1>
           // console.log('123123');
-        ) : (
           <div className={styles.noGames}>No active games. Create one!</div>
         )}
       </div>
 
       {/* Pagination at the bottom */}
       <div className={styles.paginationBottom}>
-        <button 
-          onClick={() => handlePageChange(currentPage - 1)} 
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage <= 1}
         >
           Prev
@@ -207,14 +218,14 @@ return (
         <span>
           Page {currentPage} of {totalFakePages}
         </span>
-        <button 
-          onClick={() => handlePageChange(currentPage + 1)} 
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage >= totalFakePages}
         >
           Next
         </button>
       </div>
-      </div>
+    </div>
   );
 };
 

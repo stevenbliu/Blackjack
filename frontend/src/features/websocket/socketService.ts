@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 // import { store } from '../../app/store';
 // import { WS_RECEIVED } from './types/actionTypes';
-import { NamespacePayload } from './types/socketTypes';
+import { NamespacePayload, SocketMessage } from './types/socketTypes';
 
 const SERVER_URL = "http://localhost:8000"
 
@@ -155,7 +155,7 @@ export class SocketService {
     });
 
     nsSocket.on('connect_error', (err) => {
-      console.error(`❌ Namespace ${normalizedNs} connection error:`, err.message, err.type, err.description);
+      console.error(`❌ Namespace ${normalizedNs} connection error:`, err.message, err.name);
     });
 
     nsSocket.on('disconnect', (reason) => {
@@ -217,9 +217,9 @@ export class SocketService {
   }
 
   // Send to specific namespace
-  sendToNamespace<T>(
-    namespace: string,
-    payload: NamespacePayload<T>
+  sendToNamespace(
+    namespace: string,  
+    payload: NamespacePayload<SocketMessage>
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       try{
@@ -228,7 +228,7 @@ export class SocketService {
           reject(new Error(`Namespace ${namespace} not connected`));
         }
         console.log(
-          `Sending to ${namespace} namespace data: ${payload.event} ${payload.data.text} ${payload.data.action} ${payload.data.type}`
+          `Sending to ${namespace} namespace data: ${payload.event} ${payload.data.message} ${payload.data.type}`
         );
         nsSocket?.emit(payload.event, payload.data, (response: any) => {
           resolve(response);
@@ -269,15 +269,19 @@ export class SocketService {
     console.log(" added handler:", this.handlers)
 
     // Get server acknowledgment
-    const ack = await new Promise<SubscriptionAck>((resolve, reject) => {
-      this.mainSocket!.emit('subscribe', { event }, (response) => {
-        console.log("Subscribe Response:", response)
-        if (response?.success) {
-          resolve(response);
-        } else {
-          reject(new Error(response?.reason || "Subscription failed"));
+    const ack = await new Promise<any>((resolve, reject) => {
+      this.mainSocket!.emit(
+        "subscribe",
+        { event },
+        (response: { success: boolean; reason?: string }) => {
+          console.log("Subscribe Response:", response);
+          if (response?.success) {
+            resolve(response);
+          } else {
+            reject(new Error(response?.reason || "Subscription failed"));
+          }
         }
-      });
+      );
     });
 
     // Return unsubscribe function

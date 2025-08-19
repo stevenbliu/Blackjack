@@ -2,9 +2,10 @@
 
 // Base interface for all socket messages (can extend as needed)
 export interface SocketMessage {
-  action: string;
+  // action: string;
   type: string;
   payload: string;
+  message: string;
   // [key: string]: any;
 }
 
