@@ -1,12 +1,13 @@
-import { Middleware } from '@reduxjs/toolkit';
+// import { Middleware } from '@reduxjs/toolkit';
 import socketService  from './socketServiceSingleton';
 import { SEND_WS_MESSAGE } from './types/actionTypes';
-import { RootState } from '../app/store';
+// import { RootState } from '../app/store';
 
-export const socketMiddleware: Middleware<{}, RootState> = (store) => {
+export const socketMiddleware = (store) => {
   return (next) => (action) => {
     if (action.type === SEND_WS_MESSAGE) {
       try {
+        console.log('WebSocket send:', action.payload);
         socketService.send(action.payload);
       } catch (error) {
         console.error('WebSocket send error:', error);

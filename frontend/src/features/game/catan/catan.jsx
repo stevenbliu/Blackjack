@@ -1,14 +1,14 @@
-import styles from './catan.module.css'
+// import styles from './catan.module.css'
 import React, { Suspense } from "react";
 const CatanBoard = React.lazy(() => import('./components/CatanBoard/CatanBoard'));
 
 // import CatanBoard from './components/CatanBoard/CatanBoard'
-import DiceRoller from './components/TurnController'
+// import DiceRoller from './components/TurnController'
 import { PlayerPanel } from './components/PlayerPanel'
-import ChatRoom from "../../chat/components/ChatRoom";
+// import ChatRoom from "../../chat/components/ChatRoom";
 // import { Button } from "@/components/ui/button"
-import { Button } from "../../../components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+// import { Button } from "../../../components/ui/button";
+// import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ChatModal } from '../../chat/ChatModal';
 
 export default function CatanGame() {
@@ -24,7 +24,7 @@ export default function CatanGame() {
         </Suspense>
       </div>
 
-      <DiceRoller />
+      {/* <DiceRoller /> */}
 
       <PlayerPanel />
       {/* <ChatRoom /> */}

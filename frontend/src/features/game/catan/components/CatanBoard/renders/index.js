@@ -19,6 +19,6 @@ export {
 } from './RenderGridLines';
 
 export {
-  RenderBuildMenu
+  default as RenderBuildMenu
 } from './RenderBuildMenu';
 

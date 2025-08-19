@@ -37,7 +37,7 @@ export interface ChatMessagePayload {
   to?: string;
   message: string;
   timestamp: number | string;
-  type?: 'lobby' | 'game' | 'private';
+  type: 'lobby' | 'game' | 'private';
   messageStatus?: 'sent' | 'delivered' | 'read';
   room_id: string;
 }

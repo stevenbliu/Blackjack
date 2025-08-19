@@ -4,7 +4,7 @@ import { useThree } from '@react-three/fiber'
 import { Vector3 } from 'three'
 import BuildMenu from '../BuildMenu/BuildMenu'
 
-export function RenderBuildMenu({position, onBuild, onCancel }) {
+export default function RenderBuildMenu({position, onBuild, onCancel }) {
   console.log("RenderBuildMenu");
 
   // if (!screenPos || screenPos.x == null || screenPos.y == null) {

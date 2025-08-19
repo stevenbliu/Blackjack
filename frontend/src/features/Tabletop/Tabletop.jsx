@@ -1,13 +1,22 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../app/store';
+// import { RootState } from '../../app/store';
 import { HandCard } from './Components/Hand/HandCard';
 import { TableArea } from './TabletopArea';
 import { reset, drawCard } from './tabletopSlice';
+// import Card from "./Components/Card/Card";
+
+// interface Card {
+//   id: string;
+//   suit: string;
+//   value: string;
+//   imageUrl: string;
+//   faceUp: boolean;
+// }
 
 export const Tabletop = () => {
   const dispatch = useDispatch();
-  const { hand, table } = useSelector((state: RootState) => state.tabletop);
+  const { hand, table } = useSelector((state) => state.tabletop);
 
   useEffect(() => {
     dispatch(reset()); // spawn the deck on component mount

@@ -3,7 +3,9 @@
 // Base interface for all socket messages (can extend as needed)
 export interface SocketMessage {
   action: string;
-  [key: string]: any;
+  type: string;
+  payload: string;
+  // [key: string]: any;
 }
 
 // Events client sends to the server
@@ -26,9 +28,9 @@ export interface ClientToServerEvents {
 export interface ServerToClientEvents {
   player_id: (data: { playerId: string }) => void;
 
-  game_update: (data: any) => void; // Replace `any` with your GameState type
-  game_started: (data: any) => void; 
-  game_over: (data: any) => void;
+  game_update: (data: SocketMessage) => void; // Replace `any` with your GameState type
+  game_started: (data: SocketMessage) => void; 
+  game_over: (data: SocketMessage) => void;
 
   // General message event if needed
   message: (msg: SocketMessage) => void;
@@ -36,7 +38,7 @@ export interface ServerToClientEvents {
   // Add other server-to-client events here
 }
 
-export interface NamespacePayload<T = any> {
+export interface NamespacePayload<T = SocketMessage> {
   event: string;
   data: T;
 }

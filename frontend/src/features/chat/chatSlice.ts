@@ -31,19 +31,17 @@ const chatSlice = createSlice({
       state.roomId = action.payload;
     },
     addMessage(state, action: PayloadAction<ChatMessagePayload>) {
-      const {
-        room_id,
-        user_id,
-        // username,
-        message,
-        timestamp,
-      } = action.payload;
+      const { room_id, user_id, username, message, timestamp, type} =
+        action.payload;
 
       const chatMessage: ChatMessage = {
         id: crypto.randomUUID(), // Or whatever ID scheme you prefer
         user_id: user_id,
-        text: message,
-        timestamp: typeof timestamp === 'string' ? new Date(timestamp).getTime() : timestamp,
+        message: message,
+        timestamp: timestamp,
+        type: type, // You can define othertypes if needed
+        room_id: room_id,
+        username: username,
       };
 
       if (!state.messagesByContext[room_id]) {

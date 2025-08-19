@@ -1,13 +1,23 @@
 import { Text } from '@react-three/drei';
-import * as THREE from 'three';
+// import * as THREE from 'three';
 
 const PORT_SCALE = 1.8; // Increased size
 
+interface PortProps {
+  type: string;
+  position: [number, number, number];
+  rotation: number;
+}
+
 export function Port({ type, position, rotation }: PortProps) {
-  const emojiMap = {
-    brick: '🧱', lumber: '🪵', wool: '🧶', 
-    grain: '🌾', ore: '⛏️', generic: '🔄'
-  };
+  const emojiMap: { [key: string]: string } = {
+      brick: "🧱",
+      lumber: "🪵",
+      wool: "🧶",
+      grain: "🌾",
+      ore: "⛏️",
+      generic: "🔄",
+    };
 
   return (
     <group 

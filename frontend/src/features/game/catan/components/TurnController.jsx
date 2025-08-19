@@ -2,8 +2,8 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Text } from "@react-three/drei";
 import { Physics, useBox, usePlane } from "@react-three/cannon";
-import { Suspense, useRef } from "react";
-import * as THREE from "three";
+import { Suspense } from "react";
+// import * as THREE from "three";
 
 // Ground plane
 function Plane() {
@@ -47,7 +47,7 @@ function BoxWalls() {
   );
 }
 
-function Wall({ position, rotation, size }: { position: [number, number, number]; rotation: [number, number, number]; size: [number, number, number]; }) {
+function Wall({ position, rotation, size }) {
   const [ref] = useBox(() => ({
     args: size,
     position,

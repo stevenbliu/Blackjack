@@ -4,7 +4,7 @@ import {
   ChatEvents,
   JoinRoomPayload,
   ChatMessagePayload,
-  SendChatMessagePayload,
+  // SendChatMessagePayload,
 } from '../socketEvents';
 import { addMessage, initialRoom } from '../chatSlice';
 import { useAppDispatch } from '../../../app/hooks';
@@ -15,9 +15,7 @@ export function useChatNamespace(
   currentUserId: string,
   currentUsername: string,
   onMessage?: (msg: ChatMessagePayload) => void
-): {
-  sendMessage: (msg: SendChatMessagePayload) => void;
-} {
+) {
   const dispatch = useAppDispatch();
 
   // ✅ Memoized handler (shared reference for add/remove listeners)
@@ -95,22 +93,23 @@ export function useChatNamespace(
   }, []);
 
   // Send message via the current socket
-  const sendMessage = (msg: SendChatMessagePayload) => {
-
-    const payload = {
-      event: ChatEvents.MESSAGE, 
-      data: msg
-    }
+  // const sendMessage = (msg: SendChatMessagePayload) => {
+  //   console.log("[💬] Sending message:", msg);
+  //   const payload = {
+  //     event: ChatEvents.MESSAGE, 
+  //     data: msg
+  //   }
     
-    socketService.sendToNamespace("/chat", payload);
-    // const socket = socketService.getNamespace('/chat');
-    // if (!socket) {
-    //   console.warn('❌ No /chat socket available');
-    //   return;
-    // }
+  //   socketService.sendToNamespace("/chat", payload);
+  //   // const socket = socketService.getNamespace('/chat');
+  //   // if (!socket) {
+  //   //   console.warn('❌ No /chat socket available');
+  //   //   return;
+  //   // }
 
-    // socket.emit(ChatEvents.MESSAGE, msg);
-  };
+  //   // socket.emit(ChatEvents.MESSAGE, msg);
+  // };
 
-  return { sendMessage };
+  // return { sendMessage };
+  // return {};
 }

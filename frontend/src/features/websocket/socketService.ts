@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 // import { store } from '../../app/store';
-import { WS_RECEIVED } from './types/actionTypes';
+// import { WS_RECEIVED } from './types/actionTypes';
 import { NamespacePayload } from './types/socketTypes';
 
 const SERVER_URL = "http://localhost:8000"
@@ -212,6 +212,7 @@ export class SocketService {
     if (!this.mainSocket?.connected) {
       throw new Error("mainSocket not connected");
     }
+    console.log(`Sending to main socket data: ${message.payload}`);
     this.mainSocket.emit(message.event, message.payload);
   }
 
@@ -227,7 +228,7 @@ export class SocketService {
           reject(new Error(`Namespace ${namespace} not connected`));
         }
         console.log(
-          `Sending to ${namespace} namespace data: ${payload.data}`
+          `Sending to ${namespace} namespace data: ${payload.event} ${payload.data.text} ${payload.data.action} ${payload.data.type}`
         );
         nsSocket?.emit(payload.event, payload.data, (response: any) => {
           resolve(response);
