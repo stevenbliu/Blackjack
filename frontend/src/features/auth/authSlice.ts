@@ -136,16 +136,17 @@ const authSlice = createSlice({
         }
       )
       .addMatcher(
-        (action) => [
+      (action): action is PayloadAction<{ data: { error: string } }> =>
+      [
           authApi.endpoints.loginAsGuest.matchRejected,
           authApi.endpoints.loginUser.matchRejected,
           authApi.endpoints.socialLogin.matchRejected,
           authApi.endpoints.refreshToken.matchRejected,
           authApi.endpoints.register.matchRejected,
         ].some(matcher => matcher(action)),
-        (state, { payload }) => {
+        (state, action) => {
           state.status = 'failed';
-          state.error = (payload as any)?.data?.error || 'Authentication error';
+          state.error = action.payload?.data?.error || 'Authentication error';
         }
       );
   }

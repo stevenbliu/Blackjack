@@ -25,7 +25,7 @@ export function useChatRoom(currentUserId: string, currentUsername: string) {
         console.log("setting state room id", createRes.room_id);
 
         await joinRoom({
-          room_id: createRes.room_id,
+          room_id: createRes.room_id!,
           user_id: currentUserId,
           username: currentUsername,
         }).unwrap();

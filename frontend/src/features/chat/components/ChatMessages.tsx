@@ -1,13 +1,28 @@
 import React, { useEffect, useMemo, useRef } from "react";
+import {RootState} from './../../../app/store';
 import { useSelector } from "react-redux";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip } from "@/components/ui/tooltip";
+
+// Define the message shape
+interface ChatMessage {
+  id: string;
+  user_id: string;          // or number if your backend uses that
+  text?: string;
+  message?: string;
+  timestamp: string | number; // timestamp from server
+}
+
+// interface ChatMessagesProps {
+//   messages: ChatMessage[] | undefined;
+//   userId: string | number;
+// }
 
 const ChatMessages: React.FC = () => {
   const roomId = useSelector((state: RootState) => state.chat.roomId);
   const userId = useSelector((state: RootState) => state.auth.userId);
   const messages = useSelector(
-    (state: RootState) => state.chat.messagesByContext[roomId]
+    (state: RootState) => state.chat.messagesByContext[roomId] as ChatMessage[] | undefined
   );
 
   const memoizedMessages = useMemo(() => messages || [], [messages]);
@@ -41,7 +56,7 @@ const ChatMessages: React.FC = () => {
         const initials = msg.user_id
           ? msg.user_id
               .split(" ")
-              .map((word) => word[0])
+              .map((word: string) => word[0])
               .join("")
               .toUpperCase()
           : "?";

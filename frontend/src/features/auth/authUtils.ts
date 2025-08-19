@@ -5,7 +5,7 @@ interface DecodedToken {
   exp: number;    // Expiration timestamp
   sub: string;    // User ID
   is_guest?: boolean;
-  [key: string]: any; // Other possible claims
+  // [key: string]: any; // Other possible claims
 }
 
 /**
@@ -31,6 +31,7 @@ export const getUserIdFromToken = (token: string): string | null => {
     const decoded = jwtDecode<DecodedToken>(token);
     return decoded.sub || null;
   } catch (error) {
+    console.error("Error decoding token:", error);
     return null;
   }
 };
@@ -43,6 +44,8 @@ export const isGuestToken = (token: string): boolean => {
     const decoded = jwtDecode<DecodedToken>(token);
     return decoded.is_guest === true;
   } catch (error) {
+    console.error("Error decoding token:", error);
+
     return false;
   }
 };
@@ -59,6 +62,8 @@ export const storeAuthData = (data: {
     localStorage.setItem('auth_token', data.token);
     localStorage.setItem('auth_userId', data.userId);
     localStorage.setItem('auth_isGuest', String(data.isGuest));
+    localStorage.setItem('auth_isGuest', String(data.isGuest));
+
   } catch (error) {
     console.error('Failed to store auth data:', error);
   }
@@ -84,6 +89,7 @@ export const getStoredToken = (): string | null => {
   try {
     return localStorage.getItem('auth_token');
   } catch (error) {
+    console.error("Error decoding token:", error);
     return null;
   }
 };

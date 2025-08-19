@@ -1,28 +1,25 @@
 import { Link } from 'react-router-dom';
 import styles from './Navbar.module.css';
-import { selectCurrentUser, selectAuthStatus } from '../../features/auth/authSlice';
 import React, { useEffect, useState, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useAppDispatch } from '../../app/hooks';
+import { RootState } from '@/app/store';
 import { logout } from '../../features/auth/authSlice';
 import { useSelector } from 'react-redux';
+
+type AuthStatus = 'idle' | 'loading' | 'succeeded' | 'failed';
 
 const Navbar: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  // const { isGuest, tokens } = useAppSelector(selectCurrentUser);
-  // const authStatus = useAppSelector(selectAuthStatus);
   const dispatch = useAppDispatch();
-  const userId = useSelector((state) => state.auth.userId);
-  const isGuest = useSelector((state) => state.auth.isGuest);
 
+  const userId = useSelector((state: RootState) => state.auth.userId);
+  const isGuest = useSelector((state: RootState) => state.auth.isGuest);
+  const authStatus = useSelector<RootState, AuthStatus>((state) => state.auth.status);
+  // const authStatus: AuthStatus = 'succeeded';
+  const tokens = useSelector((state: RootState) => state.auth.tokens);
 
-  // const isGuest = false;
-  const authStatus = 'succeeded';
-  const tokens = 3232;
-  
-  const handleLogoutClick = () => {
-    dispatch(logout());
-  };
+  const handleLogoutClick = () => dispatch(logout());
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -34,36 +31,38 @@ const Navbar: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  return (
-    <nav className={styles.navbar}>
-      <div className={styles.logo}>
-        <Link to="/">GameHub</Link>
-      </div>
-
-      <div className={styles.navLinks}>
-        <Link to="/" className={styles.navLink}>
-          Home
-        </Link>
-        <Link to="/lobby" className={styles.navLink}>
-          Lobby
-        </Link>
-        <Link to="/leaderboard" className={styles.navLink}>
-          Leaderboard
-        </Link>
-        <Link to="/store" className={styles.navLink}>
-          Store
-        </Link>
-        <Link to="/catan" className={styles.navLink}>
-          Catan
-        </Link>
-      </div>
-
-      <div className={styles.authSection}>
-        {authStatus === "loading" && (
+  // Render loading
+  if (authStatus === 'loading') {
+    return (
+      <nav className={styles.navbar}>
+        <div className={styles.logo}><Link to="/">GameHub</Link></div>
+        <div className={styles.navLinks}>
+          <Link to="/" className={styles.navLink}>Home</Link>
+          <Link to="/lobby" className={styles.navLink}>Lobby</Link>
+          <Link to="/leaderboard" className={styles.navLink}>Leaderboard</Link>
+          <Link to="/store" className={styles.navLink}>Store</Link>
+          <Link to="/catan" className={styles.navLink}>Catan</Link>
+        </div>
+        <div className={styles.authSection}>
           <div className={styles.loadingIndicator}>Loading...</div>
-        )}
+        </div>
+      </nav>
+    );
+  }
 
-        {authStatus === "succeeded" ? (
+  // Render authenticated user
+  if (authStatus === 'succeeded') {
+    return (
+      <nav className={styles.navbar}>
+        <div className={styles.logo}><Link to="/">GameHub</Link></div>
+        <div className={styles.navLinks}>
+          <Link to="/" className={styles.navLink}>Home</Link>
+          <Link to="/lobby" className={styles.navLink}>Lobby</Link>
+          <Link to="/leaderboard" className={styles.navLink}>Leaderboard</Link>
+          <Link to="/store" className={styles.navLink}>Store</Link>
+          <Link to="/catan" className={styles.navLink}>Catan</Link>
+        </div>
+        <div className={styles.authSection}>
           <div className={styles.userInfoContainer} ref={dropdownRef}>
             <div
               className={styles.userInfo}
@@ -77,9 +76,7 @@ const Navbar: React.FC = () => {
               <span className={styles.userType}>
                 {isGuest ? `GuestId: ${userId}` : `MemberId: ${userId}`}
                 <span
-                  className={`${styles.dropdownArrow} ${
-                    isDropdownOpen ? styles.rotated : ""
-                  }`}
+                  className={`${styles.dropdownArrow} ${isDropdownOpen ? styles.rotated : ''}`}
                 >
                   ▼
                 </span>
@@ -111,15 +108,30 @@ const Navbar: React.FC = () => {
               </div>
             )}
           </div>
-        ) : (
-          <button
-            onClick={() => {}} // Replace with your login handler
-            className={styles.authButton}
-            disabled={authStatus === "loading"}
-          >
-            {authStatus === "failed" ? "Retry Login" : "Login"}
-          </button>
-        )}
+        </div>
+      </nav>
+    );
+  }
+
+  // Render guest or failed auth
+  return (
+    <nav className={styles.navbar}>
+      <div className={styles.logo}><Link to="/">GameHub</Link></div>
+      <div className={styles.navLinks}>
+        <Link to="/" className={styles.navLink}>Home</Link>
+        <Link to="/lobby" className={styles.navLink}>Lobby</Link>
+        <Link to="/leaderboard" className={styles.navLink}>Leaderboard</Link>
+        <Link to="/store" className={styles.navLink}>Store</Link>
+        <Link to="/catan" className={styles.navLink}>Catan</Link>
+      </div>
+      <div className={styles.authSection}>
+        <button
+          onClick={() => {}}
+          className={styles.authButton}
+          disabled={false}
+        >
+          {authStatus === 'failed' ? 'Retry Login' : 'Login'}
+        </button>
       </div>
     </nav>
   );
