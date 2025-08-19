@@ -2,6 +2,7 @@ import { io, Socket } from 'socket.io-client';
 // import { store } from '../../app/store';
 // import { WS_RECEIVED } from './types/actionTypes';
 import { NamespacePayload, SocketMessage } from './types/socketTypes';
+import { ChatMessage } from "@/features/chat/dataTypes";
 
 const SERVER_URL = "http://localhost:8000"
 
@@ -219,7 +220,7 @@ export class SocketService {
   // Send to specific namespace
   sendToNamespace(
     namespace: string,  
-    payload: NamespacePayload<SocketMessage>
+    payload: NamespacePayload<ChatMessage>
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       try{
