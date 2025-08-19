@@ -1,5 +1,5 @@
 // TurnIndicator.tsx
-function TurnIndicator({ player }: { player: Player }) {
+function TurnIndicator({ player }) {
   return (
     <group position={[0, 10, 0]}>
       <Text

@@ -19,6 +19,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
+    "allowJs": true,
 
     // Absolute import aliases
     "paths": {
@@ -40,5 +41,5 @@
   "include": ["src"],
 
   // Exclude build and dependencies
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.js"]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.js", "**/*.test.tsx"]
 }

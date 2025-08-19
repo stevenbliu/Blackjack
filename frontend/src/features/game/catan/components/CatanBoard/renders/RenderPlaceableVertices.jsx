@@ -2,7 +2,7 @@
 import { hexToPoint } from 'honeycomb-grid'
 import React, { useEffect, useState } from 'react'
 import { useThree } from '@react-three/fiber'
-import { RenderBuildMenu } from './RenderBuildMenu' // adjust import path if needed
+// import { RenderBuildMenu } from './RenderBuildMenu' // adjust import path if needed
 
 const HEX_RADIUS = 1;
 const ANGLE_OFFSET = Math.PI / 3;

@@ -20,8 +20,8 @@ const ChatRoom = () => {
   // );
   const roomId = "lobby";
 
-  useChatRoom(userId, username);
-  useChatNamespace(roomId, userId, username);
+  useChatRoom(userId!, username!);
+  useChatNamespace(roomId, userId!, username!);
   // const currentMessages = messagesByContext[roomId] ?? [];
 
   return (

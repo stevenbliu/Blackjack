@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAppDispatch } from '../../app/hooks';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../app/store';
-import { initLobby, fetchRooms, createGame, setCurrentPage } from './lobbySlice';
+import { initLobby, setCurrentPage } from './lobbySlice';
 import { SEND_WS_MESSAGE } from '../websocket/types/actionTypes';
 import RoomList from './components/RoomList/RoomList';
 import styles from './Lobby.module.css';
@@ -66,7 +66,7 @@ const PAGE_LIMIT = 3;
 
 const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
   const dispatch = useAppDispatch();
-  const { loading, creating, socketError, currentPage, totalPages } = useSelector(
+  const { loading, creating, socketError, currentPage } = useSelector(
     (state: RootState) => state.lobby
   );
   
@@ -77,9 +77,9 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
   const pageRef = useRef(currentPage);
   pageRef.current = currentPage;
 
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [gameName, setGameName] = useState('');
-  const [maxPlayers, setMaxPlayers] = useState(2);
+  // const [showCreateModal, setShowCreateModal] = useState(false);
+  // const [gameName, setGameName] = useState('');
+  // const [maxPlayers] = useState(2);
 
   useEffect(() => {
     dispatch(initLobby());
@@ -99,27 +99,27 @@ const Lobby: React.FC<LobbyProps> = ({ currentPlayerId }) => {
     setPaginatedRooms(fakeGameRooms.slice(start, end));
   };
 
-  const handleCreateGame = async () => {
-    try {
-      // Create a new fake room
-      const newRoom = {
-        id: `room${fakeGameRooms.length + 1}`,
-        name: gameName,
-        players: [{ id: currentPlayerId, name: 'You', ready: false }],
-        maxPlayers,
-        createdAt: new Date().toISOString()
-      };
+  // const handleCreateGame = async () => {
+  //   try {
+  //     // Create a new fake room
+  //     const newRoom = {
+  //       id: `room${fakeGameRooms.length + 1}`,
+  //       name: gameName,
+  //       players: [{ id: currentPlayerId, name: 'You', ready: false }],
+  //       maxPlayers,
+  //       createdAt: new Date().toISOString()
+  //     };
       
-      fakeGameRooms.unshift(newRoom); // Add to beginning
-      updatePaginatedRooms(1); // Reset to first page
+  //     fakeGameRooms.unshift(newRoom); // Add to beginning
+  //     updatePaginatedRooms(1); // Reset to first page
       
-      setShowCreateModal(false);
-      setGameName('');
-    } catch (err) {
-      console.error('Create game failed:', err);
-      alert('Failed to create game: ' + err);
-    }
-  };
+  //     setShowCreateModal(false);
+  //     setGameName('');
+  //   } catch (err) {
+  //     console.error('Create game failed:', err);
+  //     alert('Failed to create game: ' + err);
+  //   }
+  // };
 
   const handleJoinGame = (gameId: string) => {
     // Simulate joining a game
@@ -144,7 +144,7 @@ return (
         
         <div className={styles.headerControls}>
           <button 
-            onClick={() => setShowCreateModal(true)} 
+            // onClick={() => setShowCreateModal(true)} 
             disabled={creating}
             className={styles.createButton}
           >
@@ -189,6 +189,8 @@ return (
             .map((_, idx) => <div key={idx} className={styles.skeletonRoom}></div>)
         ) : paginatedRooms.length > 0 ? (
           <RoomList games={paginatedRooms} onJoin={handleJoinGame} />
+          // <h1> asdsad </h1>
+          // console.log('123123');
         ) : (
           <div className={styles.noGames}>No active games. Create one!</div>
         )}

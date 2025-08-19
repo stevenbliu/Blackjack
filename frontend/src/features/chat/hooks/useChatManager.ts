@@ -1,6 +1,6 @@
 // hooks/useChatManager.ts
 import { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../app/store';
 // import { addMessage } from '../chatSlice';
 import socketService  from '../../websocket/socketServiceSingleton';
@@ -9,7 +9,7 @@ import { ChatMessage } from "../dataTypes";
 import { NamespacePayload } from "../../websocket/types/socketTypes";
 
 export function useChatManager() {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const currentUserId = useSelector((state: RootState) => state.auth.userId);
   const currentUsername = useSelector((state: RootState) => state.auth.username);
   const roomId = useSelector((state: RootState) => state.chat.roomId);
@@ -21,7 +21,7 @@ export function useChatManager() {
     const trimmed = newMessage.trim();
     if (!trimmed || !currentUserId || !currentUsername) return;
 
-    // const msgType = roomId === 'lobby' || roomId === 'game' ? roomId : 'private';
+    const msgType = roomId === 'lobby' || roomId === 'game' ? roomId : roomId;
     // const to = msgType === 'private' ? roomId : undefined;
 
     const payload: NamespacePayload<ChatMessage> = {
@@ -29,11 +29,11 @@ export function useChatManager() {
       data: {
         id: crypto.randomUUID(),
         user_id: currentUserId,
-        // username: currentUsername,
-        text: trimmed,
+        username: currentUsername,
+        message: trimmed,
         timestamp: Date.now(),
-        // type: msgType,
-        // room_id: roomId
+        type: msgType,
+        room_id: roomId
       }
     };
 
@@ -43,7 +43,7 @@ export function useChatManager() {
     // dispatch(addMessage(payload.data));
     setNewMessage('');
   // }, [newMessage, roomId, currentUserId, currentUsername, dispatch]);
-  }, [newMessage, currentUserId, currentUsername]);
+  }, [newMessage, roomId, currentUserId, currentUsername, dispatch]);
 
   return {
     newMessage,

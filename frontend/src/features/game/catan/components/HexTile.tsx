@@ -22,7 +22,7 @@ const terrainColors: Record<keyof typeof typeEmojiMap, string> = {
 };
 
 function getHexPoints(size: number) {
-  const width = size * 2;
+  // const width = size * 2;
   const height = Math.sqrt(3) * size;
   const centerX = size;
   const centerY = height / 2;

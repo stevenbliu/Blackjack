@@ -1,12 +1,12 @@
-import { useMemo, useEffect } from 'react'
-import { useGLTF } from '@react-three/drei'
-'../../assets/GlTF_models/Building_1/Phase_1/Building_1_phase_1.glb'
+// import { useMemo, useEffect } from 'react'
+// import { useGLTF } from '@react-three/drei'
+// '../../assets/GlTF_models/Building_1/Phase_1/Building_1_phase_1.glb'
 
 export function Settlement({ position, color }) {
   // Optionally memoize colors/materials for performance
   const baseColor = color || "orange";
   const roofColor = "firebrick";
-  const model_path = "/GlTF_models/Building_1/Phase_1/Building_1_phase_1.glb";
+  // const model_path = "/GlTF_models/Building_1/Phase_1/Building_1_phase_1.glb";
   // const { scene } = useGLTF(model_path);
   
   // // Clone the scene for this instance

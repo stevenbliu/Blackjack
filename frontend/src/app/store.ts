@@ -16,7 +16,7 @@ import authReducer from '../features/auth/authSlice'
 import { authApi } from '../features/auth/api/authApi'; // Import your API slice
 import { chatApi } from '../features/chat/api/chatApi'; // Import your API slice
 
-export const store: any = configureStore({
+export const store = configureStore({
   reducer: {
     game: gameReducer,
     lobby: lobbyReducer,

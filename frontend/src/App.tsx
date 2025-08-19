@@ -16,7 +16,7 @@ const HomePage = lazy(() => import('./pages/home/homePage'));
 const LobbyPage = lazy(() => import('./pages/lobby/lobbyPage'));
 const LeaderboardPage = lazy(() => import('./pages/leaderboard/leaderboardPage'));
 const StorePage = lazy(() => import('./pages/store/storePage'));
-const CatanGame = lazy(() => import('./features/game/catan/catan'));
+const CatanGame = lazy(() => import('./features/game/catan/catan.jsx'));
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -31,7 +31,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated === 'succeeded') {
       setShowLogin(false);
-      socketService.connect(token, username, user_id).catch(console.error);
+      socketService.connect(token!, username!, user_id!).catch(console.error);
     } else {
       setShowLogin(true);
     }

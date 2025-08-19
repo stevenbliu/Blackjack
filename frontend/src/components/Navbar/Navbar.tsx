@@ -17,7 +17,7 @@ const Navbar: React.FC = () => {
   const isGuest = useSelector((state: RootState) => state.auth.isGuest);
   const authStatus = useSelector<RootState, AuthStatus>((state) => state.auth.status);
   // const authStatus: AuthStatus = 'succeeded';
-  const tokens = useSelector((state: RootState) => state.auth.tokens);
+  const token = useSelector((state: RootState) => state.auth.token);
 
   const handleLogoutClick = () => dispatch(logout());
 
@@ -70,7 +70,7 @@ const Navbar: React.FC = () => {
             >
               {!isGuest && (
                 <span className={styles.tokenCount}>
-                  <span className={styles.tokenIcon}>🪙</span> {tokens}
+                  <span className={styles.tokenIcon}>🪙</span> {token}
                 </span>
               )}
               <span className={styles.userType}>

@@ -3,7 +3,7 @@ import styles from './RoomList.module.css';
 
 const isLoggingEnabled = import.meta.env.MODE === 'development';
 
-const log = (...args: any[]) => {
+const log = (...args: unknown[]) => {
   if (isLoggingEnabled) {
     console.log(...args);
   }
@@ -15,13 +15,14 @@ type Player = {
   ready: boolean;
 };
 
-type GameRoom = {
-  game_id: string;
+export interface GameRoom {
+  id: string; // backend uses "id" instead of "game_id"
   name: string;
   players: Player[];
-  max_players: number;
+  maxPlayers: number; // backend uses "maxPlayers" instead of "maxPlayers"
   createdAt: string;
-};
+  date?: string; // optional because some objects may not have it
+}
 
 type RoomListProps = {
   games: GameRoom[];
@@ -43,23 +44,23 @@ const RoomList: React.FC<RoomListProps> = ({ games, onJoin }) => {
           key={game.id} 
           className={styles.roomCard}
           onClick={() => {
-            log('Joining game:', game.game_id);
-            onJoin(game.game_id);
+            log('Joining game:', game.id);
+            onJoin(game.id);
           }}
         >
           <div className={styles.roomHeader}>
-            <h3 className={styles.roomName}>{game.name || `Game ${game.game_id.slice(0, 6)}`}</h3>
+            <h3 className={styles.roomName}>{game.name || `Game ${game.id.slice(0, 6)}`}</h3>
             <span className={styles.roomTime}>{formatTime(game.createdAt)}</span>
           </div>
           
           <div className={styles.roomMeta}>
             <span className={styles.playerCount}>
-              {game.players.length}/{game.max_players} players
+              {game.players.length}/{game.maxPlayers} players
             </span>
             <div className={styles.progressBar}>
               <div 
                 className={styles.progressFill}
-                style={{ width: `${(game.players.length / game.max_players) * 100}%` }}
+                style={{ width: `${(game.players.length / game.maxPlayers) * 100}%` }}
               ></div>
             </div>
           </div>
@@ -82,12 +83,12 @@ const RoomList: React.FC<RoomListProps> = ({ games, onJoin }) => {
             className={styles.joinButton}
             onClick={(e) => {
               e.stopPropagation();
-              log('Button clicked, joining game:', game.game_id);
-              onJoin(game.game_id);
+              log('Button clicked, joining game:', game.id);
+              onJoin(game.id);
             }}
-            disabled={game.players.length >= game.max_players}
+            disabled={game.players.length >= game.maxPlayers}
           >
-            {game.players.length >= game.max_players ? 'Full' : 'Join Game'}
+            {game.players.length >= game.maxPlayers ? 'Full' : 'Join Game'}
           </button>
         </div>
       ))}

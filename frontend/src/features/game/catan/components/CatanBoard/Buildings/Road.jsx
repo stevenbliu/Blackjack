@@ -11,7 +11,7 @@ import { Vector3, Euler } from 'three'
  * @param {number} [props.width] - Radius of the road cylinder
  * @param {number} [props.length] - Length of the road (defaults to distance between start and end)
  */
-export function Road({
+export default function Road({
   start,
   end,
   onClick,
