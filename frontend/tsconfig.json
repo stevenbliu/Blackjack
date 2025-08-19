@@ -40,5 +40,5 @@
   "include": ["src"],
 
   // Exclude build and dependencies
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.js"]
 }

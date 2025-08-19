@@ -8,7 +8,7 @@ import {
 } from '../socketEvents';
 import { addMessage, initialRoom } from '../chatSlice';
 import { useAppDispatch } from '../../../app/hooks';
-import { socket } from '@features/websocket/websocketMiddleware';
+// import { socket } from '@features/websocket/websocketMiddleware';
 
 export function useChatNamespace(
   roomId: string | null,

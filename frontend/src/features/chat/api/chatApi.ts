@@ -13,6 +13,7 @@ export interface ChatRoom {
 export interface ChatRoomData {
   name: string;
   creator_id: string;
+  // room_id: string | null;
 //   creator_username: string;
   max_participants: number;
 //   room_id: string | null;
