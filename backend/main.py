@@ -58,11 +58,12 @@ sio = socketio.AsyncServer(
     async_mode="asgi",
     cors_allowed_origins="*",
     engineio_logging=True,  # Enable for debugging
-    transports=["websocket"],  # Enforce WebSocket-only
+    transports=["websocket", "polling"],  # Enforce WebSocket-only
     async_handlers=True,
     logger=True,
     ping_timeout=60,
     ping_interval=25,
+    socketio_path="socket.io",
     # always_connect=True,
 )
 

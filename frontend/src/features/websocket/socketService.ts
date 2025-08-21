@@ -1,10 +1,13 @@
 import { io, Socket } from 'socket.io-client';
 // import { store } from '../../app/store';
 // import { WS_RECEIVED } from './types/actionTypes';
-import { NamespacePayload, SocketMessage } from './types/socketTypes';
+import { NamespacePayload} from './types/socketTypes';
 import { ChatMessage } from "@/features/chat/dataTypes";
 
-const SERVER_URL = "http://localhost:8000"
+
+
+// const SERVER_URL = "http://localhost:8000"
+const SERVER_URL = "http://localhost"
 
 export class SocketService {
   // private static instance: SocketService;
@@ -32,16 +35,16 @@ export class SocketService {
     this.token = token;
 
     this.mainSocket = io(SERVER_URL, {
-      transports: ["websocket"],
+      transports: ["websocket", "polling"],
       path: "/socket.io", // Must match server
       forceNew: true,
-      upgrade: false,
+      // upgrade: false,
       auth: { token: token, username: username, user_id: user_id },
       query: { token },
       // autoConnect: false,
       reconnectionAttempts: 3,
       reconnectionDelay: 1000,
-      timeout: 5000
+      timeout: 5000,
     });
 
     this.mainSocket?.on("connect", () => {

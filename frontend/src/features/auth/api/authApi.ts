@@ -9,6 +9,11 @@ interface RegisterCredentials {
   username: string;
 }
 
+// Choose API URL based on environment
+// const baseUrl = import.meta.env.DEV
+//   ? import.meta.env.VITE_DEVELOPMENT_API_URL
+//   : import.meta.env.VITE_PRODUCTION_API_URL;
+
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({ 

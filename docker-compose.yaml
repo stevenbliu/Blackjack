@@ -42,8 +42,8 @@ services:
   nginx:
     # image: openresty/openresty:alpine
     build:
-      context: /nginx
-      dockerfile: Dockerfile.nginx
+      # context: /nginx
+      dockerfile: nginx/Dockerfile.nginx
     container_name: nginx
     ports:
       - "80:80"

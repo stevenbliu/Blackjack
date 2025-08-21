@@ -2,4 +2,6 @@ FROM openresty/openresty:alpine
 
 RUN apk add --no-cache git lua5.1-cjson perl curl
 
+COPY frontend/dist /usr/share/nginx/html/
+
 RUN opm get SkyLothar/lua-resty-jwt

@@ -33,9 +33,9 @@ async def create_guest_session():
         )
 
 
-@router.get("/test")  # Changed from POST /auth/guest/test
+@router.get("/")
 async def auth_test():
-    return {"test_status": True}
+    return {"status": "Auth Service is running."}
 
 
 def valid_credentials(username, password):
