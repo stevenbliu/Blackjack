@@ -3,7 +3,17 @@ from typing import List
 from chat.modelsHttp import ChatRoom, CreateRoomRequest, JoinRoomRequest
 from chat.service import ChatRoomService  # adjust path if needed
 
-router = APIRouter(prefix="/api/chat", tags=["chat"])
+router = APIRouter(prefix="/chat", tags=["chat"])
+
+
+@router.get("/")
+async def test():
+    return {"status": "Chat Service is running."}
+
+
+@router.get("")
+async def test_no_slash():
+    return {"status_no_slash": "Chat Service is running."}
 
 
 @router.post("/create", response_model=ChatRoom)

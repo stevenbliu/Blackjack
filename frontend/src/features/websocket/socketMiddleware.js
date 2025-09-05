@@ -7,10 +7,10 @@ export const socketMiddleware = (store) => {
   return (next) => (action) => {
     if (action.type === SEND_WS_MESSAGE) {
       try {
-        console.log('WebSocket send:', action.payload);
+        console.log('WebSocket Middleware send:', action.payload);
         socketService.send(action.payload);
       } catch (error) {
-        console.error('WebSocket send error:', error);
+        console.error('WebSocket mIDDLEWARE send error:', error);
         store.dispatch({
           type: WS_RECEIVED,
           payload: {

@@ -10,30 +10,25 @@ http {
     server {
         listen 80;
 
-        # root /usr/share/nginx/html;  # frontend build copied here
-        error_page 404 /404.html;
-
         # Serve frontend (static files or dev proxy)
         location / {
-            proxy_pass http://frontend:5173;
+            proxy_pass https://blackjack-frontend-ttx9.onrender.com;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection 'upgrade';
             proxy_set_header Host $host;
             proxy_cache_bypass $http_upgrade;
-            # try_files $uri $uri/ =404;
-
         }
 
         location /api/docs {
             # Serve docs without JWT check
-            proxy_pass http://backend:8000/api/docs;
+            proxy_pass https://blackjack-backend-ctfq.onrender.com/api/docs;
         }
 
         location /api/openapi.json {
             limit_req zone=mylimit burst=5 nodelay;
 
-            proxy_pass http://backend:8000/api/openapi.json;
+            proxy_pass https://blackjack-backend-ctfq.onrender.com/api/openapi.json;
         }
 
         location /api/ {
@@ -49,9 +44,8 @@ http {
             }
 
             access_by_lua_file /usr/local/openresty/nginx/jwt.lua;
-            proxy_pass http://backend:8000/;
+            proxy_pass https://blackjack-backend-ctfq.onrender.com;
         }
-
 
         location /auth/ {
             limit_req zone=mylimit burst=5 nodelay;
@@ -59,29 +53,14 @@ http {
             # CORS headers
             add_header 'Access-Control-Allow-Origin' '*' always;
             add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
-            # add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+            add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
 
-            # if ($request_method = 'OPTIONS') {
-            #     return 204;
-            # }
+            if ($request_method = 'OPTIONS') {
+                return 204;
+            }
 
-            # access_by_lua_file /usr/local/openresty/nginx/jwt.lua;
-            proxy_pass http://backend:8000/auth/;
+            access_by_lua_file /usr/local/openresty/nginx/jwt.lua;
+            proxy_pass https://blackjack-backend-ctfq.onrender.com/api/auth;
         }
-
-        location /socket.io/ {
-            proxy_pass http://backend:8000/socket.io/;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "Upgrade";
-            proxy_set_header Host $host;
-
-            # Optional: prevent timeouts
-            proxy_read_timeout 86400s;
-            proxy_send_timeout 86400s;
-        }
-
-
-
     }
 }
