@@ -16,7 +16,7 @@ export function RenderRoads({ roads, Hex }) {
         key={`road-${idx}`}
         from={[from.x, 0.1, from.y]}
         to={[to.x, 0.1, to.y]}
-        color={'gray'} // Replace with dynamic player color if needed
+        color={'green'} // Replace with dynamic player color if needed
       />
     )
   })

@@ -92,7 +92,8 @@ export function handleBuild(buildings, params) {
     if (params.position.mesh) {
       params.position.mesh.material.opacity = 1;
       params.position.mesh.material.transparent = false;
-      params.position.mesh.material.color.set('orange');
+      params.position.mesh.material.emissive.set(0x000000);
+      params.position.mesh.material.color.set('green');
     }
   }
 

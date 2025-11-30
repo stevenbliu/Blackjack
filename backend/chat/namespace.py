@@ -59,7 +59,7 @@ class ChatNamespace(AsyncNamespace):
         #         f"Missing token or username: Auth contains:{auth}"
         #     )
         #     return False
-
+        
         # Get
         token = auth["token"]
         username = auth["username"]
