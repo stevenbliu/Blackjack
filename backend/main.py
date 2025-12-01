@@ -43,7 +43,7 @@ logging.getLogger(__name__).setLevel(logging.INFO)
 # -----------------------------
 # FastAPI + SocketIO
 # -----------------------------
-app = FastAPI(openapi_prefix="/api")  # API endpoints under /api
+app = FastAPI()  # API endpoints under /api
 sio = socketio.AsyncServer(
     async_mode="asgi",
     cors_allowed_origins="*",
@@ -70,9 +70,11 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(auth_router)
-app.include_router(game_router)
-app.include_router(chat_router)
+api_app = FastAPI()
+
+api_app.include_router(auth_router)
+api_app.include_router(game_router)
+api_app.include_router(chat_router)
 
 # Managers
 session_manager = MockSessionManager()
@@ -92,24 +94,18 @@ game_namespace = GameNamespace(
 sio.register_namespace(chat_namespace)
 sio.register_namespace(game_namespace)
 
+
+# @app.get("/healthcheck")
+# async def healthcheck():
+#     return {"status": "ok"}
+
+
 # -----------------------------
 # Static frontend (React SPA)
 # -----------------------------
-frontend_dist_path = Path(__file__).parent / "dist"  # copied by Dockerfile to /app/dist
-app.mount(
-    "/static", StaticFiles(directory=frontend_dist_path / "assets"), name="static"
-)
+
+app.mount("/api", api_app)
 app.mount("/socket.io", socketio.ASGIApp(sio, socketio_path="socket.io"))
-
-
-# Catch-all route for SPA routing (React Router)
-@app.get("/{full_path:path}")
-async def serve_spa(full_path: str):
-    index_file = frontend_dist_path / "index.html"
-    if index_file.exists():
-        return FileResponse(index_file)
-    else:
-        return Response(content="index.html not found", status_code=404)
 
 
 # -----------------------------
@@ -122,6 +118,7 @@ def with_auth(handler):
     @wraps(handler)
     async def wrapper(sid, environ, auth):
         try:
+            print("stuff")
             validated_auth = AuthPayload(**auth)
             if TEST_MODE and auth.get("token") == "test-token":
                 await sio.save_session(sid, {"user_id": "test-user-id"})
@@ -142,8 +139,14 @@ subscriptions = defaultdict(set)
 
 
 @sio.event
-@with_auth
-async def connect(sid, environ, auth: AuthPayload = None):
+# @with_auth
+async def connect(sid, environ, auth: AuthPayload):
+    print("auth payload:", auth)
+    if not auth:
+        print("no auth provided")
+        return False
+
+    auth = AuthPayload(**auth)
     token = auth.token
     username = auth.username or "anonymous"
     user_id = auth.user_id
@@ -189,6 +192,13 @@ async def catch_all(event, sid, data):
 # -----------------------------
 # API endpoints
 # -----------------------------
+
+
+# @app.get("/")
+# async def is_running():
+#     return {"API IS RUNNING": "ok"}
+
+
 @app.get("/healthcheck")
 async def healthcheck():
     return {"status": "ok"}
@@ -224,8 +234,24 @@ async def custom_metrics():
 
 app.include_router(metrics_router, prefix="")
 
+
+frontend_dist_path = Path(__file__).parent / "dist"  # copied by Dockerfile to /app/dist
+app.mount("/", StaticFiles(directory=frontend_dist_path, html=True), name="frontend")
+
+
+# Catch-all route for SPA routing (React Router)
+@app.get("/{full_path:path}")
+async def serve_spa(full_path: str):
+    # Check if file exists first
+    requested_file = frontend_dist_path / full_path
+    if requested_file.exists() and requested_file.is_file():
+        return FileResponse(requested_file)
+    # Otherwise return index.html for SPA routing
+    return FileResponse(frontend_dist_path / "index.html")
+
+
 # -----------------------------
 # Run server
 # -----------------------------
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, ws="websockets")
+    uvicorn.run("main:backend", host="0.0.0.0", port=8000, reload=True, ws="websockets")

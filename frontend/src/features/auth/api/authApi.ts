@@ -17,7 +17,7 @@ interface RegisterCredentials {
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({ 
-    baseUrl: 'http://localhost:8000/auth',
+    baseUrl: 'http://localhost:8000/api/auth',
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
       if (token) {

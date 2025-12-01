@@ -7,7 +7,7 @@ import { ChatMessage } from "@/features/chat/dataTypes";
 
 
 // const SERVER_URL = "http://localhost:8000"
-const SERVER_URL = "http://localhost"
+const SERVER_URL = "http://localhost:8000"
 
 export class SocketService {
   // private static instance: SocketService;
