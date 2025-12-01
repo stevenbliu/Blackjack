@@ -234,8 +234,11 @@ async def custom_metrics():
 
 app.include_router(metrics_router, prefix="")
 
+print("WORKDIR CONTENTS:", os.listdir("/opt/render/project/src"))
+project_root = Path(__file__).resolve().parent.parent
 
-frontend_dist_path = Path(__file__).parent / "dist"  # copied by Dockerfile to /app/dist
+# frontend_dist_path = Path(__file__).parent / "dist"  # copied by Dockerfile to /app/dist
+frontend_dist_path = project_root / "frontend" / "dist"
 app.mount("/", StaticFiles(directory=frontend_dist_path, html=True), name="frontend")
 
 
