@@ -25,7 +25,8 @@ export interface JoinRoomRequest {
   username: string;
 }
 
-const API_URL = import.meta.env.API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
+console.log(`API_URL: ${API_URL}`)
 
 
 export const chatApi = createApi({

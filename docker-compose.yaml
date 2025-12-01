@@ -10,7 +10,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./frontend/dist:/backend/dist
+      # - ./frontend/dist:/backend/dist
       - ./frontend/dist:/frontend/dist
       - ./backend:/backend
     command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload  # example for FastAPI

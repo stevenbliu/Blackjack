@@ -11,12 +11,12 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   // 2. Define the fallback value here
-  const apiUrlFallback = env.API_URL || ''; // If VITE_API_URL is missing, use empty string for relative path
+  const apiUrlFallback = env.VITE_API_URL || ''; // If VITE_API_URL is missing, use empty string for relative path
 
   return {
     // 3. Use the define option to inject the variable with the fallback
     define: {
-      'import.meta.env.API_URL': JSON.stringify(apiUrlFallback),
+      'import.meta.env.VITE_API_URL': JSON.stringify(apiUrlFallback),
     },
     
     plugins: [react(), tailwindcss(), visualizer()],
