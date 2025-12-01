@@ -1,19 +1,19 @@
 # Backend Dockerfile
 
 # Build frontend
-FROM node:20-alpine AS frontend-build
+# FROM node:20-alpine AS frontend-build
+FROM python:3.11-slim
 
 WORKDIR /app
 
 
 # COPY frontend/package*.json ./
 # RUN npm install
-COPY frontend/dist ./frontend/dist
+# COPY frontend/dist ./frontend/dist
 # RUN npm run build
 
 
 # Backend
-FROM python:3.11-slim
 
 COPY backend/ ./backend
 
