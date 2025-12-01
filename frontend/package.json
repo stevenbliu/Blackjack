@@ -33,6 +33,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.3",
     "framer-motion": "^12.23.6",
     "gsap": "^3.12.7",
     "honeycomb-grid": "^4.1.5",
@@ -54,6 +55,7 @@
   "devDependencies": {
     "@eslint/js": "^9.22.0",
     "@tailwindcss/postcss": "^4.1.11",
+    "@types/dotenv": "^6.1.1",
     "@types/gsap": "^1.20.2",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.14",

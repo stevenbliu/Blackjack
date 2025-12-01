@@ -3,11 +3,15 @@ import { io, Socket } from 'socket.io-client';
 // import { WS_RECEIVED } from './types/actionTypes';
 import { NamespacePayload} from './types/socketTypes';
 import { ChatMessage } from "@/features/chat/dataTypes";
+import * as dotenv from 'dotenv';
 
+dotenv.config();
+
+const API_URL = process.env.API_URL;
 
 
 // const SERVER_URL = "http://localhost:8000"
-const SERVER_URL = "http://localhost:8000"
+// const API_URL = ""
 
 export class SocketService {
   // private static instance: SocketService;
@@ -34,7 +38,7 @@ export class SocketService {
     this.user_id = user_id;
     this.token = token;
 
-    this.mainSocket = io(SERVER_URL, {
+    this.mainSocket = io(API_URL, {
       transports: ["websocket", "polling"],
       path: "/socket.io", // Must match server
       forceNew: true,
@@ -115,7 +119,7 @@ export class SocketService {
     // const NAMESPACE_URL = SERVER_URL + normalizedNs
     // console.log("normaliedN", normalizedNs);
 
-    const nsSocket: Socket = io(SERVER_URL + normalizedNs, {
+    const nsSocket: Socket = io(API_URL + normalizedNs, {
       // Just use the namespace path
       transports: ["websocket"],
       // path: "/socket.io", // Must match server

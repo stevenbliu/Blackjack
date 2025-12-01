@@ -25,10 +25,16 @@ export interface JoinRoomRequest {
   username: string;
 }
 
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+const API_URL = process.env.API_URL;
+
 export const chatApi = createApi({
   reducerPath: 'chatApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8000/api/chat',
+    baseUrl: `${API_URL}/api/chat`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).auth.token;
       if (token) {

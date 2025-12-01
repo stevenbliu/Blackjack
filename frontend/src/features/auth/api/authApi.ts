@@ -9,13 +9,13 @@ interface RegisterCredentials {
   username: string;
 }
 
-// Choose API URL based on environment
-// const baseUrl = import.meta.env.DEV
-//   ? import.meta.env.VITE_DEVELOPMENT_API_URL
-//   : import.meta.env.VITE_PRODUCTION_API_URL;
+import * as dotenv from 'dotenv';
 
+dotenv.config();
+
+const API_URL = process.env.API_URL;
 // const API_URL = 'http://localhost:8000'
-const API_URL = ''
+
 
 export const authApi = createApi({
   reducerPath: 'authApi',
