@@ -9,13 +9,13 @@ interface RegisterCredentials {
   username: string;
 }
 
-import * as dotenv from 'dotenv';
+// import * as dotenv from 'dotenv';
 
-dotenv.config();
+// dotenv.config();
 
-const API_URL = process.env.API_URL;
+// const API_URL = process.env.API_URL;
 // const API_URL = 'http://localhost:8000'
-
+const API_URL = import.meta.env.API_URL;
 
 export const authApi = createApi({
   reducerPath: 'authApi',

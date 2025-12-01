@@ -25,11 +25,8 @@ export interface JoinRoomRequest {
   username: string;
 }
 
-import * as dotenv from 'dotenv';
+const API_URL = import.meta.env.API_URL;
 
-dotenv.config();
-
-const API_URL = process.env.API_URL;
 
 export const chatApi = createApi({
   reducerPath: 'chatApi',

@@ -3,11 +3,9 @@ import { io, Socket } from 'socket.io-client';
 // import { WS_RECEIVED } from './types/actionTypes';
 import { NamespacePayload} from './types/socketTypes';
 import { ChatMessage } from "@/features/chat/dataTypes";
-import * as dotenv from 'dotenv';
 
-dotenv.config();
 
-const API_URL = process.env.API_URL;
+const API_URL = import.meta.env.API_URL;
 
 
 // const SERVER_URL = "http://localhost:8000"
