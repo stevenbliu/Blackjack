@@ -1,0 +1,449 @@
+[33mcommit 81f01dd5052d10e5b0b05fd52d07bd0800333241[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mcatan[m[33m, [m[1;31morigin/catan[m[33m)[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Dec 1 10:22:30 2025 -0800
+
+    updated frontend pathing to auth
+
+[33mcommit d03ddd947091f3c215df968c53e6f97f17968d26[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Dec 1 09:57:23 2025 -0800
+
+    updated frontned dist pathing
+
+[33mcommit 203b6d99ebef2a51576191039c7f0062c43b3bb1[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sun Nov 30 20:05:18 2025 -0800
+
+    manually copy dist into backend
+
+[33mcommit 420376f3532b407f9319ef514092209a2689cc21[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sun Nov 30 19:58:39 2025 -0800
+
+    updates
+
+[33mcommit 176a209312fb12ebcaa5f3baafb65f386e96f206[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sun Nov 30 18:43:31 2025 -0800
+
+    single server working
+
+[33mcommit 62c968cc41e15aba55a69f394066b11632e7165a[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sun Nov 30 15:18:48 2025 -0800
+
+    backend serving frontend
+
+[33mcommit 143a548fb426ebdebe359461af17b21aa60752c2[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Aug 21 16:11:27 2025 -0700
+
+    added nginx endpoints
+
+[33mcommit 66a175081b61b731ec4d850e969e8e4574a3279e[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Aug 18 20:45:45 2025 -0700
+
+    matched sendnamespace types
+
+[33mcommit 524b8a5b11686454c5c6276bb2ea62b0fe90dc41[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Aug 18 20:38:31 2025 -0700
+
+    fixed TS errors
+
+[33mcommit 3bdcd15c02b30ae3e1954d1e50ea1ad7194eb381[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Aug 18 19:54:56 2025 -0700
+
+    most ts errors removed
+
+[33mcommit e70ecffd2180ec22e8da5891889cc78063e0e30f[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Aug 18 17:07:30 2025 -0700
+
+    fixed TS errors part 2
+
+[33mcommit 15acd07eba70f80a37ddfeb43099cc22a0f20a9e[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Aug 18 16:58:14 2025 -0700
+
+    fixed TS errors part 1
+
+[33mcommit 4fc59f37e77a8c0981db2e6f3b3335b3c1e7ec0c[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Aug 18 15:42:23 2025 -0700
+
+    live push
+
+[33mcommit 21bf42d9540928b35ab4fe67842ee5518fd4b18f[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sat Aug 2 19:19:12 2025 -0700
+
+    auth is set up, live chat working
+
+[33mcommit 376055f81f6dc29ba0983c04d8c1d1b42bbc3a93[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 31 09:14:04 2025 -0700
+
+    working state- adding tests
+
+[33mcommit 03f3f2bdaacf53c89fa63dbe60b1cafc09b6230a[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sat Jul 26 22:50:53 2025 -0700
+
+    ws works on guest login
+
+[33mcommit 5fec144b0c9cc182c0f7c8cac2e7039c16c628a1[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sat Jul 26 21:44:49 2025 -0700
+
+    able to place settlements now on the board, working on fleshing out auth
+
+[33mcommit 40418c9ee0521457eb05fc850f1107f8066b0887[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Fri Jul 25 15:52:15 2025 -0700
+
+    removed duplicates from edges
+
+[33mcommit ac66f3292fb6e18fbd5feeb9ebe0a9060df41c80[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Fri Jul 25 15:22:04 2025 -0700
+
+    edges line up with hexagon!!!
+
+[33mcommit c4ff66b74c177914f70808ad362aa7f2a439aa90[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 24 21:08:25 2025 -0700
+
+    modularized components
+
+[33mcommit dfa906e341fd9af87e7f4a8c801ab019307f05ad[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 24 20:09:15 2025 -0700
+
+    modularized the render parts of catan board
+
+[33mcommit d2b87028d77e8862e2f583597f015c30712dcaee[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 24 19:53:17 2025 -0700
+
+    sucessfully place settlements
+
+[33mcommit 2d1da3a649b8428af915812b5e39ee029a5494fb[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 24 19:34:48 2025 -0700
+
+    got colors working
+
+[33mcommit 8fa78f66808f21046804a956b16301e7dba31ef6[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 24 19:16:07 2025 -0700
+
+    catan buidng
+
+[33mcommit 77b54560df6d7d927d63e384470d2b22e8c0d849[m[33m ([m[1;32mmain[m[33m, [m[1;32mhexagons[m[33m)[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sat Jul 19 15:06:57 2025 -0700
+
+    updated draggable cards to send events
+
+[33mcommit c8257445b6e0abcf281aaf6500e3f36658f9f52a[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Fri Jul 18 01:30:34 2025 -0700
+
+    fixed ts bugs
+
+[33mcommit 006319856b8f3aef8c3fa9281ecbe228870004d4[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 22:28:24 2025 -0700
+
+    fixes again
+
+[33mcommit 986f9601c890c30ce048abb92a48261ae6037882[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 22:10:21 2025 -0700
+
+    test
+
+[33mcommit cacfeb1e77fca6ffefdd28d059edcd86639181d3[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 22:04:48 2025 -0700
+
+    fixed tsx bugs
+
+[33mcommit 141fcd8b0f0d5f30d644e630e0d6797d26eb151a[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 20:00:16 2025 -0700
+
+    added card drag and drops
+
+[33mcommit 5529e2c703907e2e3cbf8f875a93019f87c1ade5[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 12:16:50 2025 -0700
+
+    remove .js
+
+[33mcommit 5988daacc3ab74fe5a2da5e2366d13c1573b81ca[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 02:29:05 2025 -0700
+
+    again
+
+[33mcommit 696d13f0e7baa5725d8de773a400e2419f402d40[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 01:23:20 2025 -0700
+
+    updated urls
+
+[33mcommit 161e723f5d3276e7ae82b6204bb72a760d827991[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 01:13:32 2025 -0700
+
+    1
+
+[33mcommit 052319f3927c934f3a974305710b63a4a9e727b4[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 01:09:49 2025 -0700
+
+    x
+
+[33mcommit f48b1730c36f03cc37132c5c241dabc3e45c657d[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 01:08:06 2025 -0700
+
+    updated nginx
+
+[33mcommit 091d2276dc2aedf8a994d04319b026f19498977b[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 00:46:24 2025 -0700
+
+    updated package
+
+[33mcommit b26c3240145973eeee2c17ff1fd348b29cdcedb2[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Jul 17 00:37:34 2025 -0700
+
+    updated packaging
+
+[33mcommit 5d11c1fe340ec74a6e17852bfc24341a0829e9da[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Jul 16 23:49:23 2025 -0700
+
+    updated CORS origins
+
+[33mcommit f43c2181c06dfea9fb2ec01d51d6b6baa7f56888[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Jul 16 23:48:42 2025 -0700
+
+    updated CORS origins
+
+[33mcommit 99afdae51de545cb96abf0af60ba64b78ad4af8d[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Jul 16 23:13:52 2025 -0700
+
+    fixed app.tsx
+
+[33mcommit 9d3f164b794f8b0179204177ce43dac010f5f31d[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Jul 16 23:11:49 2025 -0700
+
+    FIXED THE MIDDLEWARE THING
+
+[33mcommit 75852835fcdfd6ddecf1e9f76e28ecbf7fda1e94[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Jul 16 22:57:32 2025 -0700
+
+    fixing Typescript bugs
+
+[33mcommit cd4863ec40eae189733bf20a89daffc14583e967[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Jul 16 21:29:59 2025 -0700
+
+    refactors
+
+[33mcommit 7fba7d3a102f8f959c3a4ac90ce20fc5b6f3e52e[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Jul 16 20:54:34 2025 -0700
+
+    lobby chat works!
+
+[33mcommit 133f9ae2961a633778b276c8ef4ffa2125b0bf2b[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Jul 16 18:39:38 2025 -0700
+
+    added live chat
+
+[33mcommit 0f437918f14d3811b3bb4e4ea8127fabe6ab58cf[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Jul 16 16:40:45 2025 -0700
+
+    added pagination for roomslist
+
+[33mcommit aa03e096aca99f855950be2c04ab34875c2bd66d[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Jul 16 16:12:24 2025 -0700
+
+    update roomlist
+
+[33mcommit 2e2c03b1e8823307561cf510cdfb51ca7763459b[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Apr 24 23:42:09 2025 -0700
+
+    updated public pathing for background
+
+[33mcommit 2c2861cbcf48e7d95391c8e83ac9e8a114989865[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Apr 24 23:20:13 2025 -0700
+
+    added background to frntend, better TS typing
+
+[33mcommit f93366f77ed9972a2826290a9f2b26a0f7d26522[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Apr 24 20:06:32 2025 -0700
+
+    updated backend endpints for multiple players
+
+[33mcommit f733e1678e250ffcf65bc32855826216ad9741bd[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Apr 24 19:09:00 2025 -0700
+
+    update responsivness for mobile devices
+
+[33mcommit d8294764a85779508ff799fd476493b8a2b59b8f[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Thu Apr 24 11:18:05 2025 -0700
+
+    updated production
+
+[33mcommit fa28261be9737eb496ff66428a2d65f371a09040[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Apr 23 23:22:58 2025 -0700
+
+    adding frontend url
+
+[33mcommit 5c1eedc072df5a970e9aa55fb6a2e3d406b4f77a[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Apr 23 23:08:26 2025 -0700
+
+    production updates
+
+[33mcommit 2ecc701a96adea5ebf0f4b4e0037bae2abe9aae7[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Apr 23 21:00:49 2025 -0700
+
+    updated API URL pathing
+
+[33mcommit f3d1c1f56bffdc084467d69eb736619f177e276c[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Apr 23 20:33:11 2025 -0700
+
+    allow dist
+
+[33mcommit 9009a534add9e6e42d46f901a88fc2af9b722b29[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Apr 23 20:28:46 2025 -0700
+
+    prod reqs
+
+[33mcommit e5b2c9f49be5d0e3216863fd68c5b01115398bd5[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Apr 23 20:25:09 2025 -0700
+
+    routed to react app
+
+[33mcommit a2b18f5752b29c8ead751e676a7aae242e1e90dc[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Apr 23 19:42:48 2025 -0700
+
+    production
+
+[33mcommit f4de54bc634bae671aae8b20d06e82bd793e1c53[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Wed Apr 23 18:52:41 2025 -0700
+
+    React update
+
+[33mcommit 81acd583f46a2cfbbdc3fd641a8980bb4aa10c5a[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Apr 21 22:21:41 2025 -0700
+
+    transition to Vanilla JS to React
+
+[33mcommit d3fec62fbf0180add242f438c9ac8659f0a2d61d[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Apr 21 18:47:54 2025 -0700
+
+    better stackin on deck
+
+[33mcommit fd30287b13dc20d41669a66fc9eae9dfa911c042[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Apr 21 18:29:14 2025 -0700
+
+    working shuffle animation
+
+[33mcommit 46f0fb0639f038f6ebabac6390d32d29e9ab26cf[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Apr 21 17:08:14 2025 -0700
+
+    added GSAP flip animation
+
+[33mcommit b604e643544d7795aad9d588693a5c95204606df[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Apr 21 16:05:07 2025 -0700
+
+    added flip effect to dealer hole card
+
+[33mcommit 8db2270c1eb13a40c542e19938b68b99683ea293[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Apr 21 12:15:17 2025 -0700
+
+    added a flip card effect
+
+[33mcommit bf302b94422f96fde8ef04d969614b81b803327e[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Mon Apr 21 00:09:34 2025 -0700
+
+    shuffle animation allows to animate card moving from cardRect to deckRect
+
+[33mcommit cf9f62bdd5a12821b37a902f19f7bb91b12953ba[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sun Apr 20 21:41:31 2025 -0700
+
+    initial animations for drawing cards
+
+[33mcommit b2d44532c9a146d4d493725c456ba8aed65c3e01[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sun Apr 20 19:07:56 2025 -0700
+
+    updated requiremnets.txt
+
+[33mcommit 60d0d61ae459ee881e0df27564afd4165c00c21b[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sun Apr 20 19:03:53 2025 -0700
+
+    created a dev vs prod requirements txt
+
+[33mcommit d1bb6a18ddbb5f20b452af8bebc468b0ce969490[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sun Apr 20 18:59:45 2025 -0700
+
+    added instructions on how to run
+
+[33mcommit f60d37cb4fc6a52591aae12f7c9a79e2b924bb68[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sun Apr 20 18:58:34 2025 -0700
+
+    updated requiremnets.txt
+
+[33mcommit 4a7109206fac7ba646c648c74f5964283b750d20[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sun Apr 20 18:54:59 2025 -0700
+
+    added instructions on how to run
+
+[33mcommit 6c91a33558eaabd8471ee036c67d1b2b4452bb31[m
+Author: stevenbliu <steventheliu@gmail.com>
+Date:   Sun Apr 20 18:49:38 2025 -0700
+
+    working blackjack web game

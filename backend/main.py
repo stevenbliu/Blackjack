@@ -26,6 +26,12 @@ from backend.MockManagers import MockSessionManager, MockConnectionManager
 from backend.chat.namespace import ChatNamespace
 from backend.game.namespace import GameNamespace
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DEV = os.environ.get("DEV")
+
 # -----------------------------
 # Logging
 # -----------------------------
@@ -93,12 +99,6 @@ game_namespace = GameNamespace(
 )
 sio.register_namespace(chat_namespace)
 sio.register_namespace(game_namespace)
-
-
-# @app.get("/healthcheck")
-# async def healthcheck():
-#     return {"status": "ok"}
-
 
 # -----------------------------
 # Static frontend (React SPA)
@@ -234,11 +234,17 @@ async def custom_metrics():
 
 app.include_router(metrics_router, prefix="")
 
-print("WORKDIR CONTENTS:", os.listdir("/opt/render/project/src"))
-project_root = Path(__file__).resolve().parent.parent
 
-# frontend_dist_path = Path(__file__).parent / "dist"  # copied by Dockerfile to /app/dist
-frontend_dist_path = project_root / "frontend" / "dist"
+if DEV:
+    frontend_dist_path = Path(__file__).parent.parent / "frontend" / "dist"
+
+else:
+
+    project_root = Path(__file__).resolve().parent.parent
+    frontend_dist_path = project_root / "frontend" / "dist"  # DEPLOYMENT ON RENDER
+    print("WORKDIR CONTENTS:", os.listdir("/opt/render/project/src"))
+
+print("dist path:", frontend_dist_path)
 app.mount("/", StaticFiles(directory=frontend_dist_path, html=True), name="frontend")
 
 
