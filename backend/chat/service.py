@@ -1,6 +1,6 @@
 from uuid import uuid4
 from typing import Dict, List
-from chat.modelsHttp import (
+from backend.chat.modelsHttp import (
     ChatRoom,
     CreateRoomRequest,
 )  # adjust import path if needed

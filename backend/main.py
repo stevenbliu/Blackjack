@@ -17,14 +17,14 @@ from fastapi.responses import FileResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
-from auth.routes import router as auth_router
-from game.routes import router as game_router
-from chat.routes import router as chat_router
-from auth.models import *
-from auth.service import verify_token
-from MockManagers import MockSessionManager, MockConnectionManager
-from chat.namespace import ChatNamespace
-from game.namespace import GameNamespace
+from backend.auth.routes import router as auth_router
+from backend.game.routes import router as game_router
+from backend.chat.routes import router as chat_router
+from backend.auth.models import *
+from backend.auth.service import verify_token
+from backend.MockManagers import MockSessionManager, MockConnectionManager
+from backend.chat.namespace import ChatNamespace
+from backend.game.namespace import GameNamespace
 
 # -----------------------------
 # Logging

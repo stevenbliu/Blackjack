@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import List
 
-from game.service import GameService, Game
+from backend.game.service import GameService, Game
 
 router = APIRouter(prefix="/api", tags=["game"])
 

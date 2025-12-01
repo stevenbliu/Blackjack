@@ -1,5 +1,5 @@
 import socketio
-from auth.service import verify_token
+from backend.auth.service import verify_token
 
 # Initialize Socket.IO server
 sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*", logger=True)

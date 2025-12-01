@@ -8,11 +8,11 @@ services:
       dockerfile: Dockerfile
     container_name: server
     ports:
-      - "5555:5555"
+      - "8000:8000"
     volumes:
       - ./frontend/dist:/backend/dist
       - ./backend:/backend
-    command: uvicorn main:app --host 0.0.0.0 --port 5555 --reload  # example for FastAPI
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload  # example for FastAPI
     networks:
       - app-network
       - monitoring

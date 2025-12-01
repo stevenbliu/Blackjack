@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
-from chat.modelsHttp import ChatRoom, CreateRoomRequest, JoinRoomRequest
-from chat.service import ChatRoomService  # adjust path if needed
+from backend.chat.modelsHttp import ChatRoom, CreateRoomRequest, JoinRoomRequest
+from backend.chat.service import ChatRoomService  # adjust path if needed
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 

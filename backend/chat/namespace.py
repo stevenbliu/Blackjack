@@ -6,12 +6,12 @@ import asyncio
 
 # from prometheus_client import generate_latest, Counter, Gauge, Histogram
 
-from MockManagers import MockSessionManager, MockConnectionManager
-from chat.service import chat_rooms
-from chat.decorators import validate_payload
-from chat.modelsSocket import *
+from backend.MockManagers import MockSessionManager, MockConnectionManager
+from backend.chat.service import chat_rooms
+from backend.chat.decorators import validate_payload
+from backend.chat.modelsSocket import *
 
-from metrics import (
+from backend.metrics import (
     active_ws_connections,
     ws_message_processing_seconds,
     ws_messages_received,
@@ -59,7 +59,7 @@ class ChatNamespace(AsyncNamespace):
         #         f"Missing token or username: Auth contains:{auth}"
         #     )
         #     return False
-        
+
         # Get
         token = auth["token"]
         username = auth["username"]

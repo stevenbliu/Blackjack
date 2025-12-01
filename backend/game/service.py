@@ -2,7 +2,7 @@
 
 import uuid
 from typing import List, Dict
-from game.models import Game, GameData
+from backend.game.models import Game, GameData
 
 # In-memory store
 games: Dict[str, Game] = {}
